@@ -1,0 +1,34 @@
+﻿<Page
+    x:Class="PokemonTCG.View.GameSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:PokemonTCG.View"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="*" />
+            <RowDefinition
+                Height="auto" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition
+                Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid>
+
+            <Button
+                Name="StartGameButton"
+                Content="Let's Go!"
+                Click="StartGameEvent"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom" />
+
+        </Grid>
+
+    </Grid>
+</Page>

@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "PokemonTCG (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "PokemonTCG (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "abilities": [],
+  "attacks": [
+    {
+      "name": "Thundershock",
+      "cost": { "Lightning": 1 }
+    },
+    {
+      "name": "Thunderpunch",
+      "cost": {
+        "Lightning": 1,
+        "Colorless": 1
+      }
+    }
+  ],
+  "evolvesfrom": "null",
+  "hp": "70",
+  "id": "base1-20",
+  "key": "19 - Electabuzz.png",
+  "name": "Electabuzz",
+  "resistances": [],
+  "retreatcost": { "Colorless": 2 },
+  "supertype": "Pok\u00e9mon",
+  "types": [ "Lightning" ],
+  "weaknesses": [
+    {
+      "type": "Fighting",
+      "value": "\u00d72"
+    }
+  ]
+}

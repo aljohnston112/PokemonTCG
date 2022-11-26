@@ -1,0 +1,1 @@
+{"key": "61 - Sandshrew.png", "id": "base1-62", "name": "Sandshrew", "supertype": "Pok\u00e9mon", "hp": "40", "types": ["Fighting"], "attacks": [{"name": "Sand-attack", "cost": {"Fighting": 1}}], "abilities": [], "weaknesses": [{"type": "Grass", "value": "\u00d72"}], "resistances": [{"type": "Lightning", "value": "-30"}], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

@@ -1,0 +1,1 @@
+{"key": "25 - Dratini.png", "id": "base1-26", "name": "Dratini", "supertype": "Pok\u00e9mon", "hp": "40", "types": ["Colorless"], "attacks": [{"name": "Pound", "cost": {"Colorless": 1}}], "abilities": [], "weaknesses": [], "resistances": [{"type": "Psychic", "value": "-30"}], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

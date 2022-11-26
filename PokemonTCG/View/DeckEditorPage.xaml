@@ -1,0 +1,270 @@
+﻿<Page
+    x:Class="PokemonTCG.View.DeckEditorPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:models="using:PokemonTCG.Models"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Page.Resources>
+
+        <Flyout
+            x:Key="ImagePreviewFlyout"
+            Placement="Right">
+
+            <!-- The flyout's DataContext must be the Image Source
+             of the image the flyout is attached to. -->
+
+            <Image
+                Source="{Binding Path=Source}"
+                MaxHeight="560"
+                MaxWidth="560"
+                Stretch="Uniform" />
+
+        </Flyout>
+
+    </Page.Resources>
+
+    <Grid>
+
+        <Grid.Resources>
+
+            <DataTemplate
+                x:Key="CardListView_ItemTemplate"
+                x:DataType="models:CardItem">
+
+                <Grid>
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition
+                            Height="auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition
+                            Width="*" />
+                        <ColumnDefinition
+                            Width="auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Image
+                        x:Name="EditorImage"
+                        Source="{x:Bind Image}"
+                        MaxWidth="236"
+                        Tapped="ImageTapped"
+                        FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
+                        DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" />
+
+                    <GridViewItem 
+                        x:Name="NumberBox"
+                        Content="{x:Bind NumberBox}"
+                        Grid.Column="1"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        />
+
+
+                </Grid>
+
+            </DataTemplate>
+
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition
+                Height="auto" />
+            <RowDefinition
+                Height="*" />
+            <RowDefinition
+                Height="auto" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition
+                Width="auto" />
+            <ColumnDefinition
+                Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Viewbox
+            MaxHeight="34">
+
+            <AutoSuggestBox
+                PlaceholderText="Search"
+                HorizontalAlignment="Right"
+                QueryIcon="Find"
+                TextChanged="SearchTextChanged" />
+        </Viewbox>
+
+        <StackPanel
+            HorizontalAlignment="Left"
+            Grid.Row="1"
+            Grid.RowSpan="2">
+
+            <CheckBox
+                x:Name="CheckBoxInDeck"
+                Content="In Deck"
+                IsChecked="false" />
+            
+            <StackPanel>
+
+                <CheckBox
+                    x:Name="CheckBoxPokemon"
+                    Content="Pokemon"
+                    IsChecked="true" />
+
+                <CheckBox
+                    x:Name="CheckBoxTrainer"
+                    Content="Trainer"
+                    IsChecked="true" />
+
+                <CheckBox
+                    x:Name="CheckBoxEnergy"
+                    Content="Energy"
+                    IsChecked="true" />
+            </StackPanel>
+
+            <StackPanel
+                x:Name="StackPanelTypes">
+
+                <CheckBox
+                    x:Name="CheckBoxColorless"
+                    Content="Colorless"
+                    IsChecked="false" />
+
+                <CheckBox
+                    x:Name="CheckBoxFighting"
+                    Content="Fighting"
+                    IsChecked="false" />
+
+                <CheckBox
+                    x:Name="CheckBoxFire"
+                    Content="Fire"
+                    IsChecked="false" />
+
+                <CheckBox
+                    x:Name="CheckBoxGrass"
+                    Content="Grass"
+                    IsChecked="false" />
+
+                <CheckBox
+                    x:Name="CheckBoxLightning"
+                    Content="Lightning"
+                    IsChecked="false" />
+
+                <CheckBox
+                    x:Name="CheckBoxPsychic"
+                    Content="Psychic"
+                    IsChecked="false" />
+
+                <CheckBox
+                    x:Name="CheckBoxWater"
+                    Content="Water"
+                    IsChecked="false" />
+            </StackPanel>
+
+        </StackPanel>
+
+        <StackPanel
+            Grid.Row="0"
+            Grid.Column="1"
+            HorizontalAlignment="Center">
+
+            <StackPanel
+                Orientation="Horizontal">
+
+                <Viewbox
+                    MaxHeight="67"
+                    HorizontalAlignment="Right"
+                    Grid.Column="1"
+                    Grid.Row="2">
+
+                    <TextBlock
+                        Text="Deck Name: "
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Center"
+                        Margin="5" />
+                </Viewbox>
+
+                <Viewbox
+                    MaxHeight="67"
+                    Grid.Column="1"
+                    HorizontalAlignment="Left"
+                    Grid.Row="2">
+                    <TextBox
+                        x:Name="TextBlockDeckName"
+                        Margin="5"
+                        VerticalAlignment="Center" />
+                </Viewbox>
+
+            </StackPanel>
+
+        </StackPanel>
+
+        <GridView
+            x:Name="CardGridView"
+            CacheMode="BitmapCache"
+            ItemTemplate="{StaticResource CardListView_ItemTemplate}"
+            ItemsSource="{x:Bind _viewModel.Cards}"
+            ContainerContentChanging="UpdateListView"
+            HorizontalAlignment="Center"
+            Grid.Row="1"
+            Grid.Column="1">
+
+            <GridView.ItemContainerStyle>
+
+                <Style
+                    TargetType="GridViewItem">
+
+                    <Setter
+                        Property="Template">
+
+                        <Setter.Value>
+
+                            <ControlTemplate
+                                TargetType="GridViewItem">
+
+                                <ListViewItemPresenter
+                                    SelectedBackground="Transparent"
+                                    SelectedPointerOverBackground="Transparent"
+                                    PressedBackground="Transparent"
+                                    SelectedPressedBackground="Transparent" />
+
+                            </ControlTemplate>
+
+                        </Setter.Value>
+
+                    </Setter>
+
+                </Style>
+
+            </GridView.ItemContainerStyle>
+
+        </GridView>
+
+        <StackPanel
+            Grid.Row="2"
+            Grid.Column="1"
+            Orientation="Horizontal"
+            HorizontalAlignment="Right"
+            Padding="5">
+
+            <Button
+                Name="SubmitDeckButton"
+                Content="Submit Deck"
+                Click="SubmitDeckEvent"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="5" />
+
+            <Button
+                Name="CancelDeckButton"
+                Content="Cancel Deck"
+                Click="CancelDeckEvent"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="5" />
+        </StackPanel>
+
+    </Grid>
+
+</Page>

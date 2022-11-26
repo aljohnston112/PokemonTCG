@@ -1,0 +1,1 @@
+{"key": "43 - Bulbasaur.png", "id": "base1-44", "name": "Bulbasaur", "supertype": "Pok\u00e9mon", "hp": "40", "types": ["Grass"], "attacks": [{"name": "Leech Seed", "cost": {"Grass": 2}}], "abilities": [], "weaknesses": [{"type": "Fire", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

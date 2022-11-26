@@ -1,0 +1,1 @@
+{"key": "58 - Poliwag.png", "id": "base1-59", "name": "Poliwag", "supertype": "Pok\u00e9mon", "hp": "40", "types": ["Water"], "attacks": [{"name": "Water Gun", "cost": {"Water": 1}}], "abilities": [], "weaknesses": [{"type": "Grass", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

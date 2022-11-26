@@ -1,0 +1,1 @@
+{"key": "47 - Doduo.png", "id": "base1-48", "name": "Doduo", "supertype": "Pok\u00e9mon", "hp": "50", "types": ["Colorless"], "attacks": [{"name": "Fury Attack", "cost": {"Colorless": 1}}], "abilities": [], "weaknesses": [{"type": "Lightning", "value": "\u00d72"}], "resistances": [{"type": "Fighting", "value": "-30"}], "retreatcost": {}, "evolvesfrom": "null"}

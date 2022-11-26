@@ -1,0 +1,1 @@
+{"key": "53 - Metapod.png", "id": "base1-54", "name": "Metapod", "supertype": "Pok\u00e9mon", "hp": "70", "types": ["Grass"], "attacks": [{"name": "Stiffen", "cost": {"Colorless": 2}}, {"name": "Stun Spore", "cost": {"Grass": 2}}], "abilities": [], "weaknesses": [{"type": "Fire", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 2}, "evolvesfrom": "Caterpie"}

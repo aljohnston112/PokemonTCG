@@ -1,0 +1,1 @@
+{"key": "68 - Weedle.png", "id": "base1-69", "name": "Weedle", "supertype": "Pok\u00e9mon", "hp": "40", "types": ["Grass"], "attacks": [{"name": "Poison Sting", "cost": {"Grass": 1}}], "abilities": [], "weaknesses": [{"type": "Fire", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

@@ -1,0 +1,1 @@
+{"key": "51 - Machop.png", "id": "base1-52", "name": "Machop", "supertype": "Pok\u00e9mon", "hp": "50", "types": ["Fighting"], "attacks": [{"name": "Low Kick", "cost": {"Fighting": 1}}], "abilities": [], "weaknesses": [{"type": "Psychic", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}
