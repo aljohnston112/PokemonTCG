@@ -54,13 +54,12 @@
                         FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
                         DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}" />
 
-                    <GridViewItem 
+                    <GridViewItem
                         x:Name="NumberBox"
                         Content="{x:Bind NumberBox}"
                         Grid.Column="1"
                         HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        />
+                        VerticalAlignment="Center" />
 
 
                 </Grid>
@@ -100,11 +99,33 @@
             Grid.Row="1"
             Grid.RowSpan="2">
 
+            <Viewbox
+                MaxHeight="67"
+                HorizontalAlignment="Center">
+
+                <StackPanel>
+
+                    <TextBlock
+                        Text="Cards &#x0a;Selected "
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        TextAlignment="Center"
+                        Margin="5" />
+
+                    <TextBlock
+                        Text="{x:Bind Path=_viewModel.TotalCountText, Mode=OneWay}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center" />
+
+                </StackPanel>
+
+            </Viewbox>
+
             <CheckBox
                 x:Name="CheckBoxInDeck"
                 Content="In Deck"
                 IsChecked="false" />
-            
+
             <StackPanel>
 
                 <CheckBox
@@ -174,9 +195,7 @@
 
                 <Viewbox
                     MaxHeight="67"
-                    HorizontalAlignment="Right"
-                    Grid.Column="1"
-                    Grid.Row="2">
+                    HorizontalAlignment="Right">
 
                     <TextBlock
                         Text="Deck Name: "
@@ -187,9 +206,7 @@
 
                 <Viewbox
                     MaxHeight="67"
-                    Grid.Column="1"
-                    HorizontalAlignment="Left"
-                    Grid.Row="2">
+                    HorizontalAlignment="Left">
                     <TextBox
                         x:Name="TextBlockDeckName"
                         Margin="5"
@@ -207,7 +224,7 @@
             ItemsSource="{x:Bind _viewModel.Cards}"
             ContainerContentChanging="UpdateListView"
             HorizontalAlignment="Center"
-            Grid.Row="1"
+            Grid.Row="2"
             Grid.Column="1">
 
             <GridView.ItemContainerStyle>
@@ -242,7 +259,7 @@
         </GridView>
 
         <StackPanel
-            Grid.Row="2"
+            Grid.Row="3"
             Grid.Column="1"
             Orientation="Horizontal"
             HorizontalAlignment="Right"

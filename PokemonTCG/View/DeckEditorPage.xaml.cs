@@ -184,14 +184,7 @@ namespace PokemonTCG.View
             }
             else
             {
-                List<string> cards = new List<string>();
-                // TODO Cards are sifted!
-                foreach (CardItem item in _viewModel.GetSelectedCards())
-                {
-                    cards.Add(item.Id);
-                }
-                PokemonDeck deck = new PokemonDeck(name, cards);
-                await PokemonDeck.SaveDeck(deck);
+                _viewModel.CreateDeck(name);
                 Frame.GoBack();
             }
         }

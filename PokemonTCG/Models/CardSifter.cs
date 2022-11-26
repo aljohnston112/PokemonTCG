@@ -78,6 +78,11 @@ namespace PokemonTCG.Models
             return cards;
         }
 
+        /// <summary>
+        /// Checks if a CardItem has a count greater than 0, only if _inDeck is true.
+        /// </summary>
+        /// <param name="card">The CardItem whose count may be checked</param>
+        /// <returns>true is _notInDeck is false or card has a count greater than 0, else false</returns>
         private bool CardIsInDeck(CardItem card)
         {
             return !_inDeck || card.GetCount() > 0;

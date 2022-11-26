@@ -1,33 +1,50 @@
 ﻿using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Data;
 using PokemonTCG.DataSources;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
-using WinRT;
 
 namespace PokemonTCG.ViewModel
 {
     /// <summary>
     /// The view model for the <c>DeckEditorPage</c>.
     /// </summary>
-    internal class DeckEditorViewModel
+    internal class DeckEditorViewModel : BindableBase
     {
         private readonly Collection<CardItem> _cards = new();
         private CardSifter _sifter = new();
         public readonly ObservableCollection<CardItem> Cards = new();
 
-        private int count = 0;
-        public int GetTotalCount()
+        private int _totalCount = 0;
+        private int TotalCount
         {
-            return count;
+            get { return _totalCount; }
+            set 
+            { 
+                TotalCountText = value.ToString();
+                SetProperty(ref _totalCount, value); 
+            }
+        }
+
+        internal int GetTotalCount()
+        {
+            return _totalCount;
+        }
+
+        private string _totalCountText = "0";
+        public string TotalCountText
+        {
+            get { return _totalCountText; }
+            set { SetProperty(ref _totalCountText, value); }
         }
 
         public DeckEditorViewModel() { }
@@ -63,15 +80,15 @@ namespace PokemonTCG.ViewModel
         {
             int value = (int)args.NewValue;
             int diff = value - (int)args.OldValue;
-            if ((diff + count) > 60)
+            if ((diff + TotalCount) > 60)
             {
-                
-                value = (60 - count);
+
+                value = (60 - TotalCount);
                 diff = value - (int)args.OldValue;
             }
             item.SetCount(value);
-            count += diff;
-            Debug.Assert(count <= 60 && count >= 0);
+            TotalCount += diff;
+            Debug.Assert(TotalCount <= 60 && TotalCount >= 0);
         }
 
         /// <summary>
@@ -128,17 +145,47 @@ namespace PokemonTCG.ViewModel
             SiftCards();
         }
 
+        /// <summary>
+        /// Called when there is a change to a PokemonType checkbox.
+        /// </summary>
+        /// <param name="isChecked">Whether or not the checkbox is checked</param>
         internal void TypeChange(PokemonType type, bool isChecked)
         {
             _sifter = _sifter.TypeUpdate(type, isChecked);
             SiftCards();
         }
 
+        /// <summary>
+        /// Called when there is a change to the in-deck checkbox.
+        /// </summary>
+        /// <param name="isChecked">Whether or not the checkbox is checked</param>
         internal void InDeckChanged(bool value)
         {
             _sifter = _sifter.InDeckUpdate(value);
             SiftCards();
         }
+
+        /// <summary>
+        /// Creates a PokemonDeck from cards that have been selected by the user and are considered in-deck.
+        /// </summary>
+        /// <returns></returns>
+        internal async Task CreateDeck(string name)
+        {
+            Collection<string> cards = new();
+            foreach (CardItem card in _cards)
+            {
+                if (card.GetCount() > 0)
+                {
+                    for (int i = 0; i < card.GetCount(); i++)
+                    {
+                        cards.Add(card.Id);
+                    }
+                }
+            }
+            PokemonDeck deck = new PokemonDeck(name, cards);
+            await PokemonDeck.SaveDeck(deck);
+        }
+
     }
 
 }

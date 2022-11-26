@@ -15,6 +15,7 @@ namespace PokemonTCG.View
     public sealed partial class TitlePage : Page
     {
 
+        private Task _loadTask;
 
         public TitlePage()
         {
@@ -22,10 +23,10 @@ namespace PokemonTCG.View
 
             string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
             string folder = baseFolder + @"Assets\Decks\0 - Base\";
-            Load(folder);
+            _loadTask = Load(folder);
         }
 
-        private async void Load(string folder)
+        private async Task Load(string folder)
         {
             await CardDataSource.LoadCards(folder);
             await PokemonDeck.LoadDecks();
@@ -36,8 +37,9 @@ namespace PokemonTCG.View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ButtonDeckList(object sender, RoutedEventArgs e)
+        private async void ButtonDeckList(object sender, RoutedEventArgs e)
         {
+            await _loadTask;
             this.Frame.Navigate(typeof(DeckListPage));
         }
 
