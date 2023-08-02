@@ -14,16 +14,13 @@ fun App(gameState: GameState) {
 
 //    UI.playingField(gameState)
 
-    val deckBuilderState = DeckBuilderState()
-    deckBuilder(deckBuilderState, modifier = Modifier.padding(4.dp))
 }
 
 fun main() = application {
 
-    runBlocking {
-        APIHelper.readCards()
-    }
-
+    val deckBuilderViewModel = DeckBuilderViewModel()
+    deckBuilder(deckBuilderViewModel, modifier = Modifier.padding(4.dp))
+    deckBuilderViewModel.state.value
     val prizes = listOf(
         BaseSet.cards[0],
         BaseSet.cards[0],

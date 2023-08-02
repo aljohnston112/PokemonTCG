@@ -1,20 +1,13 @@
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import pokemon_tcg_api.APIHelper
 
 class BaseSet {
 
     companion object {
-        val cards = listOf(
-            Card(
-                "decks/0 - Base/images/large/1 - Alakazam.png",
-                "Alakazam",
-                80,
-                listOf(
-                    // PreAttackAction("Pokemon Power: Damage Swap", 0, ::damageSwap)
-                )
-            )
-        )
-        
+
         @Composable
         private fun damageSwap(gameState: GameState) {
 

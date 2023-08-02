@@ -18,9 +18,14 @@ class APIHelper {
         private val SETS_SAVE_FILE = File(".").canonicalPath + "/src/main/resources/sets.json"
         private val SET_SAVE_FILE_FOLDER = File(".").canonicalPath + "/src/main/resources/sets/"
 
-        suspend fun readCards(): List<Card> = withContext(Dispatchers.IO) {
+        suspend fun getCardsFromSet(setId: String): List<Card> = withContext(Dispatchers.IO) {
+            val allCards = readCards()
+            return@withContext allCards[setId]!!
+        }
+
+        private suspend fun readCards(): Map<String, List<Card>> = withContext(Dispatchers.IO) {
             saveCards()
-            val cards = mutableListOf<Card>()
+            val cards = mutableMapOf<String, List<Card>>()
             val setFiles = File(SET_SAVE_FILE_FOLDER).listFiles()!!
             val format = Json { ignoreUnknownKeys = true }
             for (file in setFiles) {
@@ -33,7 +38,9 @@ class APIHelper {
 
                     val element = Json.parseToJsonElement(jsonString)
                     val data = element.jsonObject["data"]!!
-                    cards.addAll(format.decodeFromJsonElement<List<Card>>(data))
+
+                    val setName = file.nameWithoutExtension
+                    cards[setName] = format.decodeFromJsonElement<List<Card>>(data)
                 }
             }
             return@withContext cards

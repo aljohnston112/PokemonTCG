@@ -4,26 +4,45 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import pokemon_tcg_api.APIHelper
 
 @Composable
 fun deckBuilder(
-    deckBuilderState: DeckBuilderState,
+    deckBuilderViewModel: DeckBuilderViewModel,
     modifier: Modifier = Modifier
 ) {
-    Column {
-        cardsLeft(deckBuilderState, modifier)
-        energyForAllAttacks(deckBuilderState, modifier)
-        deckName(modifier)
-        buttons(modifier)
+    val composableScope = rememberCoroutineScope()
+
+    composableScope.launch {
+        deckBuilderViewModel.state.collect { deckBuilderState ->
+            if (deckBuilderState != null) {
+                Column {
+                    cards(deckBuilderState, modifier)
+                    cardsLeft(deckBuilderState, modifier)
+                    energyForAllAttacks(deckBuilderState, modifier)
+                    deckName(modifier)
+                    buttons(modifier)
+                }
+            }
+        }
     }
+}
+
+@Composable
+fun cards(
+    deckBuilderState: DeckBuilderState,
+    modifier: Modifier
+) {
+
+
 }
 
 @Composable
