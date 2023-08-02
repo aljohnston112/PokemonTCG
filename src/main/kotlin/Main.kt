@@ -4,20 +4,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import pokemon_tcg_api.APIHelper
 
 @Composable
 fun App(gameState: GameState) {
-//    UI.askUserToPickFromCards(
-//        "Pick a Card",
-//        listOf(BaseSet.cards[0]),
-//        CardState(null)
-//    )
+
 //    UI.playingField(gameState)
+
     val deckBuilderState = DeckBuilderState()
     deckBuilder(deckBuilderState, modifier = Modifier.padding(4.dp))
 }
 
 fun main() = application {
+
+    runBlocking {
+        APIHelper.readCards()
+    }
+
     val prizes = listOf(
         BaseSet.cards[0],
         BaseSet.cards[0],
