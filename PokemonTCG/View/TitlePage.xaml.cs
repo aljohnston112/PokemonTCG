@@ -30,6 +30,7 @@ namespace PokemonTCG.View
         {
             await CardDataSource.LoadCards(folder);
             await PokemonDeck.LoadDecks();
+
         }
 
         /// <summary>

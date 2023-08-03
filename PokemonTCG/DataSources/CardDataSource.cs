@@ -15,7 +15,7 @@ namespace PokemonTCG.DataSources
     // TODO Create a Dictionary<string, CountdownEvent> so folder loading can be tracked
 
     /// <summary>
-    /// For getting <c>Card</c> instances.
+    /// For getting <c>Card</c> instances.0
     /// First the instances must be loaded from a given folder; <see cref="LoadCards"/>.
     /// Then instances are retrieved by the url of the corresponding png file with the card picture; <see cref="GetInstance(string)"/>.
     /// </summary>
@@ -63,6 +63,7 @@ namespace PokemonTCG.DataSources
                 await LoadCard(file);
             }
 
+
             // Cards have been loaded
             if (_countDownEventForCardsLoaded.CurrentCount != 0)
             {
@@ -102,7 +103,7 @@ namespace PokemonTCG.DataSources
                 }
                 else if (supertype == "Energy")
                 {
-                    
+
                     string[] energyTypes = name.Split();
                     string energyType = energyTypes[^2];
                     PokemonType type = Type.GetType(energyType);
