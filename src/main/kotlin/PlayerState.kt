@@ -1,3 +1,5 @@
+import pokemon_tcg_api.Card
+
 class PlayerState(
     hand: List<Card>,
     prizes: List<Card>

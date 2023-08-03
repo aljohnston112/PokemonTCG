@@ -1,3 +1,4 @@
+import pokemon_tcg_api.Card
 import kotlin.properties.Delegates
 
 class GameState(

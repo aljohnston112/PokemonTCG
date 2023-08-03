@@ -14,9 +14,18 @@ class DeckBuilderViewModel {
 
     init {
         scope.launch {
-            val cards = APIHelper.getCardsFromSet("base1")
+            val cards = APIHelper.getCardsFromSet("base1").map {
+                Pair(it, 0)
+            }.toMap()
+
             _state.emit(
-                DeckBuilderState(cards, listOf(), listOf(), listOf())
+                DeckBuilderState(
+                    "sets/base1",
+                    cards,
+                    listOf(),
+                    listOf(),
+                    listOf()
+                )
             )
         }
     }

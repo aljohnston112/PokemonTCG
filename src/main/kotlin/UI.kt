@@ -109,7 +109,7 @@ class UI {
         @Composable
         fun playerPokemon(gameState: GameState, modifier: Modifier) {
             val card = gameState.playerState.active?.card
-            val imagePath = card?.imagePath?:"decks/BlankCard2.png"
+            val imagePath = card?.images?.get("large")?:"decks/BlankCard2.png"
             val image = painterResource(imagePath)
             Box(
                 contentAlignment = Alignment.Center,
@@ -126,7 +126,7 @@ class UI {
         @Composable
         fun opponentPokemon(gameState: GameState, modifier: Modifier) {
             val card = gameState.opponentState.active?.card
-            val imagePath = card?.imagePath?:"decks/BlankCard2.png"
+            val imagePath = card?.images?.get("large")?:"decks/BlankCard2.png"
             val image = painterResource(imagePath)
             Box(
                 contentAlignment = Alignment.Center,
@@ -178,7 +178,7 @@ class UI {
                     newModifier = modifier.rotate(180F)
                     Pair(
                         "Opponent's benched ${opponentBenched[i].card.name}",
-                        opponentBenched[i].card.imagePath
+                        opponentBenched[i].card.images["large"]!!
                     )
                 } else if(i < gameState.opponentState.getNumberOfBenchedPokemon()) {
                     Pair("Opponent's unknown benched Pokemon", "decks/CardBackFlipped.png")
@@ -193,7 +193,7 @@ class UI {
                 if ((i - 6) < playerBenched.size) {
                     Pair(
                         "Your benched ${playerBenched[i].card.name}",
-                        playerBenched[i].card.imagePath
+                        playerBenched[i].card.images["large"]!!
                     )
                 } else if((i - 6) < gameState.playerState.getNumberOfBenchedPokemon()) {
                     Pair("Your benched ${playerBenched[i].card.name}", "decks/CardBack.png")
@@ -309,7 +309,7 @@ class UI {
             Column {
                 choices.forEach {
                     Image(
-                        painterResource(it.card.imagePath),
+                        painterResource(it.card.images["large"]!!),
                         "${it.card.name} with ${it.healthLeft()}0 hp"
                     )
                 }

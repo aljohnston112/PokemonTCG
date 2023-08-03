@@ -32,7 +32,7 @@ class BaseSet {
         private fun getPokemonWithDamage(pokemon: List<CardState>): List<CardState> {
             val validPokemon = mutableListOf<CardState>()
             for (poke in pokemon) {
-                if (poke.healthLeft() != poke.card.maxHP) {
+                if (poke.healthLeft() != poke.card.hp) {
                     validPokemon.add(poke)
                 }
             }

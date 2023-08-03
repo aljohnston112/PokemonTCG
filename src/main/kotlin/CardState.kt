@@ -1,3 +1,5 @@
+import pokemon_tcg_api.Card
+
 class CardState(val card: Card) {
 
     private var damage = 0
@@ -34,7 +36,7 @@ class CardState(val card: Card) {
      * @return The hp this card has left.
      */
     fun healthLeft(): Int {
-        return card.maxHP - this.damage
+        return card.hp - this.damage
     }
 
     /**

@@ -108,12 +108,12 @@ class APIHelper {
 
         /**
          * Saves the json response containing the card sets to the resource folder and
-         * reads the data into [Series] classes.
-         * The [Series]s are then grouped by the series they belong to and are sorted by date.
+         * reads the data into [Set] classes.
+         * The [Set]s are then grouped by the series they belong to and are sorted by date.
          *
-         * @return A map of the series names to the [Series]s contained in those series.
+         * @return A map of the series names to the [Set]s contained in those series.
          */
-        private suspend fun readSets(): Map<String, List<Series>> = withContext(Dispatchers.IO) {
+        private suspend fun readSets(): Map<String, List<Set>> = withContext(Dispatchers.IO) {
 
             requestAndSaveSets()
             val fileInputStream = FileInputStream(SETS_SAVE_FILE)
@@ -124,9 +124,9 @@ class APIHelper {
 
             val element = Json.parseToJsonElement(jsonString)
             val data = element.jsonObject["data"]!!
-            val series = Json.decodeFromJsonElement<List<Series>>(data)
+            val sets = Json.decodeFromJsonElement<List<Set>>(data)
 
-            return@withContext series.groupBy {
+            return@withContext sets.groupBy {
                 it.series
             }.toList().sortedBy { (_, setList) ->
                 setList.minOf { it.releaseDate }
