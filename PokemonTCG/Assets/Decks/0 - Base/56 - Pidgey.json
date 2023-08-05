@@ -1,1 +1,0 @@
-{"key": "56 - Pidgey.png", "id": "base1-57", "name": "Pidgey", "supertype": "Pok\u00e9mon", "hp": "40", "types": ["Colorless"], "attacks": [{"name": "Whirlwind", "cost": {"Colorless": 2}}], "abilities": [], "weaknesses": [{"type": "Lightning", "value": "\u00d72"}], "resistances": [{"type": "Fighting", "value": "-30"}], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

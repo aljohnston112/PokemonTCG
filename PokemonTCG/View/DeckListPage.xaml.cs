@@ -14,7 +14,7 @@ namespace PokemonTCG.View
     public sealed partial class DeckListPage : Page
     {
 
-        private ViewModelDeckListPage _viewModel = new();
+        private DeckListPageViewmodel _viewModel = new();
         public DeckListPage()
         {
             InitializeComponent();

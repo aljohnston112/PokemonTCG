@@ -1,1 +1,0 @@
-{"key": "40 - Seel.png", "id": "base1-41", "name": "Seel", "supertype": "Pok\u00e9mon", "hp": "60", "types": ["Water"], "attacks": [{"name": "Headbutt", "cost": {"Water": 1}}], "abilities": [], "weaknesses": [{"type": "Lightning", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

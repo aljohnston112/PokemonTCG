@@ -1,1 +1,0 @@
-{"key": "44 - Caterpie.png", "id": "base1-45", "name": "Caterpie", "supertype": "Pok\u00e9mon", "hp": "40", "types": ["Grass"], "attacks": [{"name": "String Shot", "cost": {"Grass": 1}}], "abilities": [], "weaknesses": [{"type": "Fire", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

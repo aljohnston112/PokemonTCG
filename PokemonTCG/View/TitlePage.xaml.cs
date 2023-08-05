@@ -1,11 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Documents;
-using PokemonTCG.DataSources;
-using PokemonTCG.Models;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using PokemonTCG.ViewModel;
 
 namespace PokemonTCG.View
 {
@@ -15,33 +10,23 @@ namespace PokemonTCG.View
     public sealed partial class TitlePage : Page
     {
 
-        private Task _loadTask;
+        private readonly TitlePageViewModel titlePageViewModel = new();
 
         public TitlePage()
         {
             this.InitializeComponent();
-
-            string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
-            string folder = baseFolder + @"Assets\Decks\0 - Base\";
-            _loadTask = Load(folder);
+            titlePageViewModel.OnInit();
         }
 
-        private async Task Load(string folder)
-        {
-            await CardDataSource.LoadCards(folder);
-            await PokemonDeck.LoadDecks();
-
-        }
 
         /// <summary>
         /// Called when the user clicks to see the deck list.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private async void ButtonDeckList(object sender, RoutedEventArgs e)
+        private void ButtonDeckListClicked(object sender, RoutedEventArgs e)
         {
-            await _loadTask;
-            this.Frame.Navigate(typeof(DeckListPage));
+            titlePageViewModel.ButtonDeckListClicked(this.Frame);
         }
 
         /// <summary>
@@ -49,9 +34,11 @@ namespace PokemonTCG.View
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ButtonGameSettings(object sender, RoutedEventArgs e)
+        private void ButtonGameSettingsClicked(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(GameSettingsPage));
+            TitlePageViewModel.ButtonGameSettingsListClicked(this.Frame);
         }
+
     }
+
 }

@@ -1,1 +1,0 @@
-{"key": "64 - Staryu.png", "id": "base1-65", "name": "Staryu", "supertype": "Pok\u00e9mon", "hp": "40", "types": ["Water"], "attacks": [{"name": "Slap", "cost": {"Water": 1}}], "abilities": [], "weaknesses": [{"type": "Lightning", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

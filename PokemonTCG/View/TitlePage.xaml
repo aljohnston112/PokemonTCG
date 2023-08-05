@@ -5,44 +5,23 @@
     xmlns:local="using:PokemonTCG.View"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-
-        <Grid.RowDefinitions>
-            <RowDefinition
-                Height="auto" />
-            <RowDefinition
-                Height="*" />
-        </Grid.RowDefinitions>
-
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition
-                Width="*" />
-        </Grid.ColumnDefinitions>
+    <Grid ColumnDefinitions="*"
+          RowDefinitions="auto, *">
 
         <TextBlock
             x:Name="textTitle"
             Text="Pokemon TCG"
             HorizontalAlignment="Center"
+            Grid.Row="0"
             Style="{StaticResource HeaderTextBlockStyle}" />
 
-        <Grid
-            Grid.Row="1">
-
-            <Grid.RowDefinitions>
-                <RowDefinition
-                    Height="*" />
-                <RowDefinition
-                    Height="*" />
-            </Grid.RowDefinitions>
-
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition
-                    Width="*" />
-            </Grid.ColumnDefinitions>
+        <Grid ColumnDefinitions="*"
+              RowDefinitions="*, *"
+              Grid.Row="1">
 
             <HyperlinkButton
                 Content="Deck List"
-                Click="ButtonDeckList"
+                Click="ButtonDeckListClicked"
                 Grid.Row="0"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center" />
@@ -50,7 +29,7 @@
             <HyperlinkButton
                 Content="Start Game"
                 Grid.Row="1"
-                Click="ButtonGameSettings"
+                Click="ButtonGameSettingsClicked"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center" />
 

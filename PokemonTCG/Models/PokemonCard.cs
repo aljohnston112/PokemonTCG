@@ -19,7 +19,7 @@ namespace PokemonTCG.Models
         public readonly int Hp;
         public readonly ImmutableList<PokemonType> Types;
         public readonly ImmutableList<Attack> Attacks;
-        public readonly ImmutableList<PokemonPower> PokemonPowers;
+        public readonly ImmutableList<Ability> PokemonPowers;
         public readonly ImmutableDictionary<PokemonType, string> Weaknesses;
         public readonly ImmutableDictionary<PokemonType, string> Resistances;
         public readonly ImmutableDictionary<PokemonType, int> RetreatCost;
@@ -50,7 +50,7 @@ namespace PokemonTCG.Models
              int hp,
              List<PokemonType> types,
              List<Attack> attacks,
-             List<PokemonPower> pokemonPowers,
+             List<Ability> pokemonPowers,
              Dictionary<PokemonType, string> weaknesses,
              Dictionary<PokemonType, string> resistances,
              Dictionary<PokemonType, int> retreatCost,

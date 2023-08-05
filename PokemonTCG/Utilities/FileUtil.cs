@@ -28,7 +28,14 @@ namespace PokemonTCG.Utilities
                     fileUrl
                     )
                 );
-            return await StorageFile.GetFileFromPathAsync(sourcePath);
+            StorageFile file = null;
+            try
+            {
+                file = await StorageFile.GetFileFromPathAsync(sourcePath);
+            } catch(FileNotFoundException e) {
+
+            }
+            return file;
         }
 
         /// <summary>

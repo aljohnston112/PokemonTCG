@@ -1,1 +1,0 @@
-{"key": "54 - Nidoran \u2642.png", "id": "base1-55", "name": "Nidoran \u2642", "supertype": "Pok\u00e9mon", "hp": "40", "types": ["Grass"], "attacks": [{"name": "Horn Hazard", "cost": {"Grass": 1}}], "abilities": [], "weaknesses": [{"type": "Psychic", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

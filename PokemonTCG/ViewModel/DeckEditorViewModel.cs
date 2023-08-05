@@ -54,17 +54,15 @@ namespace PokemonTCG.ViewModel
             // Get the json file containing all the cards for the base set
             StorageFile file = await FileUtil.getFile(deckFile);
             string jsonText = await FileIO.ReadTextAsync(file);
-            JsonArray jsonArray = JsonArray.Parse(jsonText);
+            JsonObject jsonObject = JsonObject.Parse(jsonText);
+            JsonArray jsonArray = jsonObject.GetNamedArray("data");
 
             // Load the cards
-            int i = 0;
-            DispatcherQueue dispatcherQueue = DispatcherQueue.GetForCurrentThread();
-            foreach (JsonValue element in jsonArray)
+            foreach (IJsonValue element in jsonArray)
             {
-                CardItem card = await CardItemDataSource.GetCard(dispatcherQueue, element, i);
+                CardItem card = await CardItemDataSource.GetCard(element);
                 _cards.Add(card);
                 Cards.Add(card);
-                i++;
             }
 
         }

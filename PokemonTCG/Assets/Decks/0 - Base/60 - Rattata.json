@@ -1,1 +1,0 @@
-{"key": "60 - Rattata.png", "id": "base1-61", "name": "Rattata", "supertype": "Pok\u00e9mon", "hp": "30", "types": ["Colorless"], "attacks": [{"name": "Bite", "cost": {"Colorless": 1}}], "abilities": [], "weaknesses": [{"type": "Fighting", "value": "\u00d72"}], "resistances": [{"type": "Psychic", "value": "-30"}], "retreatcost": {}, "evolvesfrom": "null"}

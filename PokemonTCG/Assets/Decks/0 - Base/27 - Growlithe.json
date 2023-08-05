@@ -1,1 +1,0 @@
-{"key": "27 - Growlithe.png", "id": "base1-28", "name": "Growlithe", "supertype": "Pok\u00e9mon", "hp": "60", "types": ["Fire"], "attacks": [{"name": "Flare", "cost": {"Fire": 1, "Colorless": 1}}], "abilities": [], "weaknesses": [{"type": "Water", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

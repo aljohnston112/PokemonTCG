@@ -1,1 +1,0 @@
-{"key": "11 - Ninetales.png", "id": "base1-12", "name": "Ninetales", "supertype": "Pok\u00e9mon", "hp": "80", "types": ["Fire"], "attacks": [{"name": "Lure", "cost": {"Colorless": 2}}, {"name": "Fire Blast", "cost": {"Fire": 4}}], "abilities": [], "weaknesses": [{"type": "Water", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "Vulpix"}

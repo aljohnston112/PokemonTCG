@@ -18,9 +18,8 @@ namespace PokemonTCG.DataSources
         /// Creates a <c>CardItem</c> from a json value in the set file.
         /// </summary>
         /// <param name="element">The json value from the json array loaded from the set file</param>
-        /// <param name="index">The index of the json value in the json array from the set file</param>
         /// <returns>A <c>Task</c> that will return a <c>CardItem></c></returns>
-        public static async Task<CardItem> GetCard(DispatcherQueue dispatcherQueue, JsonValue element, int index)
+        public static async Task<CardItem> GetCard(IJsonValue element)
         {
 
             JsonObject jObject = element.GetObject();
@@ -38,7 +37,7 @@ namespace PokemonTCG.DataSources
             }
 
             // Get the image url
-            string url = "Assets/Decks/0 - Base/" + index + " - " + name + ".png";
+            string url = "Assets/sets/base1/" + id + "-large.png";
             BitmapImage bitmapImage = new();
             bitmapImage.SetSource(await ImageLoader.OpenImage(url));
             CardItem cardItem = new(id, name, bitmapImage, limit);

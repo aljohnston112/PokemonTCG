@@ -1,1 +1,0 @@
-{"key": "42 - Abra.png", "id": "base1-43", "name": "Abra", "supertype": "Pok\u00e9mon", "hp": "30", "types": ["Psychic"], "attacks": [{"name": "Psyshock", "cost": {"Psychic": 1}}], "abilities": [], "weaknesses": [{"type": "Psychic", "value": "\u00d72"}], "resistances": [], "retreatcost": {}, "evolvesfrom": "null"}

@@ -1,1 +1,0 @@
-{"key": "50 - Koffing.png", "id": "base1-51", "name": "Koffing", "supertype": "Pok\u00e9mon", "hp": "50", "types": ["Grass"], "attacks": [{"name": "Foul Gas", "cost": {"Grass": 2}}], "abilities": [], "weaknesses": [{"type": "Psychic", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

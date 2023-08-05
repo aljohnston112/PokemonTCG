@@ -1,1 +1,0 @@
-{"key": "34 - Magikarp.png", "id": "base1-35", "name": "Magikarp", "supertype": "Pok\u00e9mon", "hp": "30", "types": ["Water"], "attacks": [{"name": "Tackle", "cost": {"Colorless": 1}}, {"name": "Flail", "cost": {"Water": 1}}], "abilities": [], "weaknesses": [{"type": "Lightning", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

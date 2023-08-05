@@ -47,51 +47,44 @@ namespace PokemonTCG.Models
             );
 
         private static Dictionary<string, PokemonDeck> _decks = new();
-        private static CountdownEvent countDownEvent = new(1);
 
-        public static async Task<ImmutableDictionary<string, PokemonDeck>> GetDecks()
+        public static ImmutableDictionary<string, PokemonDeck> GetDecks()
         {
-            countDownEvent.Wait();
             return _decks.ToImmutableDictionary();
         }
 
         // TODO handle double loading
         public static async Task LoadDecks()
         {
-            try
+            string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
+            string deckFile = baseFolder + "AppData\\decks.decks";
+
+            StorageFile decksFile = await FileUtil.getFile(deckFile);
+            if(decksFile == null) {
+                await SaveDeck(BLACKOUT_DECK);
+            }
+            string json = await FileIO.ReadTextAsync(decksFile);
+            var options = new JsonWriterOptions
             {
-
-                if (countDownEvent.CurrentCount != 0)
+                Indented = true
+            };
+            using JsonDocument document = JsonDocument.Parse(json);
+            JsonElement root = document.RootElement;
+            foreach (JsonElement deck in root.EnumerateArray())
+            {
+                string name = deck.GetProperty("name").GetString();
+                List<string> ids = new();
+                foreach (JsonElement id in deck.GetProperty("ids").EnumerateArray())
                 {
-                    string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
-                    string deckFile = baseFolder + "AppData\\decks.decks";
-
-                    StorageFile decksFile = await FileUtil.getFile(deckFile);
-                    string json = await FileIO.ReadTextAsync(decksFile);
-                    var options = new JsonWriterOptions
-                    {
-                        Indented = true
-                    };
-                    using JsonDocument document = JsonDocument.Parse(json);
-                    JsonElement root = document.RootElement;
-                    foreach (JsonElement deck in root.EnumerateArray())
-                    {
-                        string name = deck.GetProperty("name").GetString();
-                        List<string> ids = new();
-                        foreach (JsonElement id in deck.GetProperty("ids").EnumerateArray())
-                        {
-                            ids.Add(id.GetString());
-                        }
-                        PokemonDeck d = new PokemonDeck(name, ids);
-                        if (!_decks.TryAdd(name, d))
-                        {
-                            _decks.Remove(name);
-                            _decks.Add(name, d);
-                        }
-                    }
+                    ids.Add(id.GetString());
                 }
-            } catch (Exception ex) { }
-            countDownEvent.Signal();
+                PokemonDeck d = new PokemonDeck(name, ids);
+                if (!_decks.TryAdd(name, d))
+                {
+                    _decks.Remove(name);
+                    _decks.Add(name, d);
+                }
+            }
         }
 
 

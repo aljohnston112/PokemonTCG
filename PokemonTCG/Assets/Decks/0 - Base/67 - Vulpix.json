@@ -1,1 +1,0 @@
-{"key": "67 - Vulpix.png", "id": "base1-68", "name": "Vulpix", "supertype": "Pok\u00e9mon", "hp": "50", "types": ["Fire"], "attacks": [{"name": "Confuse Ray", "cost": {"Fire": 2}}], "abilities": [], "weaknesses": [{"type": "Water", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

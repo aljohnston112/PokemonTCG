@@ -1,1 +1,0 @@
-{"key": "59 - Ponyta.png", "id": "base1-60", "name": "Ponyta", "supertype": "Pok\u00e9mon", "hp": "40", "types": ["Fire"], "attacks": [{"name": "Smash Kick", "cost": {"Colorless": 2}}, {"name": "Flame Tail", "cost": {"Fire": 2}}], "abilities": [], "weaknesses": [{"type": "Water", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 1}, "evolvesfrom": "null"}

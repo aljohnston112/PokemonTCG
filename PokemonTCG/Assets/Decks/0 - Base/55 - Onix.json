@@ -1,1 +1,0 @@
-{"key": "55 - Onix.png", "id": "base1-56", "name": "Onix", "supertype": "Pok\u00e9mon", "hp": "90", "types": ["Fighting"], "attacks": [{"name": "Rock Throw", "cost": {"Fighting": 1}}, {"name": "Harden", "cost": {"Fighting": 2}}], "abilities": [], "weaknesses": [{"type": "Grass", "value": "\u00d72"}], "resistances": [], "retreatcost": {"Colorless": 3}, "evolvesfrom": "null"}

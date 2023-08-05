@@ -26,7 +26,7 @@ namespace PokemonTCG.View
             this.InitializeComponent();
             this.DataContext = _viewModel;
             string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
-            string deckFile = baseFolder + "Assets/Decks/0 - Base.json";
+            string deckFile = baseFolder + "Assets/sets/base1.json";
             _viewModel.LoadCards(deckFile);
             this.CardGridView.ItemsSource = _viewModel.Cards;
             SetUpCheckBoxes();
