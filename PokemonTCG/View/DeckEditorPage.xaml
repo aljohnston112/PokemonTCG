@@ -24,7 +24,8 @@
 
     </Page.Resources>
 
-    <Grid>
+    <Grid ColumnDefinitions="auto, *"
+        RowDefinitions="auto, auto, *, auto">
 
         <Grid.Resources>
 
@@ -32,22 +33,12 @@
                 x:Key="CardListView_ItemTemplate"
                 x:DataType="models:CardItem">
 
-                <Grid>
-
-                    <Grid.RowDefinitions>
-                        <RowDefinition
-                            Height="auto" />
-                    </Grid.RowDefinitions>
-
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition
-                            Width="*" />
-                        <ColumnDefinition
-                            Width="auto" />
-                    </Grid.ColumnDefinitions>
+                <Grid ColumnDefinitions="*, auto"
+                      RowDefinitions="auto">
 
                     <Image
                         x:Name="EditorImage"
+                        Grid.Column="0"
                         Source="{x:Bind Image}"
                         MaxWidth="236"
                         Tapped="ImageTapped"
@@ -68,32 +59,15 @@
 
         </Grid.Resources>
 
-        <Grid.RowDefinitions>
-            <RowDefinition
-                Height="auto" />
-            <RowDefinition
-                Height="auto" />
-            <RowDefinition
-                Height="*" />
-            <RowDefinition
-                Height="auto" />
-        </Grid.RowDefinitions>
-
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition
-                Width="auto" />
-            <ColumnDefinition
-                Width="*" />
-        </Grid.ColumnDefinitions>
-
         <Viewbox
-            MaxHeight="34">
+            MaxHeight="48">
 
             <AutoSuggestBox
                 PlaceholderText="Search"
                 HorizontalAlignment="Right"
                 QueryIcon="Find"
                 TextChanged="SearchTextChanged" />
+            
         </Viewbox>
 
         <StackPanel
@@ -132,7 +106,7 @@
 
                 <CheckBox
                     x:Name="CheckBoxPokemon"
-                    Content="Pokemon"
+                    Content="Pokémon"
                     IsChecked="true" />
 
                 <CheckBox

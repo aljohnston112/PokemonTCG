@@ -22,7 +22,7 @@ namespace PokemonTCG.Utilities
         public static async Task<IRandomAccessStream> OpenImage(string url)
         {
             // Load the file
-            StorageFile file = await FileUtil.getFile(url);
+            StorageFile file = await FileUtil.GetFile(url);
             IRandomAccessStream fileStream = await file.OpenReadAsync();
             return fileStream;
         }

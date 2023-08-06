@@ -5,164 +5,153 @@ using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Diagnostics.Metrics;
+using System.Threading.Tasks;
+using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace PokemonTCG.Models
 {
     /// <summary>
-    /// Used to sift <c>CardItem</c>a based on criteria.
+    /// Used to sift <c>CardItem</c>s based on criteria.
     /// </summary>
     internal class CardSifter
     {
 
-        private List<PokemonType> _types = new();
-        private bool _pokemon = true;
-        private bool _trainer = true;
-        private bool _energy = true;
-        private bool _inDeck = false;
-        private string _sifter = "";
+        private readonly ImmutableList<PokemonType> OnlyIncludeTheseTypes;
+        private readonly bool IncludePokemonCards = true;
+        private readonly bool IncludeTrainerCards = true;
+        private readonly bool IncludeEnergyCards = true;
+        private readonly bool IncludeOnlyThoseInDeck = false;
+        private readonly string SearchString = "";
 
         /// <summary>
         /// Creates a Sifter with default values.
-        /// No cards are sifted by PokemonType, 
-        /// whether they represent a PokemonCard, a TrainerCard, or an EnergyCard,
-        /// or by whether the card name contains a string.
+        /// No cards will be sifted.
         /// </summary>
-        public CardSifter() { }
+        public CardSifter() {
+            OnlyIncludeTheseTypes = ImmutableList.Create<PokemonType>();
+        }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="types">The types to sift the cards by.
-        ///                     If there are no types, then there is no sifting based on types.</param>
-        /// <param name="pokemon">Sifts out PokemonCard representations if false</param>
-        /// <param name="trainer">Sifts out TrainerCard representations if false</param>
-        /// <param name="energy">Sifts out Energy card representations if false</param>
-        /// <param name="sifter">Sift out CardItems whose Names do not contain this string</param>
+        /// <param name="onlyIncludeTheseTypes">Will inlcude all types if this list is empty.</param>
+        /// <param name="includePokemonCards"></param>
+        /// <param name="includeTrainerCards"></param>
+        /// <param name="includeEnergyCards"></param>
+        /// <param name="searchString"></param>
+        /// <param name="includeOnlyThoseInDeck"></param>
         private CardSifter(
-            List<PokemonType> types,
-            bool pokemon,
-            bool trainer,
-            bool energy,
-            string sifter,
-            bool inDeck
+            ImmutableList<PokemonType> onlyIncludeTheseTypes,
+            bool includePokemonCards,
+            bool includeTrainerCards,
+            bool includeEnergyCards,
+            string searchString,
+            bool includeOnlyThoseInDeck
             )
         {
-            _types = types;
-            _pokemon = pokemon;
-            _trainer = trainer;
-            _energy = energy;
-            _sifter = sifter.ToLower();
-            _inDeck = inDeck;
+            OnlyIncludeTheseTypes = onlyIncludeTheseTypes;
+            IncludePokemonCards = includePokemonCards;
+            IncludeTrainerCards = includeTrainerCards;
+            IncludeEnergyCards = includeEnergyCards;
+            SearchString = searchString.ToLower();
+            IncludeOnlyThoseInDeck = includeOnlyThoseInDeck;
         }
 
         /// <summary>
         /// Sift through CardItems.
         /// </summary>
-        /// <param name="values">The CardItems to sift</param>
-        /// <returns>A Collection of CardItems that match the criteria of this CardSifter</returns>
-        public Collection<CardItem> Sift(Collection<CardItem> values)
+        /// <param name="cardItems">The CardItems to sift.</param>
+        /// <returns>A Collection of CardItems that match the criteria of this CardSifter.</returns>
+        public Collection<CardItem> Sift(Collection<CardItem> cardItems)
         {
-            Collection<CardItem> cards = new();
-            foreach (CardItem card in values)
+            Collection<CardItem> matchingCardItems = new();
+            foreach (CardItem card in cardItems)
             {
-                bool isInTypes = CardTypeIsInTypes(card);
-                bool isACorrectCardType = CardIsACorrectCardType(card);
+                bool hasMatchingType = CardTypeMatchesTypeInPokemonTypes(card);
+                bool hasMatchingSupertype = CardHasMatchingSuperType(card);
                 bool containsText = CardContainsText(card);
                 bool isInDeck = CardIsInDeck(card);
-                if (isInTypes && isACorrectCardType && containsText && isInDeck)
+                if (hasMatchingType && hasMatchingSupertype && containsText && isInDeck)
                 {
-                    cards.Add(card);
+                    matchingCardItems.Add(card);
                 }
             }
-            return cards;
+            return matchingCardItems;
         }
 
-        /// <summary>
-        /// Checks if a CardItem has a count greater than 0, only if _inDeck is true.
-        /// </summary>
-        /// <param name="card">The CardItem whose count may be checked</param>
-        /// <returns>true is _notInDeck is false or card has a count greater than 0, else false</returns>
         private bool CardIsInDeck(CardItem card)
         {
-            return !_inDeck || card.GetCount() > 0;
+            return !IncludeOnlyThoseInDeck || card.GetCount() > 0;
         }
 
-        /// <summary>
-        /// Checks if a CardItem's Name contains _sifter.
-        /// The empty string is contained in all names.
-        /// </summary>
-        /// <param name="card">The CardItem whose Name is to be checked</param>
-        /// <returns>true if the card's Name contained </returns>
         private bool CardContainsText(CardItem card)
         {
 
-            return _sifter == "" || card.Name.ToLower().Contains(_sifter);
+            return SearchString == "" || card.Name.ToLower().Contains(SearchString);
         }
 
-        /// <summary>
-        /// Checks if the Card that is represented by CardItem has a System.Type that is allowed by this CardSifter.
-        /// </summary>
-        /// <param name="card">The CardItem that represents the Card whose System.Type is to checked</param>
-        /// <returns>true if the Card represented by the CardItem has a System.Type that is allowed by this CardSifter</returns>
-        private bool CardIsACorrectCardType(CardItem card)
+        private bool CardHasMatchingSuperType(CardItem cardItem)
         {
-            Card c = CardDataSource.GetInstance(card.Id);
-            System.Type type = c.GetType();
-            bool isPokemon = (type == typeof(PokemonCard));
-            bool isTrainer = (type == typeof(TrainerCard));
-            bool isEnergy = (type == typeof(EnergyCard));
-            Debug.Assert(isPokemon || isTrainer || isEnergy);
-            return ((isPokemon && _pokemon) || (isTrainer && _trainer) || (isEnergy && _energy));
+            PokemonCard card = CardDataSource.GetCardById(cardItem.Id);
+            CardSupertype supertype = card.Supertype;
+            bool isPokemon = (supertype == CardSupertype.Pokemon);
+            bool isTrainer = (supertype == CardSupertype.Trainer);
+            bool isEnergy = (supertype == CardSupertype.Energy);
+            return ((isPokemon && IncludePokemonCards) || (isTrainer && IncludeTrainerCards) || (isEnergy && IncludeEnergyCards));
         }
 
-        /// <summary>
-        /// Checks if a card's PokemonType is in _types.
-        /// An empty _types List will contain all types.
-        /// </summary>
-        /// <param name="card">The CardItem that corresponds to the Card whose PokemonType will be checked</param>
-        /// <returns>true is the PokemonType of the Card is contained in _types</returns>
-        private bool CardTypeIsInTypes(CardItem card)
+        private bool CardTypeMatchesTypeInPokemonTypes(CardItem cardItem)
         {
-            bool isIn = false;
-            if (_types.Count == 0)
+            bool typeMatches = false;
+            if (OnlyIncludeTheseTypes.Count == 0)
             {
-                isIn = true;
+                typeMatches = true;
             }
             else
             {
-                Card c = CardDataSource.GetInstance(card.Id);
-                if (c.GetType() == typeof(PokemonCard))
+                PokemonCard card = CardDataSource.GetCardById(cardItem.Id);
+
+                // Get types
+                ImmutableList<PokemonType> types;
+                if (card.Supertype == CardSupertype.Pokemon)
                 {
-                    ImmutableList<PokemonType> types = (c as PokemonCard).Types;
-                    foreach (PokemonType t in types)
-                    {
-                        if (_types.Contains(t))
-                        {
-                            isIn = true;
-                        }
-                    }
+                    types = card.Types;
+
                 }
-                else if (c.GetType() == typeof(EnergyCard))
+                else if (card.Supertype == CardSupertype.Energy)
                 {
-                    if (_types.Contains((c as EnergyCard).Type))
+                    string[] energyTypes = card.Name.Split();
+                    string energyType = energyTypes[^2];
+
+                    PokemonType type = PokemonCard.GetPokemonType(energyType);
+                    types = ImmutableList.Create(type);
+                } else
+                {
+                    types = ImmutableList.Create<PokemonType>();
+                }
+
+                // Check type
+                foreach (PokemonType type in types)
+                {
+                    if (OnlyIncludeTheseTypes.Contains(type))
                     {
-                        isIn = true;
+                        typeMatches = true;
                     }
                 }
             }
-            return isIn;
+            return typeMatches;
         }
 
         /// <summary>
         /// Creates a new CardSifter with a new sift string.
         /// </summary>
         /// <param name="text">The text to be used for sifting.
-        ///                    If empty, it will not be used to sift.</param>
+        ///                    If empty, cards will not be sifted by name.</param>
         /// <returns></returns>
         internal CardSifter NewString(string text)
         {
-            return new CardSifter(_types, _pokemon, _trainer, _energy, text, _inDeck);
+            return new CardSifter(OnlyIncludeTheseTypes, IncludePokemonCards, IncludeTrainerCards, IncludeEnergyCards, text, IncludeOnlyThoseInDeck);
         }
 
         /// <summary>
@@ -170,9 +159,9 @@ namespace PokemonTCG.Models
         /// </summary>
         /// <param name="isChecked">The new CardSifter will sift PokemonCards out if false.</param>
         /// <returns></returns>
-        internal CardSifter PokemonUpdate(bool isChecked)
+        internal CardSifter IncludePokemon(bool isChecked)
         {
-            return new CardSifter(_types, isChecked, _trainer, _energy, _sifter, _inDeck);
+            return new CardSifter(OnlyIncludeTheseTypes, isChecked, IncludeTrainerCards, IncludeEnergyCards, SearchString, IncludeOnlyThoseInDeck);
         }
 
         /// <summary>
@@ -180,9 +169,9 @@ namespace PokemonTCG.Models
         /// </summary>
         /// <param name="isChecked">The new CardSifter will sift TrainerCards out if false.</param>
         /// <returns></returns>
-        internal CardSifter TrainerUpdate(bool isChecked)
+        internal CardSifter IncludeTrainer(bool isChecked)
         {
-            return new CardSifter(_types, _pokemon, isChecked, _energy, _sifter, _inDeck);
+            return new CardSifter(OnlyIncludeTheseTypes, IncludePokemonCards, isChecked, IncludeEnergyCards, SearchString, IncludeOnlyThoseInDeck);
         }
 
         /// <summary>
@@ -190,25 +179,25 @@ namespace PokemonTCG.Models
         /// </summary>
         /// <param name="isChecked">The new CardSifter will sift EnergyCards out if false.</param>
         /// <returns></returns>
-        internal CardSifter EnergyUpdate(bool isChecked)
+        internal CardSifter IncludeEnergy(bool isChecked)
         {
-            return new CardSifter(_types, _pokemon, _trainer, isChecked, _sifter, _inDeck);
+            return new CardSifter(OnlyIncludeTheseTypes, IncludePokemonCards, IncludeTrainerCards, isChecked, SearchString, IncludeOnlyThoseInDeck);
         }
 
         /// <summary>
         /// Creates a new CardSifter that will include or exclude CardItems that have the type.
         /// </summary>
         /// <param name="type">The type</param>
-        /// <param name="isChecked">Will exclude the type if this is false</param>
+        /// <param name="includeType">Will exclude the type if this is false</param>
         /// <returns></returns>
-        internal CardSifter TypeUpdate(PokemonType type, bool isChecked)
+        internal CardSifter InludeType(PokemonType type, bool includeType)
         {
             List<PokemonType> types = new();
-            foreach (PokemonType t in _types)
+            foreach (PokemonType t in OnlyIncludeTheseTypes)
             {
                 types.Add(t);
             }
-            if (isChecked)
+            if (includeType)
             {
                 types.Add(type);
             }
@@ -216,12 +205,19 @@ namespace PokemonTCG.Models
             {
                 types.Remove(type);
             }
-            return new CardSifter(types, _pokemon, _trainer, _energy, _sifter, _inDeck);
+            return new CardSifter(types.ToImmutableList(), IncludePokemonCards, IncludeTrainerCards, IncludeEnergyCards, SearchString, IncludeOnlyThoseInDeck);
         }
 
-        internal CardSifter InDeckUpdate(bool value)
+        /// <summary>
+        /// Creates a new CardSifter that will include or exclude CardItems based on if they are in the deck or not.
+        /// </summary>
+        /// <param name="includeOnlyThoseFromDeck">Will exclude cards not in the deck if true.</param>
+        /// <returns></returns>
+        internal CardSifter IncludeOnlyThoseFromDeck(bool includeOnlyThoseFromDeck)
         {
-            return new CardSifter(_types, _pokemon, _trainer, _energy, _sifter, value);
+            return new CardSifter(OnlyIncludeTheseTypes, IncludePokemonCards, IncludeTrainerCards, IncludeEnergyCards, SearchString, includeOnlyThoseFromDeck);
         }
+
     }
+
 }

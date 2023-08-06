@@ -59,10 +59,10 @@ namespace PokemonTCG.Models
             string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
             string deckFile = baseFolder + "AppData\\decks.decks";
 
-            StorageFile decksFile = await FileUtil.getFile(deckFile);
+            StorageFile decksFile = await FileUtil.GetFile(deckFile);
             if(decksFile == null) {
                 await SaveDeck(BLACKOUT_DECK);
-                decksFile = await FileUtil.getFile(deckFile);
+                decksFile = await FileUtil.GetFile(deckFile);
             }
             string json = await FileIO.ReadTextAsync(decksFile);
             var options = new JsonWriterOptions

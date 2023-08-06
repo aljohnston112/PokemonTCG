@@ -1,15 +1,9 @@
 ﻿using PokemonTCG.Models;
-using PokemonTCG.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
-using Windows.Storage.Search;
-using Type = PokemonTCG.Models.Type;
 
 namespace PokemonTCG.DataSources
 {
@@ -21,246 +15,226 @@ namespace PokemonTCG.DataSources
     /// <summary>
     /// For getting <c>Card</c> instances.
     /// First the instances must be loaded from a given folder; <see cref="LoadSets"/>.
-    /// Then instances are retrieved by the url of the corresponding png file with the card picture; <see cref="GetInstance(string)"/>.
+    /// Then instances are retrieved by the url of the corresponding png file with the card picture; <see cref="GetCardById(string)"/>.
     /// </summary>
     internal class CardDataSource
     {
 
         // Contains the card instances used for GamePage
-        private static readonly Dictionary<string, Card> _instances = new();
+        private static readonly Dictionary<string, PokemonCard> idsToCards = new();
 
-        // The card instances will not be available till the count down reaches 0
-        private static readonly CountdownEvent _countDownEventForCardsLoaded = new(1);
 
         /// <summary>
-        /// Gets a <c>Card</c> instance based on the card's id.
-        /// The <c>Card</c> class is used for the <c>GamePage</c>.
-        /// This method will block until all Card instances are loaded from memory.
-        /// You must call <see cref="LoadSets"/> to load the Card instances.
+        /// Gets all cards associated with a set. 
         /// </summary>
-        /// <param name="id">The id of the card</param>
-        /// <returns>The <c>Card</c> instance the corresponds to the id</returns>
-        public static Card GetInstance(string id)
-        {
-            _countDownEventForCardsLoaded.Wait();
-
-            return _instances[id];
-        }
-
-        /// <summary>
-        /// Loads all <c>Card</c> instances from folder.
-        /// </summary>
-        /// <param name="folder">The folder that contains the json files with the <c>Card</c> data</param>
-        public static async Task LoadSets(string folder)
-        {
-            // Get the json files from the folder
-            StorageFolder storageFolder = await FileUtil.GetFolder(folder);
-            List<string> fileTypeFilter = new() { ".json" };
-            QueryOptions queryOptions = new(CommonFileQuery.OrderByName, fileTypeFilter);
-            StorageFileQueryResult query = storageFolder.CreateFileQueryWithOptions(queryOptions);
-            IReadOnlyList<StorageFile> fileList = await query.GetFilesAsync();
-
-            // Read the json files
-            foreach (StorageFile file in fileList)
-            {
-                if (!file.Name.Contains("sets.json"))
-                {
-                    await LoadCards(file);
-                }
-            }
-
-
-            // Cards have been loaded
-            if (_countDownEventForCardsLoaded.CurrentCount != 0)
-            {
-                _countDownEventForCardsLoaded.Signal();
-            }
-        }
-
-        /// <summary>
-        /// Creates a <c>Card</c> intance from a json file. 
-        /// </summary>
-        /// <param name="file">The json file containing the card information</param>
-        /// <returns>A Task that returns the Card when it is ready</returns>
+        /// <param name="file">The json file containing the card information for the set.</param>
+        /// <returns>A <c>Task<ICollection<Card>>/c> that returns the collection of cards in the set.</returns>
         /// <exception cref="Exception">Throws an exception if the supertype of the card is not "Pok\u00e9mon", "Trainer", or "Energy"</exception>
-        private async static Task LoadCards(StorageFile file)
+        internal async static Task<ICollection<PokemonCard>> LoadCardsFromSet(StorageFile file)
         {
             // Read the file
             string jsonText = await FileIO.ReadTextAsync(file);
             JsonObject jObject = JsonObject.Parse(jsonText);
             JsonArray jArray = jObject.GetNamedArray("data");
-            for (int i = 0; i < jArray.Count; i++)
+
+            string baseImagePath = file.Path[..(file.Path.LastIndexOf(".") + 1)] + "\\";
+            foreach (IJsonValue jsonCardValue in jArray)
             {
-                // For whatever reason, a foreach loop did not work
-                JsonObject jsonCardItem = JsonObject.Parse(jArray[i].Stringify());
-                string path = file.Path[..(file.Path.LastIndexOf(".") + 1)] + "\\";
-                string id = jsonCardItem.GetNamedString("id");
-                string imageUrl = path + jsonCardItem.GetNamedString("id") + "-small.png";
+                JsonObject jsonCard = jsonCardValue.GetObject();
+                string id = jsonCard.GetNamedString("id");
 
-                if (!_instances.ContainsKey(id))
+                if (!idsToCards.ContainsKey(id))
                 {
-                    // Create the card instance
-                    Card card;
-                    string supertype = jsonCardItem.GetNamedString("supertype");
-                    string name = jsonCardItem.GetNamedString("name");
-                    if (supertype == "Pok\u00e9mon")
-                    {
-                        card = LoadPokemonCard(jsonCardItem, imageUrl, id, name);
-                    }
-                    else if (supertype == "Trainer")
-                    {
-                        card = new TrainerCard(imageUrl, id, name);
-                    }
-                    else if (supertype == "Energy")
-                    {
+                    string name = jsonCard.GetNamedString("name");
+                    CardSupertype supertype = PokemonCard.GetCardSuperType(jsonCard.GetNamedString("supertype"));
 
-                        string[] energyTypes = name.Split();
-                        string energyType = energyTypes[^2];
-                        PokemonType type = Type.GetType(energyType);
-                        card = new EnergyCard(imageUrl, id, name, type);
-                    }
-                    else
+                    // Subtypes
+                    List<CardSubtype> cardSubTypes = new();
+                    if (jsonCard.ContainsKey("evolvesFrom"))
                     {
-                        throw new Exception();
+                        JsonArray jsonSubtypes = jsonCard.GetNamedArray("subtypes");
+                        foreach (IJsonValue jsonSubtype in jsonSubtypes)
+                        {
+                            cardSubTypes.Add(PokemonCard.GetCardSubType(jsonSubtype.GetString()));
+                        }
                     }
-                    _instances.Add(id, card);
+
+                    int level = 0;
+                    if (jsonCard.ContainsKey("level"))
+                    {
+                        level = int.Parse(jsonCard.GetNamedString("level"));
+                    }
+                    int hp = 0;
+                    if (jsonCard.ContainsKey("level"))
+                    {
+                        hp = int.Parse(jsonCard.GetNamedString("hp"));
+                    }
+
+                    // Pokemon types
+                    List<Models.PokemonType> pokemonTypes = new();
+                    if (jsonCard.ContainsKey("types"))
+                    {
+                        JsonArray jsonTypeList = jsonCard.GetNamedArray("types");
+                        foreach (IJsonValue obj in jsonTypeList)
+                        {
+                            pokemonTypes.Add(PokemonCard.GetPokemonType(obj.GetString()));
+                        }
+                    }
+
+                    // Evolves from
+                    string evolvesFrom = null;
+                    if (jsonCard.ContainsKey("evolvesFrom"))
+                    {
+                        evolvesFrom = jsonCard.GetNamedString("evolvesFrom");
+                    }
+
+                    // Abilities
+                    List<Ability> abilities = new();
+                    if (jsonCard.ContainsKey("abilities"))
+                    {
+                        JsonArray jsonAbilityList = jsonCard.GetNamedArray("abilities");
+                        foreach (IJsonValue jsonAbilityValue in jsonAbilityList)
+                        {
+                            JsonObject jsonAbility = jsonAbilityValue.GetObject();
+                            string pokemonPowerName = jsonAbility.GetNamedString("name");
+                            string pokemonPowerText = jsonAbility.GetNamedString("text");
+                            string pokemonPowerType = jsonAbility.GetNamedString("type");
+                            abilities.Add(new Ability(pokemonPowerName, pokemonPowerText, pokemonPowerType));
+                        }
+                    }
+
+                    // Attacks
+                    List<Attack> attacks = new();
+                    if (jsonCard.ContainsKey("attacks"))
+                    {
+                        JsonArray jsonAttackArray = jsonCard.GetNamedArray("attacks");
+                        foreach (IJsonValue jsonAttackValue in jsonAttackArray)
+                        {
+                            JsonObject jsonAttack = jsonAttackValue.GetObject();
+                            string attackName = jsonAttack.GetNamedString("name");
+
+                            // Get the energy cost of the attack
+                            Dictionary<PokemonType, int> attackCost = new();
+                            JsonArray jsonAttackCost = jsonAttack.GetNamedArray("cost");
+                            foreach (IJsonValue pokemonTypeValue in jsonAttackCost)
+                            {
+                                PokemonType pokemonType = PokemonCard.GetPokemonType(pokemonTypeValue.GetString());
+                                if (!attackCost.ContainsKey(pokemonType))
+                                {
+                                    attackCost[pokemonType] = 0;
+                                }
+                                attackCost[pokemonType] += 1;
+                            }
+
+                            int convertedEnergyCost = (int)(jsonAttack.GetNamedNumber("convertedEnergyCost"));
+                            string damageString = jsonAttack.GetNamedString("damage");
+                            if (damageString.EndsWith("×") || damageString.EndsWith("+") || damageString.EndsWith("-"))
+                            {
+                                damageString = damageString[..^1];
+                            }
+                            else if (damageString == "")
+                            {
+                                damageString = "0";
+                            }
+                            int damage = int.Parse(damageString);
+                            string text = jsonAttack.GetNamedString("text");
+                            attacks.Add(new Attack(attackName, attackCost, convertedEnergyCost, damage, text));
+                        }
+                    }
+
+                    // Weaknesses
+                    Dictionary<PokemonType, string> weakness = new();
+                    if (jsonCard.ContainsKey("weaknesses"))
+                    {
+                        JsonArray weaknessArray = jsonCard.GetNamedArray("weaknesses");
+                        foreach (IJsonValue weaknessValue in weaknessArray)
+                        {
+                            JsonObject jsonWeakness = weaknessValue.GetObject();
+
+                            string weaknessType = jsonWeakness.GetNamedString("type");
+                            string weaknessModifier = jsonWeakness.GetNamedString("value");
+                            weakness[PokemonCard.GetPokemonType(weaknessType)] = weaknessModifier;
+                        }
+                    }
+
+                    // Resistances
+                    Dictionary<PokemonType, string> resistances = new();
+                    if (jsonCard.ContainsKey("resistances"))
+                    {
+                        JsonArray resistanceArray = jsonCard.GetNamedArray("resistances");
+                        foreach (IJsonValue resistanceValue in resistanceArray)
+                        {
+                            JsonObject jsonresistance = resistanceValue.GetObject();
+                            string resistanceType = jsonresistance.GetNamedString("type");
+                            string resistanceModifier = jsonresistance.GetNamedString("value");
+                            resistances[PokemonCard.GetPokemonType(resistanceType)] = resistanceModifier;
+                        }
+                    }
+
+                    // Retreat cost
+                    Dictionary<PokemonType, int> retreatCost = new();
+                    if (jsonCard.ContainsKey("retreatCost"))
+                    {
+                        JsonArray jsonRetreatCost = jsonCard.GetNamedArray("retreatCost");
+                        foreach (IJsonValue retreatCostValue in jsonRetreatCost)
+                        {
+                            String retreatString = retreatCostValue.GetString();
+                            PokemonType pokemontype = PokemonCard.GetPokemonType(retreatString);
+                            if (!retreatCost.ContainsKey(pokemontype))
+                            {
+                                retreatCost[pokemontype] = 0;
+                            }
+                            retreatCost[pokemontype] += 1;
+
+                        }
+                    }
+
+                    int convertedRetreatCost = 0;
+                    if (jsonCard.ContainsKey("retreatCost"))
+                    {
+                        convertedRetreatCost = (int)(jsonCard.GetNamedNumber("convertedRetreatCost"));
+                    }
+
+                    // Image paths
+                    Dictionary<ImageSize, String> imagePaths = new() {
+                        { ImageSize.SMALL,  baseImagePath + id + "-small.png" },
+                        { ImageSize.LARGE,  baseImagePath + id + "-large.png" }
+                    };
+
+                    PokemonCard card = new(
+                        id,
+                        name,
+                        supertype,
+                        level,
+                        hp,
+                        pokemonTypes,
+                        evolvesFrom,
+                        abilities,
+                        attacks,
+                        weakness,
+                        resistances,
+                        retreatCost,
+                        convertedRetreatCost,
+                        imagePaths
+                        );
+
+                    idsToCards.Add(id, card);
                 }
             }
-
+            return idsToCards.Values;
         }
 
         /// <summary>
-        /// Creates a <c>PokemonCard</c> given a <c>JsonObject</c> of the json file.
+        /// Gets a <c>Card</c> instance based on the card's id.
+        /// The <c>Card</c> class is used for the <c>GamePage</c>.
+        /// This method will throw and exception if cards are not loaded beforehand or the id is invalid.
+        /// You can prevent this by calling <see cref="SetDataSource.LoadSets"/> to load the Card instances beforehand.
         /// </summary>
-        /// <param name="jObject">The <c>JsonObject</c> of the json file containing the Pokemon card information</param>
-        /// <param name="imageUrl">The url for the image of the Pokmeon card</param>
-        /// <param name="id">The unique id of the card</param>
-        /// <param name="name">The name of the card</param>
-        /// <returns>A <c>PokemonCard</c> representing the data passed in</returns>
-        private static PokemonCard LoadPokemonCard(
-            JsonObject jObject,
-            string imageUrl,
-            string id,
-            string name
-            )
+        /// <param name="id">The id of the card</param>
+        /// <returns>The <c>Card</c> instance that having the given id.</returns>
+        public static PokemonCard GetCardById(string id)
         {
-            int hp = int.Parse(jObject.GetNamedString("hp"));
-
-            // Get the types
-            List<PokemonType> type = new();
-            foreach (IJsonValue obj in jObject.GetNamedArray("types"))
-            {
-                type.Add(Type.GetType(obj.GetString()));
-            }
-
-            // Get the attacks
-            List<Attack> attacks = new();
-            JsonArray jsonAttackArray = jObject.GetNamedArray("attacks");
-            for (int i = 0; i < jsonAttackArray.Count; i++)
-            {
-                // For whatever reason, a foreach loop did not work
-                JsonObject jsonAttack = JsonObject.Parse(jsonAttackArray[i].Stringify());
-                string attackName = jsonAttack.GetNamedString("name");
-
-                // Get the energy cost of the attack
-                Dictionary<PokemonType, int> attackCost = new();
-                JsonArray jsonAttackCost = jsonAttack.GetNamedArray("cost");
-                foreach (IJsonValue obj in jsonAttackCost)
-                {
-                    String typeString = obj.Stringify();
-                    PokemonType t = Type.GetType(typeString[1..^1]);
-                    if (!attackCost.ContainsKey(t))
-                    {
-                        attackCost[t] = 0;
-                    }
-                    attackCost[t] += 1;
-                }
-                attacks.Add(new Attack(attackName, attackCost));
-            }
-
-            // Get the abilities
-            List<Ability> pokemonPowers = new();
-            if (jObject.ContainsKey("abilities"))
-            {
-                JsonArray pokemonPowerArray = jObject.GetNamedArray("abilities");
-                for (int i = 0; i < pokemonPowerArray.Count; i++)
-                {
-                    // Same as above
-                    JsonObject jsonPokemonPower = JsonObject.Parse(pokemonPowerArray[i].Stringify());
-                    string pokemonPowerName = jsonPokemonPower.GetNamedString("name");
-                    string pokemonPowerText = jsonPokemonPower.GetNamedString("text");
-                    string pokemonPowerType = jsonPokemonPower.GetNamedString("type");
-                    pokemonPowers.Add(new Ability(pokemonPowerName, pokemonPowerText, pokemonPowerType));
-                }
-            }
-
-            // Get the weaknesses
-            Dictionary<PokemonType, string> weakness = new();
-            if (jObject.ContainsKey("weaknesses"))
-            {
-                JsonArray weaknessArray = jObject.GetNamedArray("weaknesses");
-                for (int i = 0; i < weaknessArray.Count; i++)
-                {
-                    // Same as above
-                    var jsonWeaknesses = JsonObject.Parse(weaknessArray[i].Stringify());
-                    string weaknessType = jsonWeaknesses.GetNamedString("type");
-                    string weaknessValue = jsonWeaknesses.GetNamedString("value");
-                    weakness[Type.GetType(weaknessType)] = weaknessValue;
-                }
-            }
-
-            // Get the resisitances
-            Dictionary<PokemonType, string> resistances = new();
-            if (jObject.ContainsKey("resistances"))
-            {
-                JsonArray resistanceArray = jObject.GetNamedArray("resistances");
-                for (int i = 0; i < resistanceArray.Count; i++)
-                {
-                    // Same as above
-                    var jsonResistances = JsonObject.Parse(resistanceArray[i].Stringify());
-                    string resistanceType = jsonResistances.GetNamedString("type");
-                    string resistanceValue = jsonResistances.GetNamedString("value");
-                    resistances[Type.GetType(resistanceType)] = resistanceValue;
-                }
-            }
-
-            // Get the retreat cost
-            Dictionary<PokemonType, int> retreatCost = new();
-            if (jObject.ContainsKey("retreatCost"))
-            {
-                JsonArray jsonRetreatCost = jObject.GetNamedArray("retreatCost");
-                foreach (IJsonValue obj in jsonRetreatCost)
-                {
-                    String retreatString = obj.Stringify();
-                    PokemonType t = Type.GetType(retreatString[1..^1]);
-                    if (!retreatCost.ContainsKey(t))
-                    {
-                        retreatCost[t] = 0;
-                    }
-                    retreatCost[t] += 1;
-
-                }
-            }
-
-            string evolvesFrom = null;
-            if (jObject.ContainsKey("evolvesFrom"))
-            {
-                evolvesFrom = jObject.GetNamedString("evolvesFrom");
-            }
-
-            return new PokemonCard(
-                    imageUrl,
-                    id,
-                    name,
-                    hp,
-                    type,
-                    attacks,
-                    pokemonPowers,
-                    weakness,
-                    resistances,
-                    retreatCost,
-                    evolvesFrom
-                 );
+            return idsToCards[id];
         }
 
     }

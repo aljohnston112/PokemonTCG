@@ -13,7 +13,7 @@ namespace PokemonTCG.Models
         private PokemonCard[] _prizes = new PokemonCard[6];
         private PokemonCard[] _hand = new PokemonCard[7];
         private PokemonCard[] _active;
-        private List<Type> _deck = new();
+        private List<PokemonType> _deck = new();
         private List<PokemonCard> _discardPile = new();
 
 

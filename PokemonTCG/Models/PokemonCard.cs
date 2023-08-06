@@ -1,71 +1,148 @@
 ﻿using PokemonTCG.Models;
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using Windows.Data.Json;
-using Windows.Storage;
 
 namespace PokemonTCG.Models
 {
-    /// <summary>
-    /// To be used in the <c>GamePage</c>
-    /// </summary>
-    public class PokemonCard : Card
+
+    public enum CardSupertype
     {
+        Pokemon,
+        Trainer,
+        Energy
+    }
+
+    public enum CardSubtype
+    {
+        BASIC,
+        STAGE_1,
+        STAGE_2,
+
+    }
+
+    public enum PokemonType
+    {
+        Colorless,
+        Fighting,
+        Fire,
+        Grass,
+        Lightning,
+        Psychic,
+        Water
+    }
+
+    public enum ImageSize
+    {
+        SMALL,
+        LARGE
+    }
+
+    /// <summary>
+    /// Contains card data.
+    /// </summary>
+    public class PokemonCard
+    {
+        public readonly string Id;
+        public readonly string Name;
+        public readonly CardSupertype Supertype;
+        public readonly int Level;
         public readonly int Hp;
         public readonly ImmutableList<PokemonType> Types;
+        public readonly string EvolvesFrom;
+        public readonly ImmutableList<Ability> Abilities;
         public readonly ImmutableList<Attack> Attacks;
-        public readonly ImmutableList<Ability> PokemonPowers;
         public readonly ImmutableDictionary<PokemonType, string> Weaknesses;
         public readonly ImmutableDictionary<PokemonType, string> Resistances;
         public readonly ImmutableDictionary<PokemonType, int> RetreatCost;
-        public readonly string EvolvesFrom;
+        public readonly int ConvertedRetreatCost;
+        public readonly ImmutableDictionary<ImageSize, string> ImageFileNames;
 
-        /// <summary>
-        /// Creates a <c>PokemonCard</c>. 
-        /// Should be supplied with card data from the json files.
-        /// </summary>
-        /// <param name="url">The url for the image of the Pokmeon card</param>
-        /// <param name="id">The unique id of the card</param>
-        /// <param name="name">The name of the card</param>
-        /// <param name="hp">The hp of the card</param>
-        /// <param name="types">The <c>PokemonType</c>s of the card</param>
-        /// <param name="attacks">The <c>Attack</c>s of the card</param>
-        /// <param name="pokemonPowers">The <c>PokemonPower</c>s of the card</param>
-        /// <param name="weaknesses">The weaknesses of the card. 
-        ///                          A Dictionary of <c>PokemonType</c> to the modifier string.</param>
-        /// <param name="resistances">The resistances of the card.
-        ///                           A Dictionary of <c>PokemonType</c> to the modifier string.</param>
-        /// <param name="retreatCost">The retreat cost of the card.
-        ///                           A Dictionary of <c>PokemonType</c> to number of energies.</param>
-        /// <param name="evolvesFrom">The name of the card that this card evolves from</param>
         public PokemonCard(
-             string url,
-             string id,
-             string name,
-             int hp,
-             List<PokemonType> types,
-             List<Attack> attacks,
-             List<Ability> pokemonPowers,
-             Dictionary<PokemonType, string> weaknesses,
-             Dictionary<PokemonType, string> resistances,
-             Dictionary<PokemonType, int> retreatCost,
-             string evolvesFrom
-        ) : base(url, id, name)
+            string id,
+            string name,
+            CardSupertype supertype,
+            int level,
+            int hp,
+            List<PokemonType> types,
+            string evolvesFrom,
+            List<Ability> abilities,
+            List<Attack> attacks,
+            Dictionary<PokemonType, string> weaknesses,
+            Dictionary<PokemonType, string> resistances,
+            Dictionary<PokemonType, int> retreatCost,
+            int convertedRetreatCost,
+            Dictionary<ImageSize, string> imageFileNames
+        )
         {
+            this.Id = id;
+            this.Name = name;
+            this.Supertype = supertype;
+            this.Level = level;
             this.Hp = hp;
             this.Types = types.ToImmutableList();
+            this.EvolvesFrom = evolvesFrom;
+            this.Abilities = abilities.ToImmutableList();
             this.Attacks = attacks.ToImmutableList();
-            this.PokemonPowers = pokemonPowers.ToImmutableList();
             this.Weaknesses = weaknesses.ToImmutableDictionary();
             this.Resistances = resistances.ToImmutableDictionary();
             this.RetreatCost = retreatCost.ToImmutableDictionary();
-            this.EvolvesFrom = evolvesFrom;
+            this.ConvertedRetreatCost = convertedRetreatCost;
+            this.ImageFileNames = imageFileNames.ToImmutableDictionary();
+        }
+
+        private static readonly ImmutableDictionary<string, CardSupertype> cardSupertypeMap = 
+            new Dictionary<string, CardSupertype>()
+            {
+                { "Pokémon", CardSupertype.Pokemon },
+                { "Trainer", CardSupertype.Trainer },
+                { "Energy", CardSupertype.Energy }
+            }.ToImmutableDictionary();
+
+        public static CardSupertype GetCardSuperType(string supertype)
+        {
+            CardSupertype cardSupertype = cardSupertypeMap[supertype];
+            return cardSupertype;
+        }
+
+        private static readonly ImmutableDictionary<string, CardSubtype> cardSubtypeMap =
+            new Dictionary<string, CardSubtype>()
+            {
+                { "Basic",  CardSubtype.BASIC },
+                { "Stage 1",  CardSubtype.STAGE_1 },
+                { "Stage 2",  CardSubtype.STAGE_2 }
+            }.ToImmutableDictionary();
+
+        public static CardSubtype GetCardSubType(string subtype)
+        {
+            CardSubtype cardSubtype = cardSubtypeMap[subtype];
+            return cardSubtype;
+        }
+
+        /// <summary>
+        /// For converting strings to the <c>PokemonType</c> the correspond to.
+        /// </summary>
+        private static readonly ImmutableDictionary<string, PokemonType> pokemonTypeMap =
+            new Dictionary<string, PokemonType>(){
+                { "Colorless", PokemonType.Colorless },
+                { "Fighting", PokemonType.Fighting },
+                { "Fire", PokemonType.Fire },
+                { "Grass", PokemonType.Grass },
+                { "Lightning", PokemonType.Lightning },
+                { "Psychic", PokemonType.Psychic },
+                { "Water", PokemonType.Water }
+            }.ToImmutableDictionary();
+
+        /// <summary>
+        /// Takes a string representing a <c>PokemonType</c> and returns the corresponding <c>PokemonType</c>.
+        /// </summary>
+        /// <param name="pokemonType">The string that represents a <c>PokemonType</c></param>
+        /// <returns>The <c>PokemonType</c> that the string corresponds to</returns>
+        public static PokemonType GetPokemonType(string pokemonType)
+        {
+            PokemonType type = pokemonTypeMap[pokemonType];
+            return type;
         }
 
     }
+
 }

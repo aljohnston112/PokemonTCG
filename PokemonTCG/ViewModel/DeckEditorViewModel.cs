@@ -1,14 +1,10 @@
-﻿using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Data;
+﻿using Microsoft.UI.Xaml.Controls;
 using PokemonTCG.DataSources;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using System;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
@@ -28,10 +24,10 @@ namespace PokemonTCG.ViewModel
         private int TotalCount
         {
             get { return _totalCount; }
-            set 
-            { 
+            set
+            {
                 TotalCountText = value.ToString();
-                SetProperty(ref _totalCount, value); 
+                SetProperty(ref _totalCount, value);
             }
         }
 
@@ -52,7 +48,7 @@ namespace PokemonTCG.ViewModel
         public async void LoadCards(string deckFile)
         {
             // Get the json file containing all the cards for the base set
-            StorageFile file = await FileUtil.getFile(deckFile);
+            StorageFile file = await FileUtil.GetFile(deckFile);
             string jsonText = await FileIO.ReadTextAsync(file);
             JsonObject jsonObject = JsonObject.Parse(jsonText);
             JsonArray jsonArray = jsonObject.GetNamedArray("data");
@@ -76,11 +72,11 @@ namespace PokemonTCG.ViewModel
         /// <returns>true if the item's Count was updated, or the total count would have gone over 60, else false</returns>
         internal void ChangeCount(NumberBoxValueChangedEventArgs args, CardItem item)
         {
-            int value = (int)args.NewValue;
+            int value = Math.Max((int)args.NewValue, 0);
+
             int diff = value - (int)args.OldValue;
             if ((diff + TotalCount) > 60)
             {
-
                 value = (60 - TotalCount);
                 diff = value - (int)args.OldValue;
             }
@@ -117,9 +113,9 @@ namespace PokemonTCG.ViewModel
         /// Called when there is a change to the pokmeon checkbox
         /// </summary>
         /// <param name="isChecked">Whether or not the checkbox is checked</param>
-        internal void PokemonCheckBox(bool isChecked)
+        internal void OnPokemonCheckBox(bool isChecked)
         {
-            _sifter = _sifter.PokemonUpdate(isChecked);
+            _sifter = _sifter.IncludePokemon(isChecked);
             SiftCards();
         }
 
@@ -127,9 +123,9 @@ namespace PokemonTCG.ViewModel
         /// Called when there is a change to the trainer checkbox
         /// </summary>
         /// <param name="isChecked">Whether or not the checkbox is checked</param>
-        internal void TrainerCheckBox(bool isChecked)
+        internal void OnTrainerCheckBox(bool isChecked)
         {
-            _sifter = _sifter.TrainerUpdate(isChecked);
+            _sifter = _sifter.IncludeTrainer(isChecked);
             SiftCards();
         }
 
@@ -137,9 +133,9 @@ namespace PokemonTCG.ViewModel
         /// Called when there is a change to the energy checkbox.
         /// </summary>
         /// <param name="isChecked">Whether or not the checkbox is checked</param>
-        internal void EnergyCheckBox(bool isChecked)
+        internal void OnEnergyCheckBox(bool isChecked)
         {
-            _sifter = _sifter.EnergyUpdate(isChecked);
+            _sifter = _sifter.IncludeEnergy(isChecked);
             SiftCards();
         }
 
@@ -149,7 +145,7 @@ namespace PokemonTCG.ViewModel
         /// <param name="isChecked">Whether or not the checkbox is checked</param>
         internal void TypeChange(PokemonType type, bool isChecked)
         {
-            _sifter = _sifter.TypeUpdate(type, isChecked);
+            _sifter = _sifter.InludeType(type, isChecked);
             SiftCards();
         }
 
@@ -159,7 +155,7 @@ namespace PokemonTCG.ViewModel
         /// <param name="isChecked">Whether or not the checkbox is checked</param>
         internal void InDeckChanged(bool value)
         {
-            _sifter = _sifter.InDeckUpdate(value);
+            _sifter = _sifter.IncludeOnlyThoseFromDeck(value);
             SiftCards();
         }
 
@@ -180,7 +176,7 @@ namespace PokemonTCG.ViewModel
                     }
                 }
             }
-            PokemonDeck deck = new PokemonDeck(name, cards);
+            PokemonDeck deck = new(name, cards);
             await PokemonDeck.SaveDeck(deck);
         }
 

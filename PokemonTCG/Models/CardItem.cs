@@ -45,7 +45,7 @@ namespace PokemonTCG.Models
         /// <returns>True if the Count was updated, and false if the count is over Limit or under 0.</returns>
         public void SetCount(int count)
         {
-            if (Limit != -1 && (count > Limit || count < 0 || count > 60))
+            if (Limit != -1 && (count > Limit || count < 0 || count > 60) || (count < 0 || count > 60))
             {
                 throw new ArgumentException("Count was out of range: " + count);
             }

@@ -1,16 +1,13 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using System.Collections.Generic;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using System.Diagnostics;
 using Windows.Foundation;
 using PokemonTCG.Models;
 using PokemonTCG.ViewModel;
 using System;
-using Type = PokemonTCG.Models.Type;
-using System.Xml.Linq;
+using PokemonType = PokemonTCG.Models.PokemonType;
 
 namespace PokemonTCG.View
 {
@@ -23,12 +20,12 @@ namespace PokemonTCG.View
 
         public DeckEditorPage()
         {
-            this.InitializeComponent();
-            this.DataContext = _viewModel;
+            InitializeComponent();
+            DataContext = _viewModel;
             string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
             string deckFile = baseFolder + "Assets/sets/base1.json";
             _viewModel.LoadCards(deckFile);
-            this.CardGridView.ItemsSource = _viewModel.Cards;
+            CardGridView.ItemsSource = _viewModel.Cards;
             SetUpCheckBoxes();
         }
 
@@ -39,58 +36,59 @@ namespace PokemonTCG.View
         {
 
             // For the supertype checkboxes
-            DependencyPropertyChangedCallback callback = (sender, property) =>
+            void superTypesCallback(DependencyObject sender, DependencyProperty property)
             {
-                string name = (string)sender.GetValue(CheckBox.NameProperty);
-                bool? isChecked = ((CheckBox)sender).IsChecked;
-                if (isChecked.HasValue)
+                CheckBox checkBox = sender as CheckBox;
+                if (checkBox.IsChecked.HasValue)
                 {
-                    if (name == "CheckBoxPokemon")
+                    string text = checkBox.Content.ToString();
+                    CardSupertype supertype = PokemonCard.GetCardSuperType(text);
+                    if (supertype == CardSupertype.Pokemon)
                     {
-                        _viewModel.PokemonCheckBox(isChecked.Value);
+                        _viewModel.OnPokemonCheckBox(checkBox.IsChecked.Value);
                     }
-                    else if (name == "CheckBoxTrainer")
+                    else if (supertype == CardSupertype.Trainer)
                     {
-                        _viewModel.TrainerCheckBox(isChecked.Value);
+                        _viewModel.OnTrainerCheckBox(checkBox.IsChecked.Value);
                     }
-                    else if (name == "CheckBoxEnergy")
+                    else if (supertype == CardSupertype.Energy)
                     {
-                        _viewModel.EnergyCheckBox(isChecked.Value);
+                        _viewModel.OnEnergyCheckBox(checkBox.IsChecked.Value);
                     }
                 }
-            };
+            }
 
-            CheckBoxPokemon.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, callback);
-            CheckBoxTrainer.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, callback);
-            CheckBoxEnergy.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, callback);
+            CheckBoxPokemon.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, superTypesCallback);
+            CheckBoxTrainer.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, superTypesCallback);
+            CheckBoxEnergy.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, superTypesCallback);
 
             // For the type checkboxes
-            DependencyPropertyChangedCallback callbackTypes = (sender, property) =>
+            void pokemonTypesCallback(DependencyObject sender, DependencyProperty property)
             {
-                CheckBox cb = sender as CheckBox;
-                if (cb.IsChecked.HasValue)
+                CheckBox checkBox = sender as CheckBox;
+                if (checkBox.IsChecked.HasValue)
                 {
-                    string text = cb.Content.ToString();
-                    PokemonType type = Type.GetType(text);
-                    _viewModel.TypeChange(type, cb.IsChecked.Value);
+                    string text = checkBox.Content.ToString();
+                    PokemonType type = PokemonCard.GetPokemonType(text);
+                    _viewModel.TypeChange(type, checkBox.IsChecked.Value);
                 }
-            };
+            }
 
-            foreach (FrameworkElement element in StackPanelTypes.Children)
+            foreach (UIElement element in StackPanelTypes.Children)
             {
-                element.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, callbackTypes);
+                element.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, pokemonTypesCallback);
             }
 
             // For the in deck checkbox
-            DependencyPropertyChangedCallback callbackInDeck = (sender, property) =>
+            void inDeckCallback(DependencyObject sender, DependencyProperty property)
             {
-                CheckBox cb = sender as CheckBox;
-                if (cb.IsChecked.HasValue)
+                CheckBox checkBox = sender as CheckBox;
+                if (checkBox.IsChecked.HasValue)
                 {
-                    _viewModel.InDeckChanged(cb.IsChecked.Value);
+                    _viewModel.InDeckChanged(checkBox.IsChecked.Value);
                 }
-            };
-            CheckBoxInDeck.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, callbackInDeck);
+            }
+            CheckBoxInDeck.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, inDeckCallback);
 
         }
 
@@ -112,41 +110,33 @@ namespace PokemonTCG.View
 
             if (args.Phase == 0)
             {
-                args.RegisterUpdateCallback(ShowImage);
+                args.RegisterUpdateCallback(UpdateListViewCard);
                 args.Handled = true;
             }
 
         }
 
         /// <summary>
-        /// The callback for updating a container in the GridView named CardGridView.
+        /// The callback for updating an item in the GridView named CardGridView.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void ShowImage(ListViewBase sender, ContainerContentChangingEventArgs args)
+        private void UpdateListViewCard(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
             if (args.Phase == 1)
             {
                 Grid templateRoot = args.ItemContainer.ContentTemplateRoot as Grid;
-
-                // Image image = templateRoot.FindName("EditorImage") as Image;
                 CardItem item = args.Item as CardItem;
 
-                /*image.Source = item.Image;*/
-
-                TypedEventHandler<
-                    NumberBox,
-                    NumberBoxValueChangedEventArgs
-                > handler =
-                    (box, args) =>
+                void numberBoxHandler(NumberBox box, NumberBoxValueChangedEventArgs args)
+                {
+                    if (!double.IsNaN(args.NewValue))
                     {
-                        if (!double.IsNaN(args.NewValue))
-                        {
-                            _viewModel.ChangeCount(args, item);
-                        }
-                    };
+                        _viewModel.ChangeCount(args, item);
+                    }
+                }
 
-                item.SetHandler(handler);
+                item.SetHandler(numberBoxHandler);
             }
 
         }
@@ -184,7 +174,15 @@ namespace PokemonTCG.View
             }
             else
             {
-                _viewModel.CreateDeck(name);
+                Flyout flyoutNotEnough = new();
+                TextBlock text = new()
+                {
+                    Text = "Saving deck"
+                };
+                flyoutNotEnough.Content = text;
+                Flyout.SetAttachedFlyout(SubmitDeckButton, flyoutNotEnough);
+                Flyout.ShowAttachedFlyout(SubmitDeckButton);
+                await _viewModel.CreateDeck(name);
                 Frame.GoBack();
             }
         }

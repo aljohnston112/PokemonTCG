@@ -10,7 +10,7 @@ using Windows.Storage;
 namespace PokemonTCG.Utilities
 {
     /// <summary>
-    /// Methods for the file system.
+    /// Helper methods for the file system.
     /// </summary>
     public class FileUtil
     {
@@ -18,38 +18,30 @@ namespace PokemonTCG.Utilities
         /// <summary>
         /// Loads a file from the file system.
         /// </summary>
-        /// <param name="fileUrl">The path to the file</param>
-        /// <returns>A <c>Task</c> that returns a <c>StorageFile</c> of the file when complete</returns>
-        public static async Task<StorageFile> getFile(string fileUrl)
+        /// <param name="fileUrl">The path to the file.</param>
+        /// <returns>A <c>Task</c> that returns a <c>StorageFile</c> of the file when complete.</returns>
+        public static async Task<StorageFile> GetFile(string fileUrl)
         {
             String sourcePath = Path.GetFullPath(
                 Path.Combine(
-                    Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                    Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory),
                     fileUrl
                     )
                 );
-            StorageFile file = null;
-            try
-            {
-                file = await StorageFile.GetFileFromPathAsync(sourcePath);
-            } catch(FileNotFoundException e) {
-
-            }
-            return file;
+            return await StorageFile.GetFileFromPathAsync(sourcePath);
         }
 
         /// <summary>
         /// Loads a folder from the file system.
         /// </summary>
         /// <param name="folderUrl">The path to the folder</param>
-        /// <returns>A <c>Task</c> that returns a <c>StorageFile</c> of the folder when complete</returns>
+        /// <returns>A <c>Task</c> that returns a <c>StorageFolder</c> of the folder when complete</returns>
         public static async Task<StorageFolder> GetFolder(string folderUrl)
         {
-            var sourcePath = Path.GetFullPath(
-                    folderUrl
-                );
+            var sourcePath = Path.GetFullPath(folderUrl);
             return await StorageFolder.GetFolderFromPathAsync(sourcePath);
         }
+
     }
 
 }
