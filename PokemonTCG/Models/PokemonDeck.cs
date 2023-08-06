@@ -62,6 +62,7 @@ namespace PokemonTCG.Models
             StorageFile decksFile = await FileUtil.getFile(deckFile);
             if(decksFile == null) {
                 await SaveDeck(BLACKOUT_DECK);
+                decksFile = await FileUtil.getFile(deckFile);
             }
             string json = await FileIO.ReadTextAsync(decksFile);
             var options = new JsonWriterOptions
