@@ -45,7 +45,7 @@ namespace PokemonTCG.ViewModel
             await foreach (CardItem item in CardItemDataSource.GetCardItemsForSet(deckFile))
             {
                 _cards.Add(item);
-                Cards.Add(item);
+                Cards.Insert(Math.Min(item.Number - 1, Cards.Count), item);
             }
         }
 

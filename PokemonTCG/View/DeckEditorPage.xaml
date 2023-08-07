@@ -70,96 +70,84 @@
             
         </Viewbox>
 
-        <StackPanel
-            HorizontalAlignment="Left"
-            Grid.Row="1"
-            Grid.RowSpan="2">
+        <ScrollViewer Grid.Row="1"
+                      Grid.RowSpan="2">
 
-            <Viewbox
-                MaxHeight="67"
-                HorizontalAlignment="Center">
+            <StackPanel HorizontalAlignment="Left"
+                        >
+
+                <Viewbox MaxHeight="67"
+                         HorizontalAlignment="Center">
+
+                    <StackPanel>
+
+                        <TextBlock Text="Cards &#x0a;Selected "
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   TextAlignment="Center"
+                                   Margin="5" />
+
+                        <TextBlock Text="{x:Bind Path=_viewModel.TotalCountText, Mode=OneWay}"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Center" />
+
+                    </StackPanel>
+
+                </Viewbox>
+
+                <CheckBox x:Name="CheckBoxInDeck"
+                          Content="In Deck"
+                          IsChecked="false" />
 
                 <StackPanel>
 
-                    <TextBlock
-                        Text="Cards &#x0a;Selected "
-                        HorizontalAlignment="Center"
-                        VerticalAlignment="Center"
-                        TextAlignment="Center"
-                        Margin="5" />
+                    <CheckBox x:Name="CheckBoxPokemon"
+                              Content="Pokémon"
+                              IsChecked="true" />
 
-                    <TextBlock
-                        Text="{x:Bind Path=_viewModel.TotalCountText, Mode=OneWay}"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Center" />
+                    <CheckBox x:Name="CheckBoxTrainer"
+                              Content="Trainer"
+                              IsChecked="true" />
 
+                    <CheckBox x:Name="CheckBoxEnergy"
+                              Content="Energy"
+                              IsChecked="true" />
                 </StackPanel>
 
-            </Viewbox>
+                <StackPanel x:Name="StackPanelTypes">
 
-            <CheckBox
-                x:Name="CheckBoxInDeck"
-                Content="In Deck"
-                IsChecked="false" />
+                    <CheckBox x:Name="CheckBoxColorless"
+                              Content="Colorless"
+                              IsChecked="false" />
 
-            <StackPanel>
+                    <CheckBox x:Name="CheckBoxFighting"
+                              Content="Fighting"
+                              IsChecked="false" />
 
-                <CheckBox
-                    x:Name="CheckBoxPokemon"
-                    Content="Pokémon"
-                    IsChecked="true" />
+                    <CheckBox x:Name="CheckBoxFire"
+                              Content="Fire"
+                              IsChecked="false" />
 
-                <CheckBox
-                    x:Name="CheckBoxTrainer"
-                    Content="Trainer"
-                    IsChecked="true" />
+                    <CheckBox x:Name="CheckBoxGrass"
+                              Content="Grass"
+                              IsChecked="false" />
 
-                <CheckBox
-                    x:Name="CheckBoxEnergy"
-                    Content="Energy"
-                    IsChecked="true" />
+                    <CheckBox x:Name="CheckBoxLightning"
+                              Content="Lightning"
+                              IsChecked="false" />
+
+                    <CheckBox x:Name="CheckBoxPsychic"
+                              Content="Psychic"
+                              IsChecked="false" />
+
+                    <CheckBox x:Name="CheckBoxWater"
+                              Content="Water"
+                              IsChecked="false" />
+                </StackPanel>
+
             </StackPanel>
 
-            <StackPanel
-                x:Name="StackPanelTypes">
-
-                <CheckBox
-                    x:Name="CheckBoxColorless"
-                    Content="Colorless"
-                    IsChecked="false" />
-
-                <CheckBox
-                    x:Name="CheckBoxFighting"
-                    Content="Fighting"
-                    IsChecked="false" />
-
-                <CheckBox
-                    x:Name="CheckBoxFire"
-                    Content="Fire"
-                    IsChecked="false" />
-
-                <CheckBox
-                    x:Name="CheckBoxGrass"
-                    Content="Grass"
-                    IsChecked="false" />
-
-                <CheckBox
-                    x:Name="CheckBoxLightning"
-                    Content="Lightning"
-                    IsChecked="false" />
-
-                <CheckBox
-                    x:Name="CheckBoxPsychic"
-                    Content="Psychic"
-                    IsChecked="false" />
-
-                <CheckBox
-                    x:Name="CheckBoxWater"
-                    Content="Water"
-                    IsChecked="false" />
-            </StackPanel>
-
-        </StackPanel>
+        </ScrollViewer>
 
         <StackPanel
             Grid.Row="0"

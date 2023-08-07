@@ -57,7 +57,7 @@ namespace PokemonTCG.DataSources
             BitmapImage bitmapImage = new();
             bitmapImage.SetSource(await ImageLoader.OpenImage(url));
 
-            return new CardItem(id, name, bitmapImage, limit);
+            return new CardItem(id, name, bitmapImage, limit, card.Number);
         }
 
     }

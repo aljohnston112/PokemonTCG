@@ -22,6 +22,7 @@ namespace PokemonTCG.Models
         public readonly BitmapImage Image;
         public readonly NumberBox NumberBox;
         public readonly int Limit;
+        public readonly int Number;
 
         private bool handlerAttached = false;
 
@@ -85,12 +86,13 @@ namespace PokemonTCG.Models
         /// <param name="name">The name of the card</param>
         /// <param name="image">The image of the card</param>
         /// <param name="limit">How many of this card wil be allowed in a deck</param>
-        public CardItem(string id, string name, BitmapImage image, int limit)
+        public CardItem(string id, string name, BitmapImage image, int limit, int number)
         {
             this.Id = id;
             this.Name = name;
             this.Image = image;
             this.Limit = limit;
+            this.Number = number;
             this.NumberBox = new NumberBox();
             this.NumberBox.Value = 0;
             if(Limit == -1)

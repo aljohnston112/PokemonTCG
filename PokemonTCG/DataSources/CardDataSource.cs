@@ -1,6 +1,7 @@
 ﻿using PokemonTCG.Models;
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
@@ -190,6 +191,30 @@ namespace PokemonTCG.DataSources
                         { ImageSize.LARGE,  baseImagePath + id + "-large.png" }
                     };
 
+                    JsonObject setObject = jsonCard.GetNamedObject("set");
+                    string setId = setObject.GetNamedString("id");
+                    string setName = setObject.GetNamedString("name");
+                    string setSeries = setObject.GetNamedString("series");
+                    int number = int.Parse(jsonCard.GetNamedString("number"));
+                    string artist = jsonCard.GetNamedString("artist");
+                    Rarity rarity = Rarity.NONE;
+                    if (jsonCard.ContainsKey("rarity"))
+                    {
+                        rarity = PokemonCard.GetRarity(jsonCard.GetNamedString("rarity"));
+                    }
+                    string flavorText = "";
+                    if (jsonCard.ContainsKey("flavorText"))
+                    {
+                        flavorText = jsonCard.GetNamedString("flavorText");
+                    }
+
+                    // Legalities
+                    IDictionary<Legality, LegalType> legalities = new Dictionary<Legality, LegalType>();
+                    foreach (KeyValuePair<string, IJsonValue> legalityElement in jsonCard.GetNamedObject("legalities"))
+                    {
+                        legalities[PokemonCard.GetLegality(legalityElement.Key)] = PokemonCard.GetLegalType(legalityElement.Value.GetString());
+                    }
+
                     PokemonCard card = new(
                         id,
                         name,
@@ -204,7 +229,15 @@ namespace PokemonTCG.DataSources
                         resistances,
                         retreatCost,
                         convertedRetreatCost,
-                        imagePaths
+                        imagePaths,
+                        setId,
+                        setName,
+                        setSeries,
+                        number,
+                        artist,
+                        rarity,
+                        flavorText,
+                        legalities
                         );
 
                     idsToCards.Add(id, card);

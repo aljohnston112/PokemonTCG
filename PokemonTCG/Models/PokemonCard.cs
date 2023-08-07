@@ -1,5 +1,4 @@
-﻿using PokemonTCG.Models;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace PokemonTCG.Models
@@ -37,6 +36,29 @@ namespace PokemonTCG.Models
         LARGE
     }
 
+    public enum Rarity
+    {
+        NONE,
+        RARE_HOLO,
+        RARE,
+        UNCOMMON,
+        COMMON
+    }
+
+    public enum Legality
+    {
+        UNLIMITED,
+        EXPANDED,
+        STANDARD
+    }
+
+    public enum LegalType
+    {
+        LEGAL,
+        ILLEGAL
+    }
+
+
     /// <summary>
     /// Contains card data.
     /// </summary>
@@ -57,6 +79,15 @@ namespace PokemonTCG.Models
         public readonly int ConvertedRetreatCost;
         public readonly ImmutableDictionary<ImageSize, string> ImageFileNames;
 
+        public readonly string SetId;
+        public readonly string SetName;
+        public readonly string SetSeries;
+        public readonly int Number;
+        public readonly string Artist;
+        public readonly Rarity Rarity;
+        public readonly string FlavorText;
+        public readonly IDictionary<Legality, LegalType> Legalities;
+
         public PokemonCard(
             string id,
             string name,
@@ -71,7 +102,15 @@ namespace PokemonTCG.Models
             Dictionary<PokemonType, string> resistances,
             Dictionary<PokemonType, int> retreatCost,
             int convertedRetreatCost,
-            Dictionary<ImageSize, string> imageFileNames
+            Dictionary<ImageSize, string> imageFileNames,
+            string setId,
+            string setName,
+            string setSeries,
+            int number,
+            string artist,
+            Rarity rarity,
+            string flavorText,
+            IDictionary<Legality, LegalType> legalities
         )
         {
             this.Id = id;
@@ -88,9 +127,17 @@ namespace PokemonTCG.Models
             this.RetreatCost = retreatCost.ToImmutableDictionary();
             this.ConvertedRetreatCost = convertedRetreatCost;
             this.ImageFileNames = imageFileNames.ToImmutableDictionary();
+            this.SetId = setId;
+            this.SetName = setName;
+            this.SetSeries = setSeries;
+            this.Number = number;
+            this.Artist = artist;
+            this.Rarity = rarity;
+            this.FlavorText = flavorText;
+            this.Legalities = legalities;
         }
 
-        private static readonly ImmutableDictionary<string, CardSupertype> cardSupertypeMap = 
+        private static readonly ImmutableDictionary<string, CardSupertype> cardSupertypeMap =
             new Dictionary<string, CardSupertype>()
             {
                 { "Pokémon", CardSupertype.Pokemon },
@@ -141,6 +188,46 @@ namespace PokemonTCG.Models
         {
             PokemonType type = pokemonTypeMap[pokemonType];
             return type;
+        }
+
+        private static readonly ImmutableDictionary<string, Rarity> rarityMap =
+            new Dictionary<string, Rarity>()
+            {
+                { "", Models.Rarity.NONE },
+                { "Rare Holo", Models.Rarity.RARE_HOLO },
+                { "Rare", Models.Rarity.RARE },
+                { "Uncommon", Models.Rarity.UNCOMMON },
+                { "Common", Models.Rarity.COMMON}
+            }.ToImmutableDictionary();
+
+        public static Rarity GetRarity(string rarity)
+        {
+            return rarityMap[rarity];
+        }
+
+        private static readonly ImmutableDictionary<string, Legality> legalityMap =
+           new Dictionary<string, Legality>()
+           {
+               { "unlimited", Legality.UNLIMITED },
+               { "expanded", Legality.EXPANDED },
+               { "standard", Legality.STANDARD }
+           }.ToImmutableDictionary();
+
+        public static Legality GetLegality(string legality)
+        {
+            return legalityMap[legality];
+        }
+
+        private static readonly ImmutableDictionary<string, LegalType> legalTypeMap =
+           new Dictionary<string, LegalType>()
+           {
+               { "Legal", LegalType.LEGAL },
+               { "Illegal", LegalType.ILLEGAL }
+           }.ToImmutableDictionary();
+
+        public static LegalType GetLegalType(string legalType)
+        {
+            return legalTypeMap[legalType];
         }
 
     }
