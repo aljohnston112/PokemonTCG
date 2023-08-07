@@ -7,6 +7,10 @@ using PokemonTCG.Models;
 using PokemonTCG.ViewModel;
 using System;
 using PokemonType = PokemonTCG.Models.PokemonType;
+using PokemonTCG.DataSources;
+using System.Collections.Immutable;
+using System.Collections.Generic;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace PokemonTCG.View
 {
@@ -21,10 +25,45 @@ namespace PokemonTCG.View
         {
             InitializeComponent();
             DataContext = _viewModel;
+        }
+
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+
+            object deckName = e.Parameter;
+            ISet<string> sets = new HashSet<string>();
+            if (deckName != null)
+            {
+                ImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
+                foreach (string id in decks[deckName as string].CardIds)
+                {
+                    PokemonCard card = CardDataSource.GetCardById(id);
+                    sets.Add(card.SetId);
+                }
+            }
+            else
+            {
+                sets.Add("base1");
+            }
+
             string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
-            string setFile = baseFolder + "Assets/sets/base1.json";
-            _viewModel.LoadCardsItemsForSet(setFile);
-            CardGridView.ItemsSource = _viewModel.Cards;
+            foreach (string set in sets)
+            {
+                string setFile = baseFolder + "Assets/sets/" + set + ".json";
+                await _viewModel.LoadCardsItemsForSet(setFile);
+            }
+
+            CardGridView.ItemsSource = _viewModel.CardItems;
+            if (deckName != null)
+            {
+                ImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
+                foreach (string id in decks[deckName as string].CardIds)
+                {
+                    _viewModel.IncrementCardCountForCardWithId(id);
+                }
+            }
+
             SetUpCheckBoxes();
         }
 
@@ -131,7 +170,7 @@ namespace PokemonTCG.View
                 {
                     if (!double.IsNaN(args.NewValue))
                     {
-                        _viewModel.ChangeCount(args, item);
+                        _viewModel.ChangeCount((int)args.OldValue, (int)args.NewValue, item);
                     }
                 }
 

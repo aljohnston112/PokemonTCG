@@ -89,7 +89,7 @@ namespace PokemonTCG.DataSources
                 writer.WriteString("name", deckEntry.Key);
                 PokemonDeck pokemonDeck = deckEntry.Value;
                 writer.WriteStartArray("ids");
-                foreach (string id in pokemonDeck.Deck)
+                foreach (string id in pokemonDeck.CardIds)
                 {
                     writer.WriteStringValue(id);
                 }

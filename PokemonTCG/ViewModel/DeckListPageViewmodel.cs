@@ -12,7 +12,7 @@ namespace PokemonTCG.ViewModel
         private readonly Collection<string> _deckNames = new();
         public readonly ObservableCollection<string> DeckNames = new();
 
-        internal async Task GetDecks()
+        internal void GetDecks()
         {
             ImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
             foreach (string name in decks.Keys)

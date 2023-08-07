@@ -16,7 +16,7 @@ namespace PokemonTCG.Models
     public class PokemonDeck
     {
 
-        public readonly ImmutableArray<string> Deck;
+        public readonly ImmutableArray<string> CardIds;
         public readonly string Name;
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace PokemonTCG.Models
         public PokemonDeck(string name, ICollection<string> ids)
         {
             Debug.Assert(ids.Count == 60);
-            Deck = ids.ToImmutableArray();
+            CardIds = ids.ToImmutableArray();
             Name = name;
         }
 

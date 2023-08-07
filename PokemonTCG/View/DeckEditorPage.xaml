@@ -185,7 +185,7 @@
             x:Name="CardGridView"
             CacheMode="BitmapCache"
             ItemTemplate="{StaticResource CardListView_ItemTemplate}"
-            ItemsSource="{x:Bind _viewModel.Cards}"
+            ItemsSource="{x:Bind _viewModel.CardItems}"
             ContainerContentChanging="UpdateListView"
             HorizontalAlignment="Center"
             Grid.Row="2"

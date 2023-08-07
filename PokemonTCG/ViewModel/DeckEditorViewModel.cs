@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PokemonTCG.ViewModel
@@ -15,9 +16,9 @@ namespace PokemonTCG.ViewModel
     /// </summary>
     internal class DeckEditorViewModel : BindableBase
     {
-        private readonly List<CardItem> _cards = new();
+        private readonly List<CardItem> _cardItems = new();
         private CardSifter _sifter = new();
-        public readonly ObservableCollection<CardItem> Cards = new();
+        public readonly ObservableCollection<CardItem> CardItems = new();
 
         private int _numberOfCardsInDeck = 0;
         private string _NumberOfCardsInDeckText = "0";
@@ -40,12 +41,12 @@ namespace PokemonTCG.ViewModel
 
         public DeckEditorViewModel() { }
 
-        public async void LoadCardsItemsForSet(string deckFile)
+        public async Task LoadCardsItemsForSet(string deckFile)
         {
             await foreach (CardItem item in CardItemDataSource.GetCardItemsForSet(deckFile))
             {
-                _cards.Add(item);
-                Cards.Insert(Math.Min(item.Number - 1, Cards.Count), item);
+                _cardItems.Add(item);
+                CardItems.Insert(Math.Min(item.Number - 1, CardItems.Count), item);
             }
         }
 
@@ -56,17 +57,20 @@ namespace PokemonTCG.ViewModel
         /// <param name="item">The item that corresponds to the NumberBoxValueChangedEvent.
         ///                    It's Count will be updated by the args unless it will cause the total count to be over 60</param>
         /// <returns>true if the item's Count was updated, or the total count would have gone over 60, else false</returns>
-        internal void ChangeCount(NumberBoxValueChangedEventArgs args, CardItem item)
+        internal void ChangeCount(int oldValue, int newValue, CardItem item)
         {
-            int value = Math.Max((int)args.NewValue, 0);
+            int value = Math.Max(newValue, 0);
 
-            int diff = value - (int)args.OldValue;
+            int diff = value - oldValue;
             if ((diff + NumberOfCardsInDeck) > 60)
             {
                 value = (60 - NumberOfCardsInDeck);
-                diff = value - (int)args.OldValue;
+                diff = value - oldValue;
             }
             item.SetCount(value);
+            CardItem cardItem = _cardItems.FirstOrDefault(card => card.Id == item.Id);
+            cardItem?.SetCount(value);
+
             NumberOfCardsInDeck += diff;
             Debug.Assert(NumberOfCardsInDeck <= 60 && NumberOfCardsInDeck >= 0);
         }
@@ -76,11 +80,11 @@ namespace PokemonTCG.ViewModel
         /// </summary>
         private void SiftCards()
         {
-            Collection<CardItem> cards = _sifter.Sift(_cards);
-            Cards.Clear();
+            Collection<CardItem> cards = _sifter.Sift(_cardItems);
+            CardItems.Clear();
             foreach (CardItem card in cards)
             {
-                Cards.Add(card);
+                CardItems.Add(card);
             }
         }
 
@@ -152,7 +156,7 @@ namespace PokemonTCG.ViewModel
         internal async Task CreateDeck(string name)
         {
             Collection<string> cards = new();
-            foreach (CardItem card in _cards)
+            foreach (CardItem card in _cardItems)
             {
                 if (card.GetCount() > 0)
                 {
@@ -166,6 +170,17 @@ namespace PokemonTCG.ViewModel
             await DeckDataSource.SaveDeck(deck);
         }
 
+        internal void IncrementCardCountForCardWithId(string id)
+        {
+            CardItem cardItem = _cardItems.FirstOrDefault(card => card.Id == id);
+            if (cardItem != null)
+            {
+                cardItem.SetCount(cardItem.GetCount() + 1);
+            } else
+            {
+                throw new ArgumentException("Card with" + id + "was not found.");
+            }
+        }
     }
 
 }
