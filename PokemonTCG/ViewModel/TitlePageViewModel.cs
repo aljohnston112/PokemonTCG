@@ -22,7 +22,7 @@ namespace PokemonTCG.ViewModel
         private static async Task LoadSetsAndDecks()
         {
             await SetDataSource.LoadSets();
-            await PokemonDeck.LoadDecks();
+            await DeckDataSource.LoadDecks();
         }
 
         internal async void ButtonDeckListClicked(Frame frame)

@@ -3,7 +3,6 @@ using Microsoft.UI.Xaml.Controls;
 using Image = Microsoft.UI.Xaml.Controls.Image;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using Windows.Foundation;
 using PokemonTCG.Models;
 using PokemonTCG.ViewModel;
 using System;
@@ -23,8 +22,8 @@ namespace PokemonTCG.View
             InitializeComponent();
             DataContext = _viewModel;
             string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
-            string deckFile = baseFolder + "Assets/sets/base1.json";
-            _viewModel.LoadCards(deckFile);
+            string setFile = baseFolder + "Assets/sets/base1.json";
+            _viewModel.LoadCardsItemsForSet(setFile);
             CardGridView.ItemsSource = _viewModel.Cards;
             SetUpCheckBoxes();
         }
@@ -149,7 +148,7 @@ namespace PokemonTCG.View
         {
 
             string name = TextBlockDeckName.Text;
-            if (_viewModel.GetTotalCount() != 60)
+            if (_viewModel.NumberOfCardsInDeck != 60)
             {
                 Flyout flyoutNotEnough = new();
                 TextBlock text = new()

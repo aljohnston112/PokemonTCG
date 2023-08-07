@@ -5,24 +5,15 @@
     xmlns:local="using:PokemonTCG.View"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        
-        <Grid.RowDefinitions>
-            <RowDefinition
-                Height="*" />
-            <RowDefinition
-                Height="auto" />
-        </Grid.RowDefinitions>
+    <Grid ColumnDefinitions="*"
+          RowDefinitions="*, auto">
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition
-                Width="*" />
-        </Grid.ColumnDefinitions>
-
-        <ListView
-            ItemsSource="{x:Bind _viewModel.DeckNames}">
-
-        </ListView>
+        <ListView 
+            Name="DeckNameListView"
+            ItemsSource="{x:Bind ViewModel.DeckNames}"
+            IsItemClickEnabled="True"
+            SelectionMode="None"
+            ItemClick="SetUpDeckClickListener"/>
 
         <Button
             Name="CreateNewDeckButton"

@@ -8,21 +8,10 @@ using Windows.Storage;
 namespace PokemonTCG.DataSources
 {
 
-    // TODO Caching individual set images to save memory
-    // TODO Caching individual deck images to save memory
-    // TODO Cache that depends on whether in the deck builder or game
-
-    /// <summary>
-    /// For getting <c>Card</c> instances.
-    /// First the instances must be loaded from a given folder; <see cref="LoadSets"/>.
-    /// Then instances are retrieved by the url of the corresponding png file with the card picture; <see cref="GetCardById(string)"/>.
-    /// </summary>
     internal class CardDataSource
     {
 
-        // Contains the card instances used for GamePage
-        private static readonly Dictionary<string, PokemonCard> idsToCards = new();
-
+        private static readonly IDictionary<string, PokemonCard> idsToCards = new Dictionary<string, PokemonCard>();
 
         /// <summary>
         /// Gets all cards associated with a set. 
@@ -225,9 +214,7 @@ namespace PokemonTCG.DataSources
         }
 
         /// <summary>
-        /// Gets a <c>Card</c> instance based on the card's id.
-        /// The <c>Card</c> class is used for the <c>GamePage</c>.
-        /// This method will throw and exception if cards are not loaded beforehand or the id is invalid.
+        /// This method will throw an exception if cards are not loaded beforehand or the id is invalid.
         /// You can prevent this by calling <see cref="SetDataSource.LoadSets"/> to load the Card instances beforehand.
         /// </summary>
         /// <param name="id">The id of the card</param>

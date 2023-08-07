@@ -1,4 +1,5 @@
-﻿using PokemonTCG.Models;
+﻿using PokemonTCG.DataSources;
+using PokemonTCG.Models;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -13,7 +14,7 @@ namespace PokemonTCG.ViewModel
 
         internal async Task GetDecks()
         {
-            ImmutableDictionary<string, PokemonDeck> decks = PokemonDeck.GetDecks();
+            ImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
             foreach (string name in decks.Keys)
             {
                 _deckNames.Add(name);

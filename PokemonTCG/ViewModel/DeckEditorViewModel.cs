@@ -3,11 +3,10 @@ using PokemonTCG.DataSources;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using Windows.Data.Json;
-using Windows.Storage;
 
 namespace PokemonTCG.ViewModel
 {
@@ -16,51 +15,38 @@ namespace PokemonTCG.ViewModel
     /// </summary>
     internal class DeckEditorViewModel : BindableBase
     {
-        private readonly Collection<CardItem> _cards = new();
+        private readonly List<CardItem> _cards = new();
         private CardSifter _sifter = new();
         public readonly ObservableCollection<CardItem> Cards = new();
 
-        private int _totalCount = 0;
-        private int TotalCount
+        private int _numberOfCardsInDeck = 0;
+        private string _NumberOfCardsInDeckText = "0";
+
+        internal int NumberOfCardsInDeck
         {
-            get { return _totalCount; }
-            set
+            get { return _numberOfCardsInDeck; }
+            private set
             {
                 TotalCountText = value.ToString();
-                SetProperty(ref _totalCount, value);
+                SetProperty(ref _numberOfCardsInDeck, value);
             }
         }
 
-        internal int GetTotalCount()
-        {
-            return _totalCount;
-        }
-
-        private string _totalCountText = "0";
         public string TotalCountText
         {
-            get { return _totalCountText; }
-            set { SetProperty(ref _totalCountText, value); }
+            get { return _NumberOfCardsInDeckText; }
+            set { SetProperty(ref _NumberOfCardsInDeckText, value); }
         }
 
         public DeckEditorViewModel() { }
 
-        public async void LoadCards(string deckFile)
+        public async void LoadCardsItemsForSet(string deckFile)
         {
-            // Get the json file containing all the cards for the base set
-            StorageFile file = await FileUtil.GetFile(deckFile);
-            string jsonText = await FileIO.ReadTextAsync(file);
-            JsonObject jsonObject = JsonObject.Parse(jsonText);
-            JsonArray jsonArray = jsonObject.GetNamedArray("data");
-
-            // Load the cards
-            foreach (IJsonValue element in jsonArray)
+            await foreach (CardItem item in CardItemDataSource.GetCardItemsForSet(deckFile))
             {
-                CardItem card = await CardItemDataSource.GetCard(element);
-                _cards.Add(card);
-                Cards.Add(card);
+                _cards.Add(item);
+                Cards.Add(item);
             }
-
         }
 
         /// <summary>
@@ -75,14 +61,14 @@ namespace PokemonTCG.ViewModel
             int value = Math.Max((int)args.NewValue, 0);
 
             int diff = value - (int)args.OldValue;
-            if ((diff + TotalCount) > 60)
+            if ((diff + NumberOfCardsInDeck) > 60)
             {
-                value = (60 - TotalCount);
+                value = (60 - NumberOfCardsInDeck);
                 diff = value - (int)args.OldValue;
             }
             item.SetCount(value);
-            TotalCount += diff;
-            Debug.Assert(TotalCount <= 60 && TotalCount >= 0);
+            NumberOfCardsInDeck += diff;
+            Debug.Assert(NumberOfCardsInDeck <= 60 && NumberOfCardsInDeck >= 0);
         }
 
         /// <summary>
@@ -177,7 +163,7 @@ namespace PokemonTCG.ViewModel
                 }
             }
             PokemonDeck deck = new(name, cards);
-            await PokemonDeck.SaveDeck(deck);
+            await DeckDataSource.SaveDeck(deck);
         }
 
     }

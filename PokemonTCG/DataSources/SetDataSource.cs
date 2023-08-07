@@ -11,7 +11,7 @@ namespace PokemonTCG.DataSources
     internal class SetDataSource
     {
         private static readonly string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
-        private static readonly string setFolder = baseFolder + @"Assets\sets\";
+        internal static readonly string setFolder = baseFolder + @"Assets\sets\";
 
         private static readonly IDictionary<string, ICollection<PokemonCard>> setsToCards = new Dictionary<string, ICollection<PokemonCard>>();
 

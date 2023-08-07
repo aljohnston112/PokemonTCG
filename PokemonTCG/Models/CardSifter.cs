@@ -63,7 +63,7 @@ namespace PokemonTCG.Models
         /// </summary>
         /// <param name="cardItems">The CardItems to sift.</param>
         /// <returns>A Collection of CardItems that match the criteria of this CardSifter.</returns>
-        public Collection<CardItem> Sift(Collection<CardItem> cardItems)
+        public Collection<CardItem> Sift(List<CardItem> cardItems)
         {
             Collection<CardItem> matchingCardItems = new();
             foreach (CardItem card in cardItems)

@@ -1,47 +1,63 @@
-﻿using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml.Media.Imaging;
+﻿using Microsoft.UI.Xaml.Media.Imaging;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Windows.Data.Json;
+using Windows.Storage;
 
 namespace PokemonTCG.DataSources
 {
-    /// <summary>
-    /// Contains a static method for getting the CardItems to be diplayed by the <c>DeckEditorPage</c>.
-    /// </summary>
+
     internal class CardItemDataSource
     {
 
         /// <summary>
-        /// Creates a <c>CardItem</c> from a json value in the set file.
+        /// Gets the card items from a deck.
         /// </summary>
-        /// <param name="element">The json value from the json array loaded from the set file</param>
-        /// <returns>A <c>Task</c> that will return a <c>CardItem></c></returns>
-        public static async Task<CardItem> GetCard(IJsonValue element)
+        /// <param name="deckFile">The deckFile</param>
+        /// <returns></returns>
+        internal static async IAsyncEnumerable<CardItem> GetCardItemsForSet(string deckFile)
+        {
+            StorageFile file = await FileUtil.GetFile(deckFile);
+            string jsonText = await FileIO.ReadTextAsync(file);
+            JsonObject jsonObject = JsonObject.Parse(jsonText);
+            JsonArray jsonArray = jsonObject.GetNamedArray("data");
+
+            // Load the cards
+            foreach (IJsonValue element in jsonArray)
+            {
+                CardItem card = await GetCardItem(element);
+                yield return card;
+            }
+        }
+
+        private static async Task<CardItem> GetCardItem(IJsonValue element)
         {
 
             JsonObject jObject = element.GetObject();
             String id = jObject.GetNamedString("id");
-            string name = jObject.GetNamedString("name");
+            PokemonCard card = CardDataSource.GetCardById(id);
+
+            string name = card.Name;
 
             // Get the card limit per deck. 4 is normal
             int limit = 4;
-            string type = jObject.GetNamedString("supertype");
+            CardSupertype type = card.Supertype;
 
             // Energies do not have a limit; colorless energy does though
-            if (type == "Energy" && name != "Double Colorless Energy")
+            if (type == CardSupertype.Energy && name != "Double Colorless Energy")
             {
                 limit = -1;
             }
 
-            // Get the image url
-            string url = "Assets/sets/base1/" + id + "-large.png";
+            // Create the Bitmap
+            string url = card.ImageFileNames[ImageSize.LARGE];
             BitmapImage bitmapImage = new();
             bitmapImage.SetSource(await ImageLoader.OpenImage(url));
-            CardItem cardItem = new(id, name, bitmapImage, limit);
-            return cardItem;
+
+            return new CardItem(id, name, bitmapImage, limit);
         }
 
     }
