@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using PokemonTCG.ViewModel;
 
 namespace PokemonTCG.View
 {
@@ -8,20 +9,29 @@ namespace PokemonTCG.View
     /// </summary>
     public sealed partial class GameSettingsPage : Page
     {
+
+        private readonly DeckListViewmodel ViewModel = new();
+
         public GameSettingsPage()
         {
             this.InitializeComponent();
+            ViewModel.LoadDecks();
         }
 
-        /// <summary>
-        /// Called when the user clicks to start a game.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void StartGameEvent(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(GamePage));
+            this.Frame.Navigate(
+                typeof(GamePage),
+                new GameArguments(
+                    PlayerDeckComboBox.SelectedItem as string, 
+                    OpponentDeckComboBox.SelectedItem as string
+                    )
+                );
         }
 
+        private void CancelGameEvent(object sender, RoutedEventArgs e)
+        {
+            this.Frame.GoBack();
+        }
     }
 }

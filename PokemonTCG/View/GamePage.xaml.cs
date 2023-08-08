@@ -1,78 +1,84 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System;
+using Microsoft.UI;
+using Microsoft.UI.Windowing;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.UI.ViewManagement;
+using WinRT.Interop;
 
 namespace PokemonTCG.View
 {
+    public class GameArguments
+    {
+        public readonly string PlayerDeck;
+        public readonly string OpponentDeck;
+
+        public GameArguments(string playerDeck, string opponentDeck)
+        {
+            PlayerDeck = playerDeck;
+            OpponentDeck = opponentDeck;
+        }
+
+    }
+
     /// <summary>
     /// The UI for the game.
     /// </summary>
     public sealed partial class GamePage : Page
     {
 
-        private readonly PlayerPage _player1Page;
-        private readonly PlayerPage _player2Page;
+        private readonly PlayerPage PlayerPage;
+        private readonly PlayerPage OpponentPage;
 
-        private readonly bool _singlePlayer = true;
 
         public GamePage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
-            _player1Page = PagePlayer1;
-            _player2Page = PagePlayer2;
+            PlayerPage = PagePlayer;
+            OpponentPage = PageOpponent;
 
-            RotatePlayer2();
+            RotateOpponentPage();
+            OpponentPage.HideAttacks();
 
-            if (_singlePlayer)
-            {
-                _player2Page.HideAttacks();
-            }
-
-            showHand();
-
+            ShowHand();
         }
 
-        /// <summary>
-        /// Shows a UI that has player 1's hand.
-        /// </summary>
-        private void showHand()
+        private void ShowHand()
         {
+            int width = 480;
+            int height = 270;
+            ApplicationView.PreferredLaunchViewSize = new Size(width, height);
+            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
+
             HandPage hand = new();
-            Window window = new();
-            window.Content = hand;
-            ApplicationView.PreferredLaunchViewSize = new Size(480, 270);
-            ApplicationView.PreferredLaunchWindowingMode = 
-                ApplicationViewWindowingMode.PreferredLaunchViewSize;
-
-            var hWnd = WinRT.Interop.WindowNative.GetWindowHandle(window);
-            Microsoft.UI.WindowId windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hWnd);
-            Microsoft.UI.Windowing.AppWindow appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
-            if (appWindow != null)
+            Window window = new()
             {
-                appWindow.Resize(new SizeInt32(480, 270));
-            }
-
-
+                Content = hand
+            };
+            IntPtr hWnd = WindowNative.GetWindowHandle(window);
+            WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
+            AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
+            appWindow?.Resize(new SizeInt32(width, height));
             window.Activate();
         }
 
         /// <summary>
         /// Rotates player 2's field so it is facing player 1's field.
         /// </summary>
-        private void RotatePlayer2()
+        private void RotateOpponentPage()
         {
-            _player2Page.RenderTransformOrigin = new Point(0.5, 0.5);
-            RotateTransform rotateTransform = new RotateTransform()
+            OpponentPage.RenderTransformOrigin = new Point(0.5, 0.5);
+            RotateTransform rotateTransform = new()
             {
-                CenterX = _player2Page.Width / 2,
-                CenterY = _player2Page.Height / 2,
+                CenterX = OpponentPage.Width / 2,
+                CenterY = OpponentPage.Height / 2,
                 Angle = 180
             };
-            _player2Page.RenderTransform = rotateTransform;
+            OpponentPage.RenderTransform = rotateTransform;
         }
 
     }

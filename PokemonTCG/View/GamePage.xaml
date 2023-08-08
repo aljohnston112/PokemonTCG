@@ -11,25 +11,8 @@
         <Flyout
             x:Key="FlyoutPickFromTo">
 
-            <Grid>
-
-                <Grid.RowDefinitions>
-                    <RowDefinition
-                        Height="*" />
-                    <RowDefinition
-                        Height="*" />
-                    <RowDefinition
-                        Height="*" />
-                    <RowDefinition
-                        Height="*" />
-                </Grid.RowDefinitions>
-
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition
-                        Width="*" />
-                    <ColumnDefinition
-                        Width="*" />
-                </Grid.ColumnDefinitions>
+            <Grid RowDefinitions="*, *, *, *"
+                  ColumnDefinitions="*, *">
 
                 <TextBlock
                     x:Name="TextDescription"
@@ -75,21 +58,19 @@
 
     </Page.Resources>
 
-    <Grid>
-
-        <Grid.RowDefinitions>
-            <RowDefinition
-                Height="*" />
-            <RowDefinition
-                Height="*" />
-        </Grid.RowDefinitions>
+    <Grid RowDefinitions="*, *"
+          ColumnDefinitions="*">
 
         <pokemon:PlayerPage
             Grid.Row="1"
-            x:Name="PagePlayer1" />
+            x:Name="PagePlayer"
+            VerticalAlignment="Stretch"
+            />
 
         <pokemon:PlayerPage
-            x:Name="PagePlayer2" />
+            x:Name="PageOpponent"
+            VerticalAlignment="Stretch"
+            />
 
     </Grid>
 

@@ -55,12 +55,12 @@ namespace PokemonTCG.ViewModel
 
             if(deckName != null)
             {
-                CountDeckCards(deckName as string);
+                AddDeckCards(deckName as string);
             }
 
         }
 
-        private void CountDeckCards(string deckName)
+        private void AddDeckCards(string deckName)
         {
             ImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
             foreach (string id in decks[deckName].CardIds)
@@ -90,7 +90,7 @@ namespace PokemonTCG.ViewModel
             return sets;
         }
 
-        private async Task<ISet<CardItem>> LoadCardsItemsForSet(string setName)
+        private static async Task<ISet<CardItem>> LoadCardsItemsForSet(string setName)
         {
             HashSet<CardItem> cardItems = new();
             await foreach (CardItem item in CardItemDataSource.GetCardItemsForSet(setName))
@@ -113,6 +113,22 @@ namespace PokemonTCG.ViewModel
             NumberOfCardsInDeck += diff;
             CardItemAdapter.SetCardCountForCardWithId(cardItemView.Id, value);
             Debug.Assert(NumberOfCardsInDeck <= DeckDataSource.NUMBER_OF_CARDS_PER_DECK && NumberOfCardsInDeck >= 0);
+        }
+
+        internal bool HasBasicPokemon()
+        {
+            ImmutableArray<CardItem> cardITems = CardItemAdapter.GetAllCardItems().ToImmutableArray();
+            bool hasBasicPokemon = false;
+            int i = 0;
+            while (i < cardITems.Length && !hasBasicPokemon)
+            {
+                if(CardDataSource.GetCardById(cardITems[i].Id).Subtypes.Contains(CardSubtype.BASIC))
+                {
+                    hasBasicPokemon = true;
+                };
+                i++;
+            }
+            return hasBasicPokemon;
         }
 
         /// <summary>

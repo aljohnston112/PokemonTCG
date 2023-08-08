@@ -7,30 +7,14 @@
     >
 
     <Grid
+        ColumnDefinitions="*, *, *, *, *, *, *"
         Padding="5">
-
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-        </Grid.ColumnDefinitions>
 
         <Image
             x:Name="Hand1"
             Margin="5"
             Grid.Column="0"
-            Source="ms-appx:///Assets/BlankCard2.png" />
+            Source="/Assets/BlankCard2.png" />
 
         <Image
             x:Name="Hand2"

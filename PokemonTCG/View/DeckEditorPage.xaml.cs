@@ -164,7 +164,7 @@ namespace PokemonTCG.View
                 Flyout.ShowAttachedFlyout(SubmitDeckButton);
                 Flyout.SetAttachedFlyout(SubmitDeckButton, null);
             }
-            else if (ViewModel.NumberOfCardsInDeck != 60)
+            else if (ViewModel.NumberOfCardsInDeck != DeckDataSource.NUMBER_OF_CARDS_PER_DECK)
             {
                 Flyout flyoutNotEnough = new();
                 TextBlock text = new()
@@ -176,7 +176,18 @@ namespace PokemonTCG.View
                 Flyout.ShowAttachedFlyout(SubmitDeckButton);
                 Flyout.SetAttachedFlyout(SubmitDeckButton, null);
             }
-            else
+            else if (!ViewModel.HasBasicPokemon())
+            {
+                Flyout flyoutNotEnough = new();
+                TextBlock text = new()
+                {
+                    Text = "At least one basic Pokemon is needed to make a deck."
+                };
+                flyoutNotEnough.Content = text;
+                Flyout.SetAttachedFlyout(SubmitDeckButton, flyoutNotEnough);
+                Flyout.ShowAttachedFlyout(SubmitDeckButton);
+                Flyout.SetAttachedFlyout(SubmitDeckButton, null);
+            } else
             {
                 Flyout flyoutNotEnough = new();
                 TextBlock text = new()

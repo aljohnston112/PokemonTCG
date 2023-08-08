@@ -2,22 +2,19 @@
 using PokemonTCG.Models;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 
 namespace PokemonTCG.ViewModel
 {
-    internal class DeckListPageViewmodel
+    internal class DeckListViewmodel
     {
 
-        private readonly Collection<string> _deckNames = new();
         public readonly ObservableCollection<string> DeckNames = new();
 
-        internal void GetDecks()
+        internal void LoadDecks()
         {
             ImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
             foreach (string name in decks.Keys)
             {
-                _deckNames.Add(name);
                 DeckNames.Add(name);
             }
         }

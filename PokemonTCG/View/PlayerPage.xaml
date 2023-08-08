@@ -16,117 +16,72 @@
 
     <Grid
         x:Name="GridField"
+        RowDefinitions="*, *, *"
+        ColumnDefinitions="*, *, *, *, *, *, *, *, *, *, *"
         Padding="5"
         Background="{StaticResource Color}">
-
-        <Grid.RowDefinitions>
-            <RowDefinition
-                Height="*" />
-            <RowDefinition
-                Height="*" />
-            <RowDefinition
-                Height="*" />
-            <RowDefinition
-                Height="*" />
-            <RowDefinition
-                Height="*" />
-            <RowDefinition
-                Height="*" />
-            <RowDefinition
-                Height="*" />
-        </Grid.RowDefinitions>
-
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-            <ColumnDefinition
-                Width="*" />
-        </Grid.ColumnDefinitions>
 
         <Image
             x:Name="ActiveImage"
             Source="/Assets/BlankCard2.png"
             Margin="5"
-            Grid.RowSpan="2"
             Grid.Row="0"
-            Grid.Column="4" />
+            Grid.Column="5" />
 
         <Image
             x:Name="DeckImage"
             Source="/Assets/CardBack.png"
             Margin="5"
-            Grid.RowSpan="2"
-            Grid.Row="0"
-            Grid.Column="8" />
+            Grid.Row="2"
+            Grid.Column="10" />
 
         <Image
             x:Name="Bench1Image"
             Source="/Assets/BlankCard2.png"
             Margin="5"
-            Grid.RowSpan="2"
-            Grid.Row="5"
-            Grid.Column="2" />
+            Grid.Row="2"
+            Grid.Column="3" />
 
         <Image
             x:Name="Bench2Image"
             Source="/Assets/BlankCard2.png"
             Margin="5"
-            Grid.RowSpan="2"
-            Grid.Row="5"
-            Grid.Column="3" />
+            Grid.Row="2"
+            Grid.Column="4" />
 
         <Image
             x:Name="Bench3Image"
             Source="/Assets/BlankCard2.png"
             Margin="5"
-            Grid.RowSpan="2"
-            Grid.Row="5"
-            Grid.Column="4" />
+            Grid.Row="2"
+            Grid.Column="5" />
 
         <Image
             x:Name="Bench4Image"
             Source="/Assets/BlankCard2.png"
             Margin="5"
-            Grid.RowSpan="2"
-            Grid.Row="5"
-            Grid.Column="5" />
+            Grid.Row="2"
+            Grid.Column="6" />
 
 
         <Image
             x:Name="Bench5Image"
             Source="/Assets/BlankCard2.png"
             Margin="5"
-            Grid.RowSpan="2"
-            Grid.Row="5"
-            Grid.Column="6" />
+            Grid.Row="2"
+            Grid.Column="7" />
 
         <Image
             x:Name="DiscardImage"
             Source="/Assets/BlankCard2.png"
             Margin="5"
-            Grid.RowSpan="2"
-            Grid.Row="2"
-            Grid.Column="8" />
+            Grid.Row="1"
+            Grid.Column="10" />
 
         <Image
             x:Name="Prize1Image"
             Source="/Assets/CardBack.png"
             Margin="5"
-            Grid.RowSpan="2"
             Grid.Row="0"
             Grid.Column="0" />
 
@@ -134,47 +89,41 @@
             x:Name="Prize2Image"
             Source="/Assets/CardBack.png"
             Margin="5"
-            Grid.RowSpan="2"
-            Grid.Row="1"
-            Grid.Column="0" />
+            Grid.Row="0"
+            Grid.Column="1" />
 
         <Image
             x:Name="Prize3Image"
             Source="/Assets/CardBack.png"
             Margin="5"
-            Grid.RowSpan="2"
-            Grid.Row="2"
+            Grid.Row="1"
             Grid.Column="0" />
 
         <Image
             x:Name="Prize4Image"
             Source="/Assets/CardBack.png"
             Margin="5"
-            Grid.RowSpan="2"
-            Grid.Row="3"
-            Grid.Column="0" />
+            Grid.Row="1"
+            Grid.Column="1" />
 
         <Image
             x:Name="Prize5Image"
             Source="/Assets/CardBack.png"
             Margin="5"
-            Grid.RowSpan="2"
-            Grid.Row="4"
+            Grid.Row="2"
             Grid.Column="0" />
 
         <Image
             x:Name="Prize6Image"
             Source="/Assets/CardBack.png"
             Margin="5"
-            Grid.RowSpan="2"
-            Grid.Row="5"
-            Grid.Column="0" />
+            Grid.Row="2"
+            Grid.Column="1" />
 
         <ComboBox
             x:Name="ComboBoxAttacks"
             Grid.Row="0"
-            Grid.Column="5"
-            Grid.RowSpan="2"
+            Grid.Column="6"
             HorizontalAlignment="Center"
             VerticalAlignment="Center">
 

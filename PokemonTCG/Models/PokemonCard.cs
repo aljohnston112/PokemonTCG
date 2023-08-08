@@ -67,6 +67,7 @@ namespace PokemonTCG.Models
         public readonly string Id;
         public readonly string Name;
         public readonly CardSupertype Supertype;
+        public readonly ImmutableList<CardSubtype> Subtypes;
         public readonly int Level;
         public readonly int Hp;
         public readonly ImmutableList<PokemonType> Types;
@@ -92,6 +93,7 @@ namespace PokemonTCG.Models
             string id,
             string name,
             CardSupertype supertype,
+            List<CardSubtype> subtypes,
             int level,
             int hp,
             List<PokemonType> types,
@@ -116,6 +118,7 @@ namespace PokemonTCG.Models
             this.Id = id;
             this.Name = name;
             this.Supertype = supertype;
+            this.Subtypes = subtypes.ToImmutableList();
             this.Level = level;
             this.Hp = hp;
             this.Types = types.ToImmutableList();

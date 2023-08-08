@@ -12,11 +12,11 @@ namespace PokemonTCG.View
     public sealed partial class DeckListPage : Page
     {
 
-        private readonly DeckListPageViewmodel ViewModel = new();
+        private readonly DeckListViewmodel ViewModel = new();
         public DeckListPage()
         {
             InitializeComponent();
-            ViewModel.GetDecks();
+            ViewModel.LoadDecks();
         }
 
         private void CreateNewDeckEvent(object sender, RoutedEventArgs args)

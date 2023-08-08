@@ -219,6 +219,7 @@ namespace PokemonTCG.DataSources
                         id,
                         name,
                         supertype,
+                        cardSubTypes,
                         level,
                         hp,
                         pokemonTypes,

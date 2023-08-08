@@ -5,30 +5,66 @@
     xmlns:local="using:PokemonTCG.View"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        
-        <Grid.RowDefinitions>
-            <RowDefinition
-                Height="*" />
-            <RowDefinition
-                Height="auto" />
-        </Grid.RowDefinitions>
+    <Grid
+        ColumnDefinitions="*"
+        RowDefinitions="*, *, auto">
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition
-                Width="*" />
-        </Grid.ColumnDefinitions>
+        <StackPanel
+            Orientation="Horizontal"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Grid.Row="0"
+            Padding="5">
 
-        <Grid>
+            <TextBlock Text="Your Deck: "
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       Margin="5" />
+
+            <ComboBox Name="PlayerDeckComboBox"
+                      ItemsSource="{x:Bind ViewModel.DeckNames}"
+                      Margin="5"/>
+
+        </StackPanel>
+
+        <StackPanel
+            Orientation="Horizontal"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Grid.Row="1"
+            Padding="5">
+
+            <TextBlock Text="Opponent's Deck: "
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       Margin="5" />
+
+            <ComboBox Name="OpponentDeckComboBox"
+                      ItemsSource="{x:Bind ViewModel.DeckNames}"
+                      Margin="5"/>
+
+        </StackPanel>
+
+        <StackPanel
+            Orientation="Horizontal"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Grid.Row="2"
+            Padding="5">
 
             <Button
                 Name="StartGameButton"
                 Content="Let's Go!"
                 Click="StartGameEvent"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom" />
+                Margin="5"/>
 
-        </Grid>
+            <Button
+                Name="CancleGameButton"
+                Content="Cancel"
+                Click="CancelGameEvent"
+                Margin="5"/>
+
+        </StackPanel>
 
     </Grid>
 </Page>
