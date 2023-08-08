@@ -22,7 +22,7 @@ namespace PokemonTCG.Models
         public GameState(PokemonDeck playerDeck, PokemonDeck opponentDeck)
         {
             Random random = new();
-            bool playerFirst = random.Next(2) == 0 ? true : false;
+            bool playerFirst = random.Next(2) == 0;
 
             bool playerHasBasic = false;
             DeckState playerDeckState;
@@ -38,6 +38,29 @@ namespace PokemonTCG.Models
                 (playerHasBasic, playerDeckState, playerDrawnCards) = ShuffleAndDraw7Cards(playerDeck);
                 (opponentHasBasic, opponentDeckState, opponentDrawnCards) = ShuffleAndDraw7Cards(opponentDeck);
             }
+
+            // Shuffle and draw until both players have a basic Pokemon
+            int opponentDraws = 0;
+            if(!playerHasBasic)
+            {
+                while (!playerHasBasic)
+                {
+                    (playerHasBasic, playerDeckState, playerDrawnCards) = ShuffleAndDraw7Cards(playerDeck);
+                    opponentDraws++;
+                }
+            }
+            int playerDraws = 0;
+            if (!opponentHasBasic)
+            {
+                while (!opponentHasBasic)
+                {
+                    (opponentHasBasic, opponentDeckState, opponentDrawnCards) = ShuffleAndDraw7Cards(opponentDeck);
+                    playerDraws++;
+                }
+            }
+
+            // Set up player
+            // Set up opponent
 
         }
 
