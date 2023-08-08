@@ -1,15 +1,6 @@
-﻿using PokemonTCG.Utilities;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using Windows.Storage;
 
 namespace PokemonTCG.Models
 {
@@ -22,6 +13,7 @@ namespace PokemonTCG.Models
         /// <summary>
         /// Creates a Deck given the ids of Pokemon cards.
         /// </summary>
+        /// <param name="name">The name of the deck.</param>
         /// <param name="ids">The ids of Pokemon cards</param>
         public PokemonDeck(string name, ICollection<string> ids)
         {

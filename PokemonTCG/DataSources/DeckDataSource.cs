@@ -4,8 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +13,7 @@ namespace PokemonTCG.DataSources
 {
     internal class DeckDataSource
     {
-
+        public static readonly int NUMBER_OF_CARDS_PER_DECK = 60;
         private static readonly Mutex FileMutex = new();
         private static readonly Dictionary<string, PokemonDeck> Decks = new();
 

@@ -1,13 +1,7 @@
 ﻿using PokemonTCG.DataSources;
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Diagnostics.Metrics;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PokemonTCG.Models
 {
@@ -63,7 +57,7 @@ namespace PokemonTCG.Models
         /// </summary>
         /// <param name="cardItems">The CardItems to sift.</param>
         /// <returns>A Collection of CardItems that match the criteria of this CardSifter.</returns>
-        public Collection<CardItem> Sift(List<CardItem> cardItems)
+        public Collection<CardItem> Sift(ICollection<CardItem> cardItems)
         {
             Collection<CardItem> matchingCardItems = new();
             foreach (CardItem card in cardItems)
@@ -82,7 +76,7 @@ namespace PokemonTCG.Models
 
         private bool CardIsInDeck(CardItem card)
         {
-            return !IncludeOnlyThoseInDeck || card.GetCount() > 0;
+            return !IncludeOnlyThoseInDeck || card.Count > 0;
         }
 
         private bool CardContainsText(CardItem card)

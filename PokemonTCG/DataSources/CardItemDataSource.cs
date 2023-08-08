@@ -4,6 +4,7 @@ using PokemonTCG.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Windows.Data.Json;
 using Windows.Storage;
 
@@ -13,53 +14,55 @@ namespace PokemonTCG.DataSources
     internal class CardItemDataSource
     {
 
+        private static string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
+
         /// <summary>
         /// Gets the card items from a deck.
         /// </summary>
         /// <param name="deckFile">The deckFile</param>
         /// <returns></returns>
-        internal static async IAsyncEnumerable<CardItem> GetCardItemsForSet(string deckFile)
+        internal static async IAsyncEnumerable<CardItem> GetCardItemsForSet(string setName)
         {
-            StorageFile file = await FileUtil.GetFile(deckFile);
-            string jsonText = await FileIO.ReadTextAsync(file);
-            JsonObject jsonObject = JsonObject.Parse(jsonText);
-            JsonArray jsonArray = jsonObject.GetNamedArray("data");
+            string setFileName = baseFolder + "Assets/sets/" + setName + ".json";
+            StorageFile setFile = await FileUtil.GetFile(setFileName);
+            string jsonSetFileRoot = await FileIO.ReadTextAsync(setFile);
+            JsonObject jsonSet = JsonObject.Parse(jsonSetFileRoot);
+            JsonArray jsonCards = jsonSet.GetNamedArray("data");
 
-            // Load the cards
-            foreach (IJsonValue element in jsonArray)
+            foreach (IJsonValue jsonCard in jsonCards)
             {
-                CardItem card = await GetCardItem(element);
-                yield return card;
+                CardItem cardItem = GetCardItem(jsonCard);
+                yield return cardItem;
             }
         }
 
-        private static async Task<CardItem> GetCardItem(IJsonValue element)
+        private static CardItem GetCardItem(IJsonValue jsonCardValue)
         {
 
-            JsonObject jObject = element.GetObject();
-            String id = jObject.GetNamedString("id");
+            JsonObject jsonCard = jsonCardValue.GetObject();
+            String id = jsonCard.GetNamedString("id");
             PokemonCard card = CardDataSource.GetCardById(id);
 
             string name = card.Name;
 
+            int cardLimit = GetCardLimit(card);
+
+            return new CardItem(id, card.Number, name, card.ImageFileNames[ImageSize.LARGE] ,cardLimit, 0);
+        }
+
+        public static int GetCardLimit(PokemonCard card)
+        {
             // Get the card limit per deck. 4 is normal
-            int limit = 4;
+            int cardLimit = 4;
             CardSupertype type = card.Supertype;
 
             // Energies do not have a limit; colorless energy does though
-            if (type == CardSupertype.Energy && name != "Double Colorless Energy")
+            if (type == CardSupertype.Energy && card.Name != "Double Colorless Energy")
             {
-                limit = -1;
+                cardLimit = -1;
             }
-
-            // Create the Bitmap
-            string url = card.ImageFileNames[ImageSize.LARGE];
-            BitmapImage bitmapImage = new();
-            bitmapImage.SetSource(await ImageLoader.OpenImage(url));
-
-            return new CardItem(id, name, bitmapImage, limit, card.Number);
+            return cardLimit;
         }
-
     }
 
 }

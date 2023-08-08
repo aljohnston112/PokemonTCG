@@ -1,12 +1,12 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using PokemonTCG.DataSources;
+﻿using PokemonTCG.DataSources;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
+using PokemonTCG.View;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace PokemonTCG.ViewModel
@@ -16,171 +16,153 @@ namespace PokemonTCG.ViewModel
     /// </summary>
     internal class DeckEditorViewModel : BindableBase
     {
-        private readonly List<CardItem> _cardItems = new();
-        private CardSifter _sifter = new();
-        public readonly ObservableCollection<CardItem> CardItems = new();
+        private readonly CardItemAdapter CardItemAdapter = new();
+        public readonly ObservableCollection<CardItemView> CardItemViews;
 
         private int _numberOfCardsInDeck = 0;
-        private string _NumberOfCardsInDeckText = "0";
+        private string _numberOfCardsInDeckText = "0";
 
         internal int NumberOfCardsInDeck
         {
             get { return _numberOfCardsInDeck; }
             private set
             {
-                TotalCountText = value.ToString();
+                NumberOfCardsInDeckText = value.ToString();
                 SetProperty(ref _numberOfCardsInDeck, value);
             }
         }
 
-        public string TotalCountText
+        internal string NumberOfCardsInDeckText
         {
-            get { return _NumberOfCardsInDeckText; }
-            set { SetProperty(ref _NumberOfCardsInDeckText, value); }
+            get { return _numberOfCardsInDeckText; }
+            private set { SetProperty(ref _numberOfCardsInDeckText, value); }
         }
 
-        public DeckEditorViewModel() { }
-
-        public async Task LoadCardsItemsForSet(string deckFile)
+        public DeckEditorViewModel()
         {
-            await foreach (CardItem item in CardItemDataSource.GetCardItemsForSet(deckFile))
+            CardItemViews = CardItemAdapter.CardItemViews;
+        }
+
+        internal async Task OnNavigatedTo(object deckName)
+        {
+            ISet<string> sets = GetSetsForDeck(deckName);
+
+            foreach (string set in sets)
             {
-                _cardItems.Add(item);
-                CardItems.Insert(Math.Min(item.Number - 1, CardItems.Count), item);
+                ISet<CardItem> cardItems = await LoadCardsItemsForSet(set);
+                CardItemAdapter.AddCardItems(cardItems);
+            }
+
+            if(deckName != null)
+            {
+                CountDeckCards(deckName as string);
+            }
+
+        }
+
+        private void CountDeckCards(string deckName)
+        {
+            ImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
+            foreach (string id in decks[deckName].CardIds)
+            {
+                CardItemAdapter.IncrementCardCountForCardWithId(id);
+                NumberOfCardsInDeck++;
+                Debug.Assert(NumberOfCardsInDeck <= 60 && NumberOfCardsInDeck >= 0);
             }
         }
 
-        /// <summary>
-        /// Increments item's Count if the total count is going to be 60 or less.
-        /// </summary>
-        /// <param name="args">The NumberBoxValueChangedEventArgs from the event handler.</param>
-        /// <param name="item">The item that corresponds to the NumberBoxValueChangedEvent.
-        ///                    It's Count will be updated by the args unless it will cause the total count to be over 60</param>
-        /// <returns>true if the item's Count was updated, or the total count would have gone over 60, else false</returns>
-        internal void ChangeCount(int oldValue, int newValue, CardItem item)
+        private static ISet<string> GetSetsForDeck(object deckName)
         {
-            int value = Math.Max(newValue, 0);
-
-            int diff = value - oldValue;
-            if ((diff + NumberOfCardsInDeck) > 60)
+            ISet<string> sets = new HashSet<string>();
+            if (deckName != null)
             {
-                value = (60 - NumberOfCardsInDeck);
+                ImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
+                foreach (string id in decks[deckName as string].CardIds)
+                {
+                    PokemonCard card = CardDataSource.GetCardById(id);
+                    sets.Add(card.SetId);
+                }
+            }
+            else
+            {
+                sets.Add("base1");
+            }
+            return sets;
+        }
+
+        private async Task<ISet<CardItem>> LoadCardsItemsForSet(string setName)
+        {
+            HashSet<CardItem> cardItems = new();
+            await foreach (CardItem item in CardItemDataSource.GetCardItemsForSet(setName))
+            {
+                cardItems.Add(item);
+            }
+            return cardItems;
+        }
+
+        public void ChangeCardItemCount(int oldValue, int newValue, CardItemView cardItemView)
+        {
+            int value = newValue;
+            int diff = value - oldValue;
+            if ((diff + NumberOfCardsInDeck) > DeckDataSource.NUMBER_OF_CARDS_PER_DECK)
+            {
+                value = (DeckDataSource.NUMBER_OF_CARDS_PER_DECK - NumberOfCardsInDeck);
                 diff = value - oldValue;
             }
-            item.SetCount(value);
-            CardItem cardItem = _cardItems.FirstOrDefault(card => card.Id == item.Id);
-            cardItem?.SetCount(value);
-
+            
             NumberOfCardsInDeck += diff;
-            Debug.Assert(NumberOfCardsInDeck <= 60 && NumberOfCardsInDeck >= 0);
-        }
-
-        /// <summary>
-        /// Updates the cards to match the sifting criteria.
-        /// </summary>
-        private void SiftCards()
-        {
-            Collection<CardItem> cards = _sifter.Sift(_cardItems);
-            CardItems.Clear();
-            foreach (CardItem card in cards)
-            {
-                CardItems.Add(card);
-            }
-        }
-
-        /// <summary>
-        /// Sifts cards by checking if some text is in the name of the card.
-        /// The search is not case sensitive.
-        /// </summary>
-        /// <param name="text">The text to search the name of the card for</param>
-        public void SearchStringUpdated(string text)
-        {
-            _sifter = _sifter.NewString(text);
-            SiftCards();
-        }
-
-        /// <summary>
-        /// Called when there is a change to the pokmeon checkbox
-        /// </summary>
-        /// <param name="isChecked">Whether or not the checkbox is checked</param>
-        internal void OnPokemonCheckBox(bool isChecked)
-        {
-            _sifter = _sifter.IncludePokemon(isChecked);
-            SiftCards();
-        }
-
-        /// <summary>
-        /// Called when there is a change to the trainer checkbox
-        /// </summary>
-        /// <param name="isChecked">Whether or not the checkbox is checked</param>
-        internal void OnTrainerCheckBox(bool isChecked)
-        {
-            _sifter = _sifter.IncludeTrainer(isChecked);
-            SiftCards();
-        }
-
-        /// <summary>
-        /// Called when there is a change to the energy checkbox.
-        /// </summary>
-        /// <param name="isChecked">Whether or not the checkbox is checked</param>
-        internal void OnEnergyCheckBox(bool isChecked)
-        {
-            _sifter = _sifter.IncludeEnergy(isChecked);
-            SiftCards();
-        }
-
-        /// <summary>
-        /// Called when there is a change to a PokemonType checkbox.
-        /// </summary>
-        /// <param name="isChecked">Whether or not the checkbox is checked</param>
-        internal void TypeChange(PokemonType type, bool isChecked)
-        {
-            _sifter = _sifter.InludeType(type, isChecked);
-            SiftCards();
-        }
-
-        /// <summary>
-        /// Called when there is a change to the in-deck checkbox.
-        /// </summary>
-        /// <param name="isChecked">Whether or not the checkbox is checked</param>
-        internal void InDeckChanged(bool value)
-        {
-            _sifter = _sifter.IncludeOnlyThoseFromDeck(value);
-            SiftCards();
+            CardItemAdapter.SetCardCountForCardWithId(cardItemView.Id, value);
+            Debug.Assert(NumberOfCardsInDeck <= DeckDataSource.NUMBER_OF_CARDS_PER_DECK && NumberOfCardsInDeck >= 0);
         }
 
         /// <summary>
         /// Creates a PokemonDeck from cards that have been selected by the user and are considered in-deck.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Task representing the saving of the deck.</returns>
         internal async Task CreateDeck(string name)
         {
             Collection<string> cards = new();
-            foreach (CardItem card in _cardItems)
+            foreach (CardItem card in CardItemAdapter.GetAllCardItems())
             {
-                if (card.GetCount() > 0)
+                for (int i = 0; i < card.Count; i++)
                 {
-                    for (int i = 0; i < card.GetCount(); i++)
-                    {
-                        cards.Add(card.Id);
-                    }
+                    cards.Add(card.Id);
                 }
             }
             PokemonDeck deck = new(name, cards);
             await DeckDataSource.SaveDeck(deck);
         }
 
-        internal void IncrementCardCountForCardWithId(string id)
+        public void SearchStringUpdated(string text)
         {
-            CardItem cardItem = _cardItems.FirstOrDefault(card => card.Id == id);
-            if (cardItem != null)
-            {
-                cardItem.SetCount(cardItem.GetCount() + 1);
-            } else
-            {
-                throw new ArgumentException("Card with" + id + "was not found.");
-            }
+            CardItemAdapter.UpdateSearchString(text);
         }
+
+        internal void OnPokemonCheckBox(bool isChecked)
+        {
+            CardItemAdapter.IncludePokemon(isChecked);
+        }
+
+        internal void OnTrainerCheckBox(bool isChecked)
+        {
+            CardItemAdapter.IncludeTrainer(isChecked);
+        }
+
+        internal void OnEnergyCheckBox(bool isChecked)
+        {
+            CardItemAdapter.IncludeEnergy(isChecked);
+        }
+
+        internal void OnTypeCheckBox(PokemonType type, bool isChecked)
+        {
+            CardItemAdapter.InludeType(type, isChecked);
+        }
+
+        internal void InDeckCheckbox(bool isChecked)
+        {
+            CardItemAdapter.IncludeOnlyThoseFromDeck(isChecked);
+        }
+
     }
 
 }
