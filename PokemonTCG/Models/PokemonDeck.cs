@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 
@@ -21,6 +22,27 @@ namespace PokemonTCG.Models
             CardIds = ids.ToImmutableArray();
             Name = name;
         }
+
+        internal ImmutableArray<string> Shuffle()
+        {
+            // Fisher-Yates
+            Random random = new Random();
+            List<int> visited = new List<int>();
+            List<string> shuffledIds = new();
+            for(int i = 0; i < CardIds.Length; i++)
+            {
+                int j = random.Next(CardIds.Length);
+                while (visited.Contains(j))
+                {
+                    j = random.Next(CardIds.Length);
+                }
+                shuffledIds[i] = CardIds[j];
+                visited.Add(j);
+            }
+            return shuffledIds.ToImmutableArray();
+        }
+
+
 
         public static readonly PokemonDeck BLACKOUT_DECK = new(
             "Blackout",

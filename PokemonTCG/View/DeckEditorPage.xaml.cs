@@ -9,6 +9,8 @@ using PokemonType = PokemonTCG.Models.PokemonType;
 using PokemonTCG.DataSources;
 using System.Collections.Immutable;
 using Microsoft.UI.Xaml.Navigation;
+using System.Xml.Linq;
+using PokemonTCG.Utilities;
 
 namespace PokemonTCG.View
 {
@@ -154,50 +156,18 @@ namespace PokemonTCG.View
             string name = TextBlockDeckName.Text;
             if (name.Length == 0)
             {
-                Flyout flyoutNoName = new();
-                TextBlock text = new()
-                {
-                    Text = "A deck name is needed to make a deck."
-                };
-                flyoutNoName.Content = text;
-                Flyout.SetAttachedFlyout(SubmitDeckButton, flyoutNoName);
-                Flyout.ShowAttachedFlyout(SubmitDeckButton);
-                Flyout.SetAttachedFlyout(SubmitDeckButton, null);
+                FlyoutUtil.ShowTextFlyout("A deck name is needed to make a deck.", SubmitDeckButton);
             }
             else if (ViewModel.NumberOfCardsInDeck != DeckDataSource.NUMBER_OF_CARDS_PER_DECK)
             {
-                Flyout flyoutNotEnough = new();
-                TextBlock text = new()
-                {
-                    Text = "60 cards are need to make a deck."
-                };
-                flyoutNotEnough.Content = text;
-                Flyout.SetAttachedFlyout(SubmitDeckButton, flyoutNotEnough);
-                Flyout.ShowAttachedFlyout(SubmitDeckButton);
-                Flyout.SetAttachedFlyout(SubmitDeckButton, null);
+                FlyoutUtil.ShowTextFlyout("60 cards are need to make a deck.", SubmitDeckButton);
             }
             else if (!ViewModel.HasBasicPokemon())
             {
-                Flyout flyoutNotEnough = new();
-                TextBlock text = new()
-                {
-                    Text = "At least one basic Pokemon is needed to make a deck."
-                };
-                flyoutNotEnough.Content = text;
-                Flyout.SetAttachedFlyout(SubmitDeckButton, flyoutNotEnough);
-                Flyout.ShowAttachedFlyout(SubmitDeckButton);
-                Flyout.SetAttachedFlyout(SubmitDeckButton, null);
+                FlyoutUtil.ShowTextFlyout("At least one basic Pokemon is needed to make a deck.", SubmitDeckButton);
             } else
             {
-                Flyout flyoutNotEnough = new();
-                TextBlock text = new()
-                {
-                    Text = "Saving deck"
-                };
-                flyoutNotEnough.Content = text;
-                Flyout.SetAttachedFlyout(SubmitDeckButton, flyoutNotEnough);
-                Flyout.ShowAttachedFlyout(SubmitDeckButton);
-                Flyout.SetAttachedFlyout(SubmitDeckButton, null);
+                FlyoutUtil.ShowTextFlyout("Saving deck", SubmitDeckButton);
                 await ViewModel.CreateDeck(name);
                 Frame.GoBack();
             }

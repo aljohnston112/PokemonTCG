@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace PokemonTCG.Models
 {
@@ -9,12 +10,12 @@ namespace PokemonTCG.Models
     public class PlayerState
     {
 
-        private readonly PokemonCard[] Bench = new PokemonCard[5];
-        private readonly PokemonCard[] Prizes = new PokemonCard[6];
-        private readonly PokemonCard[] Hand = new PokemonCard[7];
-        private readonly PokemonCard[] Active;
-        private readonly List<PokemonType> Deck = new();
-        private readonly List<PokemonCard> DiscardPile = new();
+        private ImmutableArray<PokemonCard> Bench;
+        private ImmutableArray<PokemonCard> Prizes;
+        private ImmutableArray<PokemonCard> Hand;
+        private ImmutableArray<PokemonCard> Active;
+        private DeckState DeckState;
+        private ImmutableArray<PokemonCard> DiscardPile;
 
 
     }

@@ -36,7 +36,7 @@ namespace PokemonTCG.View
         /// <param name="e"></param>
         private void ButtonGameSettingsClicked(object sender, RoutedEventArgs e)
         {
-            TitlePageViewModel.ButtonGameSettingsListClicked(this.Frame);
+            frame.Navigate(typeof(GameSettingsPage));
         }
 
     }

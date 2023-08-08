@@ -20,7 +20,7 @@ namespace PokemonTCG.View
 
         public PlayerPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
 
             Bench[0] = Bench1Image;
             Bench[1] = Bench2Image;
@@ -43,20 +43,6 @@ namespace PokemonTCG.View
         public void HideAttacks()
         {
             ComboBoxAttacks.Visibility = Visibility.Collapsed;
-        }
-
-        /// <summary>
-        /// To be used for blowing up images in the field 
-        /// </summary>
-        /// <param name="path">The path to the image to display</param>
-        private async void SetFlyout(string path)
-        {
-            BitmapImage bitmapImage = new();
-            bitmapImage.SetSource(await ImageLoader.OpenImage(path));
-            Active.Source = bitmapImage;
-            Flyout flyout = Resources["FlyoutPickFromTo"] as Flyout;
-            FlyoutBase.SetAttachedFlyout(Active, flyout);
-            Active.Tapped +=  (sender, e) => { FlyoutBase.ShowAttachedFlyout((sender as FrameworkElement)); };
         }
 
     }

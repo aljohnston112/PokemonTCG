@@ -55,7 +55,7 @@
             <Button
                 Name="StartGameButton"
                 Content="Let's Go!"
-                Click="StartGameEvent"
+                Click="StartGameButtonClicked"
                 Margin="5"/>
 
             <Button

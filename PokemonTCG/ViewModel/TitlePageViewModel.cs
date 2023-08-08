@@ -33,10 +33,7 @@ namespace PokemonTCG.ViewModel
             frame.Navigate(typeof(DeckListPage));
         }
 
-        internal static void ButtonGameSettingsListClicked(Frame frame)
-        {
-            frame.Navigate(typeof(GameSettingsPage));
-        }
+
 
     }
 

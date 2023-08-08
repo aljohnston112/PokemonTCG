@@ -4,6 +4,8 @@ using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Navigation;
+using PokemonTCG.ViewModel;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.UI.ViewManagement;
@@ -30,6 +32,8 @@ namespace PokemonTCG.View
     public sealed partial class GamePage : Page
     {
 
+        GamePageViewModel ViewModel = new();
+
         private readonly PlayerPage PlayerPage;
         private readonly PlayerPage OpponentPage;
 
@@ -45,6 +49,13 @@ namespace PokemonTCG.View
             OpponentPage.HideAttacks();
 
             ShowHand();
+        }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            GameArguments gameArguments = e.Parameter as GameArguments;
+            ViewModel.StartGame(gameArguments);
         }
 
         private void ShowHand()
@@ -66,9 +77,6 @@ namespace PokemonTCG.View
             window.Activate();
         }
 
-        /// <summary>
-        /// Rotates player 2's field so it is facing player 1's field.
-        /// </summary>
         private void RotateOpponentPage()
         {
             OpponentPage.RenderTransformOrigin = new Point(0.5, 0.5);

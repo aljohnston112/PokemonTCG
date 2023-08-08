@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using PokemonTCG.Utilities;
 using PokemonTCG.ViewModel;
 
 namespace PokemonTCG.View
@@ -14,24 +15,35 @@ namespace PokemonTCG.View
 
         public GameSettingsPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             ViewModel.LoadDecks();
         }
 
-        private void StartGameEvent(object sender, RoutedEventArgs e)
+        private void StartGameButtonClicked(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(
-                typeof(GamePage),
-                new GameArguments(
-                    PlayerDeckComboBox.SelectedItem as string, 
-                    OpponentDeckComboBox.SelectedItem as string
-                    )
-                );
+            if (PlayerDeckComboBox.SelectedItem == null)
+            {
+                FlyoutUtil.ShowTextFlyout("A deck is needed to play.", PlayerDeckComboBox);
+            }
+            else if (OpponentDeckComboBox.SelectedItem == null)
+            {
+                FlyoutUtil.ShowTextFlyout("Your opponent needs a deck.", PlayerDeckComboBox);
+            }
+            else
+            {
+                Frame.Navigate(
+                    typeof(GamePage),
+                    new GameArguments(
+                        PlayerDeckComboBox.SelectedItem as string,
+                        OpponentDeckComboBox.SelectedItem as string
+                        )
+                    );
+            }
         }
 
         private void CancelGameEvent(object sender, RoutedEventArgs e)
         {
-            this.Frame.GoBack();
+            Frame.GoBack();
         }
     }
 }
