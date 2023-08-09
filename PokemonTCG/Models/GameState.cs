@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PokemonTCG.DataSources;
+using PokemonTCG.Utilities;
 using PokemonTCG.View;
 
 namespace PokemonTCG.Models
@@ -13,8 +16,8 @@ namespace PokemonTCG.Models
     /// </summary>
     public class GameState
     {
-        private PlayerState PlayerState1;
-        private PlayerState PlayerState2;
+        private PlayerState PlayerState;
+        private PlayerState OpponentState;
 
         /// <summary>
         /// Creates a new <c>GameState</c>
@@ -25,27 +28,27 @@ namespace PokemonTCG.Models
             bool playerFirst = random.Next(2) == 0;
 
             bool playerHasBasic = false;
-            DeckState playerDeckState;
-            IList<PokemonCard> playerDrawnCards;
-
             bool opponentHasBasic = false;
-            DeckState opponentDeckState;
-            IList<PokemonCard> opponentDrawnCards;
 
             // Shuffle and draw until at least one player has a basic Pokemon
+            PlayerState potentialPlayerState = null;
+            PlayerState potentialOpponentState = null;
             while (!playerHasBasic && !opponentHasBasic)
             {
-                (playerHasBasic, playerDeckState, playerDrawnCards) = ShuffleAndDraw7Cards(playerDeck);
-                (opponentHasBasic, opponentDeckState, opponentDrawnCards) = ShuffleAndDraw7Cards(opponentDeck);
+                potentialPlayerState = ShuffleAndDraw7Cards(playerDeck);
+                potentialOpponentState = ShuffleAndDraw7Cards(opponentDeck);
+                playerHasBasic = potentialPlayerState.HandHasBasicPokemon();
+                opponentHasBasic = potentialOpponentState.HandHasBasicPokemon();
             }
 
             // Shuffle and draw until both players have a basic Pokemon
             int opponentDraws = 0;
-            if(!playerHasBasic)
+            if (!playerHasBasic)
             {
                 while (!playerHasBasic)
                 {
-                    (playerHasBasic, playerDeckState, playerDrawnCards) = ShuffleAndDraw7Cards(playerDeck);
+                    potentialPlayerState = ShuffleAndDraw7Cards(playerDeck);
+                    playerHasBasic = potentialPlayerState.HandHasBasicPokemon();
                     opponentDraws++;
                 }
             }
@@ -54,32 +57,66 @@ namespace PokemonTCG.Models
             {
                 while (!opponentHasBasic)
                 {
-                    (opponentHasBasic, opponentDeckState, opponentDrawnCards) = ShuffleAndDraw7Cards(opponentDeck);
+                    potentialOpponentState = ShuffleAndDraw7Cards(opponentDeck);
+                    opponentHasBasic = potentialOpponentState.HandHasBasicPokemon();
                     playerDraws++;
                 }
             }
+            Debug.Assert(potentialOpponentState != null && potentialPlayerState != null);
+            PlayerState = potentialPlayerState;
+            OpponentState = potentialOpponentState;
 
-            // Set up player
-            // Set up opponent
+            SetUpOpponent();
 
         }
 
-        private static (bool, DeckState, IList<PokemonCard>) ShuffleAndDraw7Cards(PokemonDeck deck)
+        private void SetUpOpponent()
         {
-            bool hasBasic = false;
-            DeckState deckState = new(deck.Shuffle());
-            (deckState, IList<string> drawnIds) = deckState.DrawCards(7);
-            IList<PokemonCard> drawnCards = new List<PokemonCard>();
-            foreach (string cardId in drawnIds)
+            ImmutableList<PokemonCard> basicPokemon = OpponentState.Hand.Where(
+                card => card.Subtypes.Contains(CardSubtype.BASIC)
+            ).ToImmutableList();
+
+            PokemonCard active;
+            if(basicPokemon.Count == 1)
             {
-                PokemonCard card = CardDataSource.GetCardById(cardId);
-                if (card.Subtypes.Contains(CardSubtype.BASIC))
+                active = basicPokemon.First();
+            } else
+            {
+                ImmutableList<PokemonCard> energy = OpponentState.Hand.Where(
+                    card => card.Supertype == CardSupertype.Energy
+                ).ToImmutableList();
+
+                Dictionary<PokemonType, int> numberOfEnergies = OpponentState.Hand
+                    .GroupBy(card => card.)
+    .ToDictionary(group => group.Key, group => group.Count()); ;
+
+                Dictionary<string, int> rank = new();
+                foreach(PokemonCard pokemon in basicPokemon)
                 {
-                    hasBasic = true;
+                    rank[pokemon.Id] = 0;
                 }
-                drawnCards.Add(card);
+                foreach (PokemonCard pokemon in basicPokemon)
+                {
+                    foreach(Attack attack in pokemon.Attacks)
+                    {
+                        foreach((PokemonType type, int count) in attack.EnergyCost)
+                        {
+                            Console.WriteLine();
+                        }
+                    }
+                }
+
             }
-            return (hasBasic, deckState, drawnCards);
+
+            
+
+        }
+
+        private static PlayerState ShuffleAndDraw7Cards(PokemonDeck deck)
+        {
+            ImmutableList<string> deckState = deck.Shuffle();
+            PlayerState playerState = DeckUtil.DrawCards(deckState, 7);
+            return playerState;
         }
 
     }

@@ -115,10 +115,7 @@ namespace PokemonTCG.Models
                 }
                 else if (card.Supertype == CardSupertype.Energy)
                 {
-                    string[] energyTypes = card.Name.Split();
-                    string energyType = energyTypes[^2];
-
-                    PokemonType type = PokemonCard.GetPokemonType(energyType);
+                    PokemonType type = PokemonCard.GetEnergyType(card);
                     types = ImmutableList.Create(type);
                 } else
                 {

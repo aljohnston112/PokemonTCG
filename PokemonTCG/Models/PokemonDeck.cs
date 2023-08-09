@@ -23,12 +23,12 @@ namespace PokemonTCG.Models
             Name = name;
         }
 
-        internal ImmutableArray<string> Shuffle()
+        internal ImmutableList<string> Shuffle()
         {
             // Fisher-Yates
             Random random = new Random();
             List<int> visited = new List<int>();
-            List<string> shuffledIds = new();
+            List<string> shuffledIds = new(CardIds);
             for(int i = 0; i < CardIds.Length; i++)
             {
                 int j = random.Next(CardIds.Length);
@@ -36,10 +36,10 @@ namespace PokemonTCG.Models
                 {
                     j = random.Next(CardIds.Length);
                 }
-                shuffledIds[i] = CardIds[j];
+                shuffledIds[i] = (CardIds[j]);
                 visited.Add(j);
             }
-            return shuffledIds.ToImmutableArray();
+            return shuffledIds.ToImmutableList();
         }
 
 

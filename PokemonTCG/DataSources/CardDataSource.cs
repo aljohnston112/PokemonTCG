@@ -40,7 +40,7 @@ namespace PokemonTCG.DataSources
 
                     // Subtypes
                     List<CardSubtype> cardSubTypes = new();
-                    if (jsonCard.ContainsKey("evolvesFrom"))
+                    if (jsonCard.ContainsKey("subtypes"))
                     {
                         JsonArray jsonSubtypes = jsonCard.GetNamedArray("subtypes");
                         foreach (IJsonValue jsonSubtype in jsonSubtypes)

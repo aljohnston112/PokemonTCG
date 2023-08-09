@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace PokemonTCG.Models
@@ -16,7 +17,7 @@ namespace PokemonTCG.Models
         BASIC,
         STAGE_1,
         STAGE_2,
-
+        SPECIAL,
     }
 
     public enum PokemonType
@@ -159,7 +160,8 @@ namespace PokemonTCG.Models
             {
                 { "Basic",  CardSubtype.BASIC },
                 { "Stage 1",  CardSubtype.STAGE_1 },
-                { "Stage 2",  CardSubtype.STAGE_2 }
+                { "Stage 2",  CardSubtype.STAGE_2 },
+                { "Special", CardSubtype.SPECIAL }
             }.ToImmutableDictionary();
 
         public static CardSubtype GetCardSubType(string subtype)
@@ -231,6 +233,13 @@ namespace PokemonTCG.Models
         public static LegalType GetLegalType(string legalType)
         {
             return legalTypeMap[legalType];
+        }
+
+        internal static PokemonType GetEnergyType(PokemonCard card)
+        {
+            string[] energyTypes = card.Name.Split();
+            string energyType = energyTypes[^2];
+            return GetPokemonType(energyType);
         }
 
     }
