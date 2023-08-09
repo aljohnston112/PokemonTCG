@@ -86,9 +86,9 @@ namespace PokemonTCG.Models
                     card => card.Supertype == CardSupertype.Energy
                 ).ToImmutableList();
 
-                Dictionary<PokemonType, int> numberOfEnergies = OpponentState.Hand
-                    .GroupBy(card => card.)
-    .ToDictionary(group => group.Key, group => group.Count()); ;
+                ImmutableDictionary<PokemonType, int> numberOfEnergies = OpponentState.Hand
+                    .GroupBy(card => PokemonCard.GetEnergyType(card))
+                    .ToImmutableDictionary(group => group.Key, group => group.Count());
 
                 Dictionary<string, int> rank = new();
                 foreach(PokemonCard pokemon in basicPokemon)
