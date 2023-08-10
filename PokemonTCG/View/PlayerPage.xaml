@@ -23,7 +23,7 @@
 
         <Image
             x:Name="ActiveImage"
-            Source="/Assets/BlankCard2.png"
+            Source="{Binding Path=PlayerState.Active.ImageFileNames[ImageSize.SMALL], Mode=OneWay, FallbackValue=/Assets/BlankCard2.png}"
             Margin="5"
             Grid.Row="0"
             Grid.Column="5" />

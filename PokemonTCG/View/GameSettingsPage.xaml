@@ -23,6 +23,7 @@
 
             <ComboBox Name="PlayerDeckComboBox"
                       ItemsSource="{x:Bind ViewModel.DeckNames}"
+                      SelectedIndex="0"
                       Margin="5"/>
 
         </StackPanel>
@@ -41,6 +42,7 @@
 
             <ComboBox Name="OpponentDeckComboBox"
                       ItemsSource="{x:Bind ViewModel.DeckNames}"
+                      SelectedIndex="0"
                       Margin="5"/>
 
         </StackPanel>

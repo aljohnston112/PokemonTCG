@@ -242,6 +242,10 @@ namespace PokemonTCG.Models
             return GetPokemonType(energyType);
         }
 
+        internal static bool IsBasicPokemon(PokemonCard card)
+        {
+            return card.Supertype == CardSupertype.Pokemon && card.Subtypes.Contains(CardSubtype.BASIC);
+        }
     }
 
 }

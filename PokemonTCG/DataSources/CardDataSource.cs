@@ -27,7 +27,7 @@ namespace PokemonTCG.DataSources
             JsonObject jObject = JsonObject.Parse(jsonText);
             JsonArray jArray = jObject.GetNamedArray("data");
 
-            string baseImagePath = file.Path[..(file.Path.LastIndexOf(".") + 1)] + "\\";
+            string baseImagePath = file.Path[(file.Path.IndexOf("Assets") - 1)..(file.Path.LastIndexOf("."))] + "\\";
             foreach (IJsonValue jsonCardValue in jArray)
             {
                 JsonObject jsonCard = jsonCardValue.GetObject();
@@ -61,7 +61,7 @@ namespace PokemonTCG.DataSources
                     }
 
                     // Pokemon types
-                    List<Models.PokemonType> pokemonTypes = new();
+                    List<PokemonType> pokemonTypes = new();
                     if (jsonCard.ContainsKey("types"))
                     {
                         JsonArray jsonTypeList = jsonCard.GetNamedArray("types");

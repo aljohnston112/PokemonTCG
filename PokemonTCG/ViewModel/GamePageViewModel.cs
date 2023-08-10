@@ -9,9 +9,16 @@ namespace PokemonTCG.ViewModel
     internal class GamePageViewModel
     {
 
-        private GameState GameState;
+        internal interface IGameCallbacks
+        {
+            void OnReadyForUSerToSetUp();
+            void OnGameStateChanged(GameState gameState);
+        }
 
-        internal async Task StartGame(GameArguments gameArguments)
+        private GameState GameState;
+        private IGameCallbacks Callbacks;
+
+        internal async Task StartGame(GameArguments gameArguments, IGameCallbacks callbacks)
         { 
             string playerDeckName = gameArguments.PlayerDeck;
             string opponentDeckName = gameArguments.OpponentDeck;
@@ -22,6 +29,10 @@ namespace PokemonTCG.ViewModel
             PokemonDeck playerDeck = decks[playerDeckName];
             PokemonDeck opponentDeck = decks[opponentDeckName];
             GameState = new(playerDeck, opponentDeck);
+            GameState = GameState.SetUpOpponent();
+            Callbacks = callbacks;
+            Callbacks.OnGameStateChanged(GameState);
+            Callbacks.OnReadyForUSerToSetUp();
         }
 
     }

@@ -9,7 +9,7 @@ namespace PokemonTCG.View
     {
         public HandPage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
         }
 
     }

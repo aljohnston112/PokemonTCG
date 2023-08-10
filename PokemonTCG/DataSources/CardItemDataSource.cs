@@ -14,8 +14,6 @@ namespace PokemonTCG.DataSources
     internal class CardItemDataSource
     {
 
-        private static string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
-
         /// <summary>
         /// Gets the card items from a deck.
         /// </summary>
@@ -23,7 +21,7 @@ namespace PokemonTCG.DataSources
         /// <returns></returns>
         internal static async IAsyncEnumerable<CardItem> GetCardItemsForSet(string setName)
         {
-            string setFileName = baseFolder + "Assets/sets/" + setName + ".json";
+            string setFileName = "\\Assets\\sets\\" + setName + ".json";
             StorageFile setFile = await FileUtil.GetFile(setFileName);
             string jsonSetFileRoot = await FileIO.ReadTextAsync(setFile);
             JsonObject jsonSet = JsonObject.Parse(jsonSetFileRoot);

@@ -1,9 +1,6 @@
-﻿using Microsoft.UI.Dispatching;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Media.Imaging;
-using PokemonTCG.Utilities;
+using Microsoft.UI.Xaml.Navigation;
 
 namespace PokemonTCG.View
 {
@@ -12,35 +9,20 @@ namespace PokemonTCG.View
     /// </summary>
     public sealed partial class PlayerPage : Page
     {
-        private readonly Image[] Bench = new Image[5];
-        private readonly Image[] Prizes = new Image[6];
-        private readonly Image Active = new();
-        private readonly Image Deck = new();
-        private readonly Image Discard = new();
-
+        public PlayerPageViewModel ViewModel;
+        
         public PlayerPage()
         {
             InitializeComponent();
-
-            Bench[0] = Bench1Image;
-            Bench[1] = Bench2Image;
-            Bench[2] = Bench3Image;
-            Bench[3] = Bench4Image;
-            Bench[4] = Bench5Image;
-
-            Prizes[0] = Prize1Image;
-            Prizes[1] = Prize2Image;
-            Prizes[2] = Prize3Image;
-            Prizes[3] = Prize4Image;
-            Prizes[4] = Prize5Image;
-            Prizes[5] = Prize6Image;
-
-            Active = ActiveImage;
-            Deck = DeckImage;
-            Discard = DiscardImage;
         }
 
-        public void HideAttacks()
+        internal void SetViewModel(PlayerPageViewModel viewModel)
+        {
+            ViewModel = viewModel;
+            DataContext = ViewModel;
+        }
+
+        internal void HideAttacks()
         {
             ComboBoxAttacks.Visibility = Visibility.Collapsed;
         }

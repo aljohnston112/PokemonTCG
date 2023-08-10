@@ -25,8 +25,7 @@ namespace PokemonTCG.DataSources
         public static async Task LoadDecks()
         {
             FileMutex.WaitOne();
-            string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
-            string deckFile = baseFolder + "AppData\\decks.decks";
+            string deckFile = "\\AppData\\decks.decks";
 
             StorageFile decksFile = await FileUtil.GetFile(deckFile);
             if (decksFile == null)

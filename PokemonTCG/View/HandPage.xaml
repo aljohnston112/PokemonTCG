@@ -6,52 +6,9 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     >
 
-    <Grid
-        ColumnDefinitions="*, *, *, *, *, *, *"
+    <ItemsControl
         Padding="5">
-
-        <Image
-            x:Name="Hand1"
-            Margin="5"
-            Grid.Column="0"
-            Source="/Assets/BlankCard2.png" />
-
-        <Image
-            x:Name="Hand2"
-            Margin="5"
-            Grid.Column="1"
-            Source="/Assets/BlankCard2.png" />
-
-        <Image
-            x:Name="Hand3"
-            Margin="5"
-            Grid.Column="2"
-            Source="/Assets/BlankCard2.png" />
-
-        <Image
-            x:Name="Hand4"
-            Margin="5"
-            Grid.Column="3"
-            Source="/Assets/BlankCard2.png" />
-
-        <Image
-            x:Name="Hand5"
-            Margin="5"
-            Grid.Column="4"
-            Source="/Assets/BlankCard2.png" />
-
-        <Image
-            x:Name="Hand6"
-            Margin="5"
-            Grid.Column="5"
-            Source="/Assets/BlankCard2.png" />
-
-        <Image
-            x:Name="Hand7"
-            Margin="5"
-            Grid.Column="6"
-            Source="/Assets/BlankCard2.png" />
-
-    </Grid>
+        
+    </ItemsControl>
     
 </Page>

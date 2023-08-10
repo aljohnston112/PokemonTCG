@@ -1,5 +1,6 @@
 ﻿using PokemonTCG.DataSources;
 using PokemonTCG.Models;
+using System;
 using System.Collections.Immutable;
 using System.Linq;
 
@@ -8,13 +9,13 @@ namespace PokemonTCG.Utilities
     internal class DeckUtil
     {
 
-        public static PlayerState DrawCards(ImmutableList<string> deck, int numberOfCards)
+        public static (ImmutableList<PokemonCard>, ImmutableList<PokemonCard>) DrawCards(ImmutableList<PokemonCard> deck, int numberOfCards)
         {
-            ImmutableList<PokemonCard> drawnCards = deck.Take(numberOfCards).Select(id => CardDataSource.GetCardById(id)).ToImmutableList();
-            ImmutableList<string> newDeck = deck.Skip(numberOfCards).ToImmutableList();
-            PlayerState playerState = new(deck: newDeck, hand: drawnCards);
-            return playerState;
+            ImmutableList<PokemonCard> drawnCards = deck.Take(numberOfCards).ToImmutableList();
+            ImmutableList<PokemonCard> newDeck = deck.Skip(numberOfCards).ToImmutableList();
+            return (newDeck, drawnCards);
         }
 
     }
+
 }

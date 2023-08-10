@@ -22,12 +22,7 @@ namespace PokemonTCG.Utilities
         /// <returns>A <c>Task</c> that returns a <c>StorageFile</c> of the file when complete.</returns>
         public static async Task<StorageFile> GetFile(string fileUrl)
         {
-            String sourcePath = Path.GetFullPath(
-                Path.Combine(
-                    Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory),
-                    fileUrl
-                    )
-                );
+            String sourcePath = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory) + fileUrl;
             return await StorageFile.GetFileFromPathAsync(sourcePath);
         }
 
