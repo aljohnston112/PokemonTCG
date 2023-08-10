@@ -6,9 +6,30 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
     >
 
-    <ItemsControl
-        Padding="5">
+    <Page.Resources>
+
+        <Flyout
+            x:Name="ImagePreviewFlyout"
+            x:Key="ImagePreviewFlyout"
+            Placement="Right">
+
+            <!-- The flyout's DataContext must be the Image Source
+             of the image the flyout is attached to. -->
+
+            <Image
+                x:Name="Image"
+                Source="{Binding Path=Source}"
+                MaxHeight="560"
+                MaxWidth="560"
+                Stretch="Uniform" />
+
+        </Flyout>
+
+    </Page.Resources>
+
+    <Grid x:Name="HandGrid"
+          RowDefinitions="*">
         
-    </ItemsControl>
-    
+    </Grid>
+
 </Page>

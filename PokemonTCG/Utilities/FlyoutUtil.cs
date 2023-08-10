@@ -1,6 +1,8 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace PokemonTCG.Utilities
@@ -21,13 +23,14 @@ namespace PokemonTCG.Utilities
             Flyout.SetAttachedFlyout(element, null);
         }
 
-        public static async Task ShowImageFlyout(string imagePath, FrameworkElement element)
+        public static void ShowImageFlyout(string imagePath, FrameworkElement element)
         {
             Flyout flyout = new();
             FlyoutPresenter flyoutPresenter = new();
-            BitmapImage image = new();
-            image.SetSource(await ImageLoader.OpenImage(imagePath));
-
+            Image image = new()
+            {
+                Source = new BitmapImage(new Uri(FileUtil.GetFullPath(imagePath))),
+            };
             flyoutPresenter.Content = image;
             flyout.Content = flyoutPresenter;
             Flyout.SetAttachedFlyout(element, flyout);

@@ -1,17 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Immutable;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using PokemonTCG.Models;
+using PokemonTCG.Utilities;
 
 namespace PokemonTCG.ViewModel
 {
 
-    internal class HandViewModel
+    public class HandViewModel
     {
 
         public ObservableCollection<string> images = new();
+
+        internal void SetHand(ImmutableList<PokemonCard> hand)
+        {
+            images.Clear();
+            foreach (PokemonCard card in hand)
+            {
+                images.Add(card.ImageFileNames[ImageSize.LARGE]);
+            }
+        }
 
     }
 

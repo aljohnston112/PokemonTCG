@@ -19,10 +19,9 @@ namespace PokemonTCG.Utilities
         /// </summary>
         /// <param name="url">The path to the image</param>
         /// <returns>A <c>Task</c> that returns a stream of the image when complete</returns>
-        public static async Task<IRandomAccessStream> OpenImage(string url)
+        public static async Task<IRandomAccessStream> OpenImage(string url, bool absolutePath = false)
         {
-            // Load the file
-            StorageFile file = await FileUtil.GetFile(url);
+            StorageFile file = await FileUtil.GetFile(url, absolutePath);
             IRandomAccessStream fileStream = await file.OpenReadAsync();
             return fileStream;
         }

@@ -6,13 +6,11 @@ using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
 using PokemonTCG.Models;
-using PokemonTCG.Utilities;
 using PokemonTCG.ViewModel;
 using Windows.Foundation;
 using Windows.Graphics;
 using Windows.UI.ViewManagement;
 using WinRT.Interop;
-using static PokemonTCG.ViewModel.GamePageViewModel;
 
 namespace PokemonTCG.View
 {
@@ -36,48 +34,30 @@ namespace PokemonTCG.View
     public sealed partial class GamePage : Page
     {
 
-        GamePageViewModel ViewModel = new();
+        GamePageViewModel ViewModel;
+
 
         private readonly PlayerPage PlayerPage;
         private readonly PlayerPage OpponentPage;
-        private HandPage hand = new();
-
-        private class GameCallbacks : IGameCallbacks
-        {
-
-            private readonly PlayerPageViewModel PlayerPageViewModel;
-            private readonly PlayerPageViewModel OpponentPageViewModel;
-
-            public GameCallbacks(
-                PlayerPageViewModel playerViewModel, 
-                PlayerPageViewModel opponentViewModel
-                )
-            {
-                PlayerPageViewModel = playerViewModel;
-                OpponentPageViewModel = opponentViewModel;
-            }
-
-            public void OnGameStateChanged(GameState gameState)
-            {
-                PlayerPageViewModel.OnStateChange(gameState.PlayerState);
-                OpponentPageViewModel.OnStateChange(gameState.OpponentState);
-            }
-
-            public void OnReadyForUSerToSetUp()
-            {
-
-            }
-
-        }
+        private HandPage handPage = new();
 
         private readonly PlayerPageViewModel PlayerPageViewModel = new();
         private readonly PlayerPageViewModel OpponentPageViewModel = new();
-        private GameCallbacks Callbacks;
+        private readonly HandViewModel HandViewModel = new();
+
 
         public GamePage()
         {
             InitializeComponent();
-            Callbacks = new(PlayerPageViewModel, OpponentPageViewModel);
+
+            ViewModel = new(
+                (GameState gameState) =>
+                    {
+                        PlayerPageViewModel.OnStateChange(gameState.PlayerState);
+                        OpponentPageViewModel.OnStateChange(gameState.OpponentState);
+                        HandViewModel.SetHand(gameState.PlayerState.Hand);
+                    }
+                );
 
             PlayerPage = PagePlayer;
             PlayerPage.SetViewModel(PlayerPageViewModel);
@@ -87,6 +67,7 @@ namespace PokemonTCG.View
             RotateOpponentPage();
             OpponentPage.HideAttacks();
 
+            handPage.SetViewModel(HandViewModel);
             ShowHand();
         }
 
@@ -94,7 +75,7 @@ namespace PokemonTCG.View
         {
             base.OnNavigatedTo(e);
             GameArguments gameArguments = e.Parameter as GameArguments;
-            _ = ViewModel.StartGame(gameArguments, Callbacks);
+            _ = ViewModel.StartGame(gameArguments);
         }
 
         private void ShowHand()
@@ -106,7 +87,7 @@ namespace PokemonTCG.View
 
             Window window = new()
             {
-                Content = hand
+                Content = handPage
             };
             IntPtr hWnd = WindowNative.GetWindowHandle(window);
             WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
