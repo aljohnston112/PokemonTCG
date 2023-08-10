@@ -1,23 +1,25 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Microsoft.UI.Xaml.Media;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 
 namespace PokemonTCG.View
 {
+
     public class PlayerPageViewModel: BindableBase
     {
 
-        private PlayerState _playerState;
-        public PlayerState PlayerState
+        Action<PlayerState> OnPlayerStateChanged;
+
+        public void SetOnPlayerStateChanged(Action<PlayerState> onPlayerStateChanged)
         {
-            get { return _playerState; }
-            set { SetProperty(ref _playerState, value); }
+            OnPlayerStateChanged = onPlayerStateChanged;
         }
 
         public void OnStateChange(PlayerState playerState)
         {
-            PlayerState = playerState;
+            OnPlayerStateChanged(playerState);
         }
 
     }

@@ -10,8 +10,24 @@
         <SolidColorBrush x:Key="Color" Color="#F3D14B"/>
         -->
         <SolidColorBrush
-            x:Key="Color"
+            x:Key="BackgroundColor"
             Color="#192653" />
+
+        <Flyout
+            x:Key="ImagePreviewFlyout"
+            Placement="Right">
+
+            <!-- The flyout's DataContext must be the Image Source
+             of the image the flyout is attached to. -->
+
+            <Image
+                Source="{Binding Path=Source}"
+                MaxHeight="560"
+                MaxWidth="560"
+                Stretch="Uniform" />
+
+        </Flyout>
+
     </Page.Resources>
 
     <Grid
@@ -19,14 +35,17 @@
         RowDefinitions="*, *, *"
         ColumnDefinitions="*, *, *, *, *, *, *, *, *, *, *"
         Padding="5"
-        Background="{StaticResource Color}">
+        Background="{StaticResource BackgroundColor}">
 
         <Image
             x:Name="ActiveImage"
-            Source="{Binding Path=PlayerState.Active.ImageFileNames[ImageSize.SMALL], Mode=OneWay, FallbackValue=/Assets/BlankCard2.png}"
+            Source="/Assets/BlankCard2.png"
             Margin="5"
             Grid.Row="0"
-            Grid.Column="5" />
+            Grid.Column="5" 
+            Tapped="ImageTapped"
+            FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
+            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"/>
 
         <Image
             x:Name="DeckImage"
@@ -40,28 +59,40 @@
             Source="/Assets/BlankCard2.png"
             Margin="5"
             Grid.Row="2"
-            Grid.Column="3" />
+            Grid.Column="3" 
+            Tapped="ImageTapped"
+            FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
+            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"/>
 
         <Image
             x:Name="Bench2Image"
             Source="/Assets/BlankCard2.png"
             Margin="5"
             Grid.Row="2"
-            Grid.Column="4" />
+            Grid.Column="4" 
+            Tapped="ImageTapped"
+            FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
+            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"/>
 
         <Image
             x:Name="Bench3Image"
             Source="/Assets/BlankCard2.png"
             Margin="5"
             Grid.Row="2"
-            Grid.Column="5" />
+            Grid.Column="5" 
+            Tapped="ImageTapped"
+            FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
+            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"/>
 
         <Image
             x:Name="Bench4Image"
             Source="/Assets/BlankCard2.png"
             Margin="5"
             Grid.Row="2"
-            Grid.Column="6" />
+            Grid.Column="6" 
+            Tapped="ImageTapped"
+            FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
+            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"/>
 
 
         <Image
@@ -69,7 +100,10 @@
             Source="/Assets/BlankCard2.png"
             Margin="5"
             Grid.Row="2"
-            Grid.Column="7" />
+            Grid.Column="7" 
+            Tapped="ImageTapped"
+            FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
+            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"/>
 
         <Image
             x:Name="DiscardImage"
@@ -121,7 +155,7 @@
             Grid.Column="1" />
 
         <ComboBox
-            x:Name="ComboBoxAttacks"
+            x:Name="ComboBoxActions"
             Grid.Row="0"
             Grid.Column="6"
             HorizontalAlignment="Center"

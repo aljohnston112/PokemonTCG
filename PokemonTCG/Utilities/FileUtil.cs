@@ -37,6 +37,11 @@ namespace PokemonTCG.Utilities
             return await StorageFolder.GetFolderFromPathAsync(sourcePath);
         }
 
+        internal static string GetFullPath(string fileUrl)
+        {
+            return Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory) + fileUrl;
+        }
+
     }
 
 }
