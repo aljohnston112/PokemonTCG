@@ -22,13 +22,17 @@ namespace PokemonTCG.Models
 
     public enum PokemonType
     {
-        Colorless,
-        Fighting,
-        Fire,
         Grass,
+        Fire,
+        Water,
         Lightning,
         Psychic,
-        Water
+        Fighting,
+        Darkness,
+        Metal,
+        Fairy,
+        Dragon,
+        Colorless,
     }
 
     public enum ImageSize

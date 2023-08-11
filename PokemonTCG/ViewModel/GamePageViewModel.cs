@@ -9,10 +9,9 @@ namespace PokemonTCG.ViewModel
 {
     internal class GamePageViewModel
     {
-
         private GameState GameState;
-
-        private Action<GameState> OnGameStateChanged;
+        private readonly Action<GameState> OnGameStateChanged;
+        private readonly GameTemplate GameTemplate = new();
 
         public GamePageViewModel(Action<GameState> onGameStateChanged)
         {
@@ -29,13 +28,13 @@ namespace PokemonTCG.ViewModel
 
             PokemonDeck playerDeck = decks[playerDeckName];
             PokemonDeck opponentDeck = decks[opponentDeckName];
-            GameState = new(playerDeck, opponentDeck);
+            GameState = GameTemplate.SetUpGame(playerDeck, opponentDeck);
             OnGameStateChanged(GameState);
         }
 
         internal void OnUserSetUp()
         {
-            GameState = GameState.SetUpOpponent();
+            GameState = GameTemplate.SetUpOpponent(GameState);
         }
 
     }

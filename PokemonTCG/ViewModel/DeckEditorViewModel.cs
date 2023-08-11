@@ -117,6 +117,7 @@ namespace PokemonTCG.ViewModel
 
         internal bool HasBasicPokemon()
         {
+            // TODO Fossils count as basic Pokemon
             ImmutableArray<CardItem> cardITems = CardItemAdapter.GetAllCardItems().ToImmutableArray();
             bool hasBasicPokemon = false;
             int i = 0;

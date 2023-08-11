@@ -165,7 +165,11 @@ namespace PokemonTCG.View
             else if (!ViewModel.HasBasicPokemon())
             {
                 FlyoutUtil.ShowTextFlyout("At least one basic Pokemon is needed to make a deck.", SubmitDeckButton);
-            } else
+            }
+            // TODO Only one Radiant Pokemon
+            // TODO Only one of each Prism star Pokemon
+            // TODO Only one ACE sPEC trainer card
+            else
             {
                 FlyoutUtil.ShowTextFlyout("Saving deck", SubmitDeckButton);
                 await ViewModel.CreateDeck(name);
