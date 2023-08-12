@@ -66,10 +66,9 @@ namespace PokemonTCG.DataSources
             FileMutex.WaitOne();
             Decks[deck.Name] = deck;
 
-            string baseFolder = AppDomain.CurrentDomain.BaseDirectory;
-            string deckFilePath = baseFolder + "AppData\\";
+            string deckFilePath = "AppData\\";
             Directory.CreateDirectory(deckFilePath);
-            StorageFolder deckFolder = await FileUtil.GetFolder(deckFilePath);
+            StorageFolder deckFolder = await StorageFolder.GetFolderFromPathAsync(FileUtil.GetFullPath(deckFilePath));
             StorageFile deckFile = await deckFolder.CreateFileAsync("decks.decks", CreationCollisionOption.ReplaceExisting);
             Stream fileStream = await deckFile.OpenStreamForWriteAsync();
 

@@ -8,6 +8,8 @@ namespace PokemonTCG.Models
     internal class PokemonDeck
     {
 
+        internal readonly static int NON_ENERGY_CARD_LIMIT = 4;
+
         internal readonly ImmutableArray<string> CardIds;
         internal readonly string Name;
 

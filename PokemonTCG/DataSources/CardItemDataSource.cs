@@ -13,52 +13,47 @@ namespace PokemonTCG.DataSources
     {
 
         /// <summary>
-        /// Gets the card items from a deck.
+        /// Gets the card items from a set.
         /// </summary>
         /// <param name="deckFile">The deckFile</param>
         /// <returns></returns>
         internal static async IAsyncEnumerable<CardItem> GetCardItemsForSet(string setName)
         {
-            string setFileName = "\\Assets\\sets\\" + setName + ".json";
-            StorageFile setFile = await FileUtil.GetFile(setFileName);
-            string jsonSetFileRoot = await FileIO.ReadTextAsync(setFile);
-            JsonObject jsonSet = JsonObject.Parse(jsonSetFileRoot);
-            JsonArray jsonCards = jsonSet.GetNamedArray("data");
+            ICollection<PokemonCard> cards = await SetDataSource.LoadSet(setName);
 
-            foreach (IJsonValue jsonCard in jsonCards)
+            foreach (PokemonCard card in cards)
             {
-                CardItem cardItem = GetCardItem(jsonCard);
+                CardItem cardItem = CreateCardItem(card);
                 yield return cardItem;
             }
         }
 
-        private static CardItem GetCardItem(IJsonValue jsonCardValue)
+        private static CardItem CreateCardItem(PokemonCard card)
         {
-
-            JsonObject jsonCard = jsonCardValue.GetObject();
-            String id = jsonCard.GetNamedString("id");
-            PokemonCard card = CardDataSource.GetCardById(id);
-
             string name = card.Name;
-
             int cardLimit = GetCardLimit(card);
-
-            return new CardItem(id, card.Number, name, card.ImagePaths[ImageSize.LARGE] ,cardLimit, 0);
+            return new CardItem(
+                id: card.Id, 
+                number: card.Number, 
+                name: name, 
+                imagePath: card.ImagePaths[ImageSize.LARGE],
+                limit: cardLimit, 
+                count: 0
+                );
         }
 
         internal static int GetCardLimit(PokemonCard card)
         {
-            // Get the card limit per deck. 4 is normal
-            int cardLimit = 4;
-            CardSupertype type = card.Supertype;
+            int cardLimit = PokemonDeck.NON_ENERGY_CARD_LIMIT;
 
-            // Energies do not have a limit; colorless energy does though
-            if (type == CardSupertype.Energy && card.Name != "Double Colorless Energy")
+            // Energies do not have a limit; colorless energies do though
+            if (card.Supertype == CardSupertype.Energy && card.Name != "Double Colorless Energy")
             {
                 cardLimit = -1;
             }
             return cardLimit;
         }
+
     }
 
 }

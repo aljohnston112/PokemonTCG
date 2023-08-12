@@ -19,17 +19,15 @@ namespace PokemonTCG.ViewModel
         }
         internal readonly ObservableCollection<CardItemView> CardItemViews = new();
 
-        internal void AddCardItems(ISet<CardItem> cardItems)
+        internal void AddCardItem(CardItem cardItem)
         {
-            foreach (var cardItem in cardItems)
-            {
-                string id = cardItem.Id;
-                CardItems.Add(id, cardItem);
+            string id = cardItem.Id;
+            CardItems.Add(id, cardItem);
 
-                CardItemView view = new(cardItem);
-                _cardItemViews.Add(id, view);
-                CardItemViews.Add(view);
-            }
+            CardItemView view = new(cardItem);
+            _cardItemViews.Add(id, view);
+            CardItemViews.Add(view);
+
             SiftCards();
         }
 

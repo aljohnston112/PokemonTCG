@@ -30,8 +30,8 @@ namespace PokemonTCG.View
             base.OnNavigatedTo(e);
 
             object deckName = e.Parameter;
-            _ = ViewModel.OnNavigatedTo(deckName);
             CardGridView.ItemsSource = ViewModel.CardItemViews;
+            _ = ViewModel.OnNavigatedTo(deckName);
             SetUpCheckBoxes();
         }
 
@@ -108,8 +108,8 @@ namespace PokemonTCG.View
             if (args.InRecycleQueue)
             {
                 Grid templateRoot = args.ItemContainer.ContentTemplateRoot as Grid;
-                Image image = templateRoot.FindName("CardImage") as Image;
-                image.Source = null;
+                GridViewItem image = templateRoot.FindName("CardImage") as GridViewItem;
+                image.Content = null;
                 (templateRoot.FindName("NumberBox") as GridViewItem).Content = null;
             }
 

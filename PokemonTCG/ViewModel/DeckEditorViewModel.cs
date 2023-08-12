@@ -50,8 +50,7 @@ namespace PokemonTCG.ViewModel
 
             foreach (string set in sets)
             {
-                ISet<CardItem> cardItems = await LoadCardsItemsForSet(set);
-                CardItemAdapter.AddCardItems(cardItems);
+                _ = LoadCardsItemsForSet(set);
             }
 
             if(deckName != null)
@@ -91,14 +90,12 @@ namespace PokemonTCG.ViewModel
             return sets;
         }
 
-        private static async Task<ISet<CardItem>> LoadCardsItemsForSet(string setName)
+        private async Task LoadCardsItemsForSet(string setName)
         {
-            HashSet<CardItem> cardItems = new();
             await foreach (CardItem item in CardItemDataSource.GetCardItemsForSet(setName))
             {
-                cardItems.Add(item);
+                CardItemAdapter.AddCardItem(item);
             }
-            return cardItems;
         }
 
         internal void ChangeCardItemCount(int oldValue, int newValue, CardItemView cardItemView)

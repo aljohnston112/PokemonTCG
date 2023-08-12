@@ -36,10 +36,10 @@
                 <Grid ColumnDefinitions="*, auto"
                       RowDefinitions="auto">
 
-                    <Image
+                    <GridViewItem
                         x:Name="CardImage"
                         Grid.Column="0"
-                        Source="{x:Bind Image}"
+                        Content="{x:Bind Image}"
                         MaxWidth="236"
                         Tapped="ImageTapped"
                         FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
