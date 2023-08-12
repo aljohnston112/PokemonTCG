@@ -66,7 +66,7 @@ namespace PokemonTCG.Models
             bool hasBasic = false;
             foreach (PokemonCard card in Hand)
             {
-                if (PokemonCard.IsBasicPokemon(card))
+                if (CardUtil.IsBasicPokemon(card))
                 {
                     hasBasic = true;
                 }

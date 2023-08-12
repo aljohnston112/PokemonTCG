@@ -5,10 +5,10 @@ using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using PokemonTCG.Models;
 using PokemonTCG.ViewModel;
-using PokemonType = PokemonTCG.Models.PokemonType;
 using PokemonTCG.DataSources;
 using Microsoft.UI.Xaml.Navigation;
 using PokemonTCG.Utilities;
+using PokemonTCG.Enums;
 
 namespace PokemonTCG.View
 {
@@ -48,8 +48,8 @@ namespace PokemonTCG.View
                 if (checkBox.IsChecked.HasValue)
                 {
                     string text = checkBox.Content.ToString();
-                    CardSupertype supertype = PokemonCard.GetCardSuperType(text);
-                    if (supertype == CardSupertype.Pokemon)
+                    CardSupertype supertype = EnumUtil.Parse<CardSupertype>(text);
+                    if (supertype == CardSupertype.Pokémon)
                     {
                         ViewModel.OnPokemonCheckBox(checkBox.IsChecked.Value);
                     }
@@ -75,7 +75,7 @@ namespace PokemonTCG.View
                 if (checkBox.IsChecked.HasValue)
                 {
                     string text = checkBox.Content.ToString();
-                    PokemonType type = PokemonCard.GetPokemonType(text);
+                    PokemonType type = EnumUtil.Parse<PokemonType>(text);
                     ViewModel.OnTypeCheckBox(type, checkBox.IsChecked.Value);
                 }
             }

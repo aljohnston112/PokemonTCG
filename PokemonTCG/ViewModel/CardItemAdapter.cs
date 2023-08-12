@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using PokemonTCG.DataSources;
+using PokemonTCG.Enums;
 using PokemonTCG.Models;
 using PokemonTCG.View;
 

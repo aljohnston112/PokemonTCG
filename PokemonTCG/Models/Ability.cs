@@ -1,12 +1,14 @@
-﻿namespace PokemonTCG.Models
+﻿using PokemonTCG.Enums;
+
+namespace PokemonTCG.Models
 {
     internal class Ability
     {
         internal readonly string Name;
         internal readonly string Text;
-        internal readonly string Type;
+        internal readonly AbilityType Type;
 
-        internal Ability(string name, string text, string type)
+        internal Ability(string name, string text, AbilityType type)
         {
             Name = name;
             Text = text;

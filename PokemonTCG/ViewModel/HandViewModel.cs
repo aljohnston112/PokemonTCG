@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using PokemonTCG.Enums;
 using PokemonTCG.Models;
 
 namespace PokemonTCG.ViewModel
@@ -15,7 +16,7 @@ namespace PokemonTCG.ViewModel
             Images.Clear();
             foreach (PokemonCard card in hand)
             {
-                Images.Add(card.ImageFileNames[ImageSize.LARGE]);
+                Images.Add(card.ImagePaths[ImageSize.LARGE]);
             }
         }
 

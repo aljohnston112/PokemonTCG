@@ -1,4 +1,5 @@
 ﻿using PokemonTCG.DataSources;
+using PokemonTCG.Enums;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using PokemonTCG.View;

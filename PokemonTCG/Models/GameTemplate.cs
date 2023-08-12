@@ -1,4 +1,5 @@
 ﻿using PokemonTCG.DataSources;
+using PokemonTCG.Enums;
 using PokemonTCG.Utilities;
 using System;
 using System.Collections.Generic;
@@ -86,7 +87,7 @@ namespace PokemonTCG.Models
         internal GameState SetUpOpponent(GameState gameState)
         {
             ImmutableList<PokemonCard> basicPokemon = gameState.OpponentState.Hand.Where(
-                card => PokemonCard.IsBasicPokemon(card)
+                card => CardUtil.IsBasicPokemon(card)
             ).ToImmutableList();
 
             PokemonCard active;
@@ -159,7 +160,7 @@ namespace PokemonTCG.Models
             Dictionary<PokemonCard, int> rank = new();
 
             ImmutableList<PokemonCard> basicPokemon = gameState.OpponentState.Hand.Where(
-               card => PokemonCard.IsBasicPokemon(card)
+               card => CardUtil.IsBasicPokemon(card)
            ).ToImmutableList();
 
             foreach (PokemonCard pokemon in basicPokemon)
@@ -188,7 +189,7 @@ namespace PokemonTCG.Models
             // Count energy cards from hand
             ImmutableDictionary<PokemonType, int> numberOfEveryEnergy = gameState.OpponentState.Hand
                 .Where(card => card.Supertype == CardSupertype.Energy)
-                .GroupBy(card => PokemonCard.GetEnergyType(card))
+                .GroupBy(card => CardUtil.GetEnergyType(card))
                 .ToImmutableDictionary(group => group.Key, group => group.Count());
             int numberOfEnergies = gameState.OpponentState.Hand
                 .Where(card => card.Supertype == CardSupertype.Energy)

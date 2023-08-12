@@ -1,4 +1,6 @@
 ﻿using PokemonTCG.DataSources;
+using PokemonTCG.Enums;
+using PokemonTCG.Utilities;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
@@ -89,7 +91,7 @@ namespace PokemonTCG.Models
         {
             PokemonCard card = CardDataSource.GetCardById(cardItem.Id);
             CardSupertype supertype = card.Supertype;
-            bool isPokemon = (supertype == CardSupertype.Pokemon);
+            bool isPokemon = (supertype == CardSupertype.Pokémon);
             bool isTrainer = (supertype == CardSupertype.Trainer);
             bool isEnergy = (supertype == CardSupertype.Energy);
             return ((isPokemon && IncludePokemonCards) || (isTrainer && IncludeTrainerCards) || (isEnergy && IncludeEnergyCards));
@@ -108,14 +110,14 @@ namespace PokemonTCG.Models
 
                 // Get types
                 ImmutableList<PokemonType> types;
-                if (card.Supertype == CardSupertype.Pokemon)
+                if (card.Supertype == CardSupertype.Pokémon)
                 {
                     types = card.Types;
 
                 }
                 else if (card.Supertype == CardSupertype.Energy)
                 {
-                    PokemonType type = PokemonCard.GetEnergyType(card);
+                    PokemonType type = CardUtil.GetEnergyType(card);
                     types = ImmutableList.Create(type);
                 } else
                 {

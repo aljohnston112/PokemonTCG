@@ -1,4 +1,5 @@
-﻿using PokemonTCG.Models;
+﻿using PokemonTCG.Enums;
+using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace PokemonTCG.DataSources
 
             int cardLimit = GetCardLimit(card);
 
-            return new CardItem(id, card.Number, name, card.ImageFileNames[ImageSize.LARGE] ,cardLimit, 0);
+            return new CardItem(id, card.Number, name, card.ImagePaths[ImageSize.LARGE] ,cardLimit, 0);
         }
 
         internal static int GetCardLimit(PokemonCard card)

@@ -1,4 +1,6 @@
-﻿using PokemonTCG.Models;
+﻿using PokemonTCG.Enums;
+using PokemonTCG.Models;
+using PokemonTCG.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -15,6 +17,7 @@ namespace PokemonTCG.DataSources
 
         /// <summary>
         /// Gets all cards associated with a set. 
+        /// This method takes a File because the <c>SetDataSource</c> iterates through a folder of set files.
         /// </summary>
         /// <param name="file">The json file containing the card information for the set.</param>
         /// <returns>A <c>Task<ICollection<Card>>/c> that returns the collection of cards in the set.</returns>
@@ -29,159 +32,190 @@ namespace PokemonTCG.DataSources
             string baseImagePath = file.Path[(file.Path.IndexOf("Assets") - 1)..(file.Path.LastIndexOf("."))] + "\\";
             foreach (IJsonValue jsonCardValue in jArray)
             {
-                JsonObject jsonCard = jsonCardValue.GetObject();
-                string id = jsonCard.GetNamedString("id");
+                JsonObject jsonCardObject = jsonCardValue.GetObject();
+                string id = jsonCardObject.GetNamedString("id");
 
                 if (!idsToCards.ContainsKey(id))
                 {
-                    string name = jsonCard.GetNamedString("name");
-                    CardSupertype supertype = PokemonCard.GetCardSuperType(jsonCard.GetNamedString("supertype"));
+                    string name = jsonCardObject.GetNamedString("name");
+                    CardSupertype supertype = EnumUtil.Parse<CardSupertype>(jsonCardObject.GetNamedString("supertype"));
 
                     // Subtypes
-                    List<CardSubtype> cardSubTypes = new();
-                    if (jsonCard.ContainsKey("subtypes"))
+                    List<CardSubtype> subtypes = new();
+                    if (jsonCardObject.ContainsKey("subtypes"))
                     {
-                        JsonArray jsonSubtypes = jsonCard.GetNamedArray("subtypes");
-                        foreach (IJsonValue jsonSubtype in jsonSubtypes)
+                        JsonArray jsonSubtypeArray = jsonCardObject.GetNamedArray("subtypes");
+                        foreach (IJsonValue jsonSubtypeValue in jsonSubtypeArray)
                         {
-                            cardSubTypes.Add(PokemonCard.GetCardSubType(jsonSubtype.GetString()));
+                            subtypes.Add(EnumUtil.Parse<CardSubtype>(jsonSubtypeValue.GetString()));
                         }
                     }
 
                     int level = 0;
-                    if (jsonCard.ContainsKey("level"))
+                    if (jsonCardObject.ContainsKey("level"))
                     {
-                        level = int.Parse(jsonCard.GetNamedString("level"));
+                        level = int.Parse(jsonCardObject.GetNamedString("level"));
                     }
+
                     int hp = 0;
-                    if (jsonCard.ContainsKey("level"))
+                    if (jsonCardObject.ContainsKey("hp"))
                     {
-                        hp = int.Parse(jsonCard.GetNamedString("hp"));
+                        hp = int.Parse(jsonCardObject.GetNamedString("hp"));
                     }
 
                     // Pokemon types
                     List<PokemonType> pokemonTypes = new();
-                    if (jsonCard.ContainsKey("types"))
+                    if (jsonCardObject.ContainsKey("types"))
                     {
-                        JsonArray jsonTypeList = jsonCard.GetNamedArray("types");
-                        foreach (IJsonValue obj in jsonTypeList)
+                        JsonArray jsonTypeArray = jsonCardObject.GetNamedArray("types");
+                        foreach (IJsonValue jsonTypeValue in jsonTypeArray)
                         {
-                            pokemonTypes.Add(PokemonCard.GetPokemonType(obj.GetString()));
+                            pokemonTypes.Add(EnumUtil.Parse<PokemonType>(jsonTypeValue.GetString()));
                         }
                     }
 
                     // Evolves from
                     string evolvesFrom = null;
-                    if (jsonCard.ContainsKey("evolvesFrom"))
+                    if (jsonCardObject.ContainsKey("evolvesFrom"))
                     {
-                        evolvesFrom = jsonCard.GetNamedString("evolvesFrom");
+                        evolvesFrom = jsonCardObject.GetNamedString("evolvesFrom");
                     }
 
                     // Abilities
                     List<Ability> abilities = new();
-                    if (jsonCard.ContainsKey("abilities"))
+                    if (jsonCardObject.ContainsKey("abilities"))
                     {
-                        JsonArray jsonAbilityList = jsonCard.GetNamedArray("abilities");
+                        JsonArray jsonAbilityList = jsonCardObject.GetNamedArray("abilities");
                         foreach (IJsonValue jsonAbilityValue in jsonAbilityList)
                         {
                             JsonObject jsonAbility = jsonAbilityValue.GetObject();
-                            string pokemonPowerName = jsonAbility.GetNamedString("name");
-                            string pokemonPowerText = jsonAbility.GetNamedString("text");
-                            string pokemonPowerType = jsonAbility.GetNamedString("type");
-                            abilities.Add(new Ability(pokemonPowerName, pokemonPowerText, pokemonPowerType));
+                            string abilityName = jsonAbility.GetNamedString("name");
+                            string abilityText = jsonAbility.GetNamedString("text");
+                            AbilityType abilityType = EnumUtil.Parse<AbilityType>(jsonAbility.GetNamedString("type"));
+                            abilities.Add(
+                                new Ability(
+                                    name: abilityName,
+                                    text: abilityText,
+                                    abilityType
+                                    )
+                                );
                         }
                     }
 
                     // Attacks
                     List<Attack> attacks = new();
-                    if (jsonCard.ContainsKey("attacks"))
+                    if (jsonCardObject.ContainsKey("attacks"))
                     {
-                        JsonArray jsonAttackArray = jsonCard.GetNamedArray("attacks");
+                        JsonArray jsonAttackArray = jsonCardObject.GetNamedArray("attacks");
                         foreach (IJsonValue jsonAttackValue in jsonAttackArray)
                         {
-                            JsonObject jsonAttack = jsonAttackValue.GetObject();
-                            string attackName = jsonAttack.GetNamedString("name");
+                            JsonObject jsonAttackObject = jsonAttackValue.GetObject();
+                            string attackName = jsonAttackObject.GetNamedString("name");
 
-                            // Get the energy cost of the attack
+                            // Energy cost
                             Dictionary<PokemonType, int> attackCost = new();
-                            JsonArray jsonAttackCost = jsonAttack.GetNamedArray("cost");
-                            foreach (IJsonValue pokemonTypeValue in jsonAttackCost)
+                            JsonArray jsonAttackCostArray = jsonAttackObject.GetNamedArray("cost");
+                            foreach (IJsonValue jsonPokemonTypeValue in jsonAttackCostArray)
                             {
-                                PokemonType pokemonType = PokemonCard.GetPokemonType(pokemonTypeValue.GetString());
+                                PokemonType pokemonType = EnumUtil.Parse<PokemonType>(jsonPokemonTypeValue.GetString());
                                 if (!attackCost.ContainsKey(pokemonType))
                                 {
                                     attackCost[pokemonType] = 0;
                                 }
                                 attackCost[pokemonType] += 1;
                             }
+                            int convertedEnergyCostForAttack = (int)(jsonAttackObject.GetNamedNumber("convertedEnergyCost"));
 
-                            int convertedEnergyCost = (int)(jsonAttack.GetNamedNumber("convertedEnergyCost"));
-                            string damageString = jsonAttack.GetNamedString("damage");
-                            if (damageString.EndsWith("×") || damageString.EndsWith("+") || damageString.EndsWith("-"))
+                            string attackDamageString = jsonAttackObject.GetNamedString("damage");
+                            if (attackDamageString.EndsWith("×") || attackDamageString.EndsWith("+") || attackDamageString.EndsWith("-"))
                             {
-                                damageString = damageString[..^1];
+                                attackDamageString = attackDamageString[..^1];
                             }
-                            else if (damageString == "")
+                            else if (attackDamageString == "")
                             {
-                                damageString = "0";
+                                attackDamageString = "0";
                             }
-                            int damage = int.Parse(damageString);
-                            string text = jsonAttack.GetNamedString("text");
-                            attacks.Add(new Attack(attackName, attackCost, convertedEnergyCost, damage, text));
+                            int attackDamage = int.Parse(attackDamageString);
+
+                            string attackText = jsonAttackObject.GetNamedString("text");
+                            attacks.Add(
+                                new Attack(
+                                    name: attackName, 
+                                    energyCost : attackCost, 
+                                    convertedEnergyCost: convertedEnergyCostForAttack, 
+                                    damage: attackDamage,
+                                    text: attackText
+                                    )
+                                );
                         }
                     }
 
                     // Weaknesses
-                    Dictionary<PokemonType, string> weakness = new();
-                    if (jsonCard.ContainsKey("weaknesses"))
+                    Dictionary<PokemonType, Modifier> weaknesses = new();
+                    if (jsonCardObject.ContainsKey("weaknesses"))
                     {
-                        JsonArray weaknessArray = jsonCard.GetNamedArray("weaknesses");
-                        foreach (IJsonValue weaknessValue in weaknessArray)
+                        JsonArray jsonWeaknessArray = jsonCardObject.GetNamedArray("weaknesses");
+                        foreach (IJsonValue weaknessValue in jsonWeaknessArray)
                         {
-                            JsonObject jsonWeakness = weaknessValue.GetObject();
+                            JsonObject jsonWeaknessObject = weaknessValue.GetObject();
 
-                            string weaknessType = jsonWeakness.GetNamedString("type");
-                            string weaknessModifier = jsonWeakness.GetNamedString("value");
-                            weakness[PokemonCard.GetPokemonType(weaknessType)] = weaknessModifier;
+                            PokemonType weaknessType = EnumUtil.Parse<PokemonType>(jsonWeaknessObject.GetNamedString("type"));
+                            string weaknessModifierString = jsonWeaknessObject.GetNamedString("value");
+                            Modifier weaknessModifier = new(
+                                EnumUtil.Parse<ModifierType>(
+                                    weaknessModifierString[..1]
+                                    .Replace("×", "times")
+                                    .Replace("-", "minus")
+                                    ),
+                                int.Parse(weaknessModifierString[1..])
+                                );
+                            weaknesses[weaknessType] = weaknessModifier;
                         }
                     }
 
                     // Resistances
-                    Dictionary<PokemonType, string> resistances = new();
-                    if (jsonCard.ContainsKey("resistances"))
+                    Dictionary<PokemonType, Modifier> resistances = new();
+                    if (jsonCardObject.ContainsKey("resistances"))
                     {
-                        JsonArray resistanceArray = jsonCard.GetNamedArray("resistances");
+                        JsonArray resistanceArray = jsonCardObject.GetNamedArray("resistances");
                         foreach (IJsonValue resistanceValue in resistanceArray)
                         {
                             JsonObject jsonresistance = resistanceValue.GetObject();
                             string resistanceType = jsonresistance.GetNamedString("type");
-                            string resistanceModifier = jsonresistance.GetNamedString("value");
-                            resistances[PokemonCard.GetPokemonType(resistanceType)] = resistanceModifier;
+                            string resistanceModifierString = jsonresistance.GetNamedString("value");
+                            Modifier resistanceModifier = new(
+                                EnumUtil.Parse<ModifierType>(
+                                    resistanceModifierString[..1]
+                                    .Replace("×", "times")
+                                    .Replace("-", "minus")
+                                    ),
+                                int.Parse(resistanceModifierString[1..])
+                                );
+                            resistances[EnumUtil.Parse<PokemonType>(resistanceType)] = resistanceModifier;
                         }
                     }
 
                     // Retreat cost
                     Dictionary<PokemonType, int> retreatCost = new();
-                    if (jsonCard.ContainsKey("retreatCost"))
+                    if (jsonCardObject.ContainsKey("retreatCost"))
                     {
-                        JsonArray jsonRetreatCost = jsonCard.GetNamedArray("retreatCost");
-                        foreach (IJsonValue retreatCostValue in jsonRetreatCost)
+                        JsonArray jsonRetreatCostArray = jsonCardObject.GetNamedArray("retreatCost");
+                        foreach (IJsonValue jsonRetreatCostValue in jsonRetreatCostArray)
                         {
-                            String retreatString = retreatCostValue.GetString();
-                            PokemonType pokemontype = PokemonCard.GetPokemonType(retreatString);
+                            string retreatCostString = jsonRetreatCostValue.GetString();
+                            PokemonType pokemontype = EnumUtil.Parse<PokemonType>(retreatCostString);
                             if (!retreatCost.ContainsKey(pokemontype))
                             {
                                 retreatCost[pokemontype] = 0;
                             }
                             retreatCost[pokemontype] += 1;
-
                         }
                     }
 
                     int convertedRetreatCost = 0;
-                    if (jsonCard.ContainsKey("retreatCost"))
+                    if (jsonCardObject.ContainsKey("retreatCost"))
                     {
-                        convertedRetreatCost = (int)(jsonCard.GetNamedNumber("convertedRetreatCost"));
+                        convertedRetreatCost = (int)(jsonCardObject.GetNamedNumber("convertedRetreatCost"));
                     }
 
                     // Image paths
@@ -190,56 +224,56 @@ namespace PokemonTCG.DataSources
                         { ImageSize.LARGE,  baseImagePath + id + "-large.png" }
                     };
 
-                    JsonObject setObject = jsonCard.GetNamedObject("set");
-                    string setId = setObject.GetNamedString("id");
-                    string setName = setObject.GetNamedString("name");
-                    string setSeries = setObject.GetNamedString("series");
-                    int number = int.Parse(jsonCard.GetNamedString("number"));
-                    string artist = jsonCard.GetNamedString("artist");
+                    JsonObject jsonSetObject = jsonCardObject.GetNamedObject("set");
+                    string setId = jsonSetObject.GetNamedString("id");
+                    string setName = jsonSetObject.GetNamedString("name");
+                    string setSeries = jsonSetObject.GetNamedString("series");
+                    int cardNumber = int.Parse(jsonCardObject.GetNamedString("number"));
+                    string artist = jsonCardObject.GetNamedString("artist");
+
                     Rarity rarity = Rarity.NONE;
-                    if (jsonCard.ContainsKey("rarity"))
+                    if (jsonCardObject.ContainsKey("rarity"))
                     {
-                        rarity = PokemonCard.GetRarity(jsonCard.GetNamedString("rarity"));
+                        rarity = EnumUtil.Parse<Rarity>(jsonCardObject.GetNamedString("rarity"));
                     }
-                    string flavorText = "";
-                    if (jsonCard.ContainsKey("flavorText"))
+                    string flavorText = null;
+                    if (jsonCardObject.ContainsKey("flavorText"))
                     {
-                        flavorText = jsonCard.GetNamedString("flavorText");
+                        flavorText = jsonCardObject.GetNamedString("flavorText");
                     }
 
                     // Legalities
-                    IDictionary<Legality, LegalType> legalities = new Dictionary<Legality, LegalType>();
-                    foreach (KeyValuePair<string, IJsonValue> legalityElement in jsonCard.GetNamedObject("legalities"))
+                    Dictionary<LegalFormat, Legality> legalities = new();
+                    foreach (KeyValuePair<string, IJsonValue> jsonLegalityPair in jsonCardObject.GetNamedObject("legalities"))
                     {
-                        legalities[PokemonCard.GetLegality(legalityElement.Key)] = PokemonCard.GetLegalType(legalityElement.Value.GetString());
+                        legalities[EnumUtil.Parse<LegalFormat>(jsonLegalityPair.Key)] = EnumUtil.Parse<Legality>(jsonLegalityPair.Value.GetString());
                     }
 
                     PokemonCard card = new(
-                        id,
-                        name,
-                        supertype,
-                        cardSubTypes,
-                        level,
-                        hp,
-                        pokemonTypes,
-                        evolvesFrom,
-                        abilities,
-                        attacks,
-                        weakness,
-                        resistances,
-                        retreatCost,
-                        convertedRetreatCost,
-                        imagePaths,
-                        setId,
-                        setName,
-                        setSeries,
-                        number,
-                        artist,
-                        rarity,
-                        flavorText,
-                        legalities
+                        id: id,
+                        name: name,
+                        supertype: supertype,
+                        subtypes: subtypes,
+                        level: level,
+                        hp: hp,
+                        types: pokemonTypes,
+                        evolvesFrom: evolvesFrom,
+                        abilities: abilities,
+                        attacks: attacks,
+                        weaknesses: weaknesses,
+                        resistances: resistances,
+                        retreatCost: retreatCost,
+                        convertedRetreatCost: convertedRetreatCost,
+                        imagePaths: imagePaths,
+                        setId: setId,
+                        setName: setName,
+                        setSeries: setSeries,
+                        number: cardNumber,
+                        artist: artist,
+                        rarity: rarity,
+                        flavorText: flavorText,
+                        legalities: legalities
                         );
-
                     idsToCards.Add(id, card);
                 }
             }
@@ -248,10 +282,10 @@ namespace PokemonTCG.DataSources
 
         /// <summary>
         /// This method will throw an exception if cards are not loaded beforehand or the id is invalid.
-        /// You can prevent this by calling <see cref="SetDataSource.LoadSets"/> to load the Card instances beforehand.
+        /// You can prevent this by calling <see cref="SetDataSource.LoadSets"/> to load the <c>Card</c> instances beforehand.
         /// </summary>
-        /// <param name="id">The id of the card</param>
-        /// <returns>The <c>Card</c> instance that having the given id.</returns>
+        /// <param name="id">The id of the card.</param>
+        /// <returns>The <c>Card</c> instance that havs the given id.</returns>
         internal static PokemonCard GetCardById(string id)
         {
             return idsToCards[id];

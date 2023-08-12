@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using PokemonTCG.Enums;
+using System.Collections.Generic;
 
 namespace PokemonTCG.Models
 {
