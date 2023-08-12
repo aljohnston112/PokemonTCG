@@ -8,7 +8,7 @@ namespace PokemonTCG.ViewModel
     internal class DeckListViewmodel
     {
 
-        public readonly ObservableCollection<string> DeckNames = new();
+        internal readonly ObservableCollection<string> DeckNames = new();
 
         internal void LoadDecks()
         {
@@ -18,6 +18,7 @@ namespace PokemonTCG.ViewModel
                 DeckNames.Add(name);
             }
         }
+
     }
 
 }

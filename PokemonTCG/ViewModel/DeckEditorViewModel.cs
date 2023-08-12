@@ -17,7 +17,7 @@ namespace PokemonTCG.ViewModel
     internal class DeckEditorViewModel : BindableBase
     {
         private readonly CardItemAdapter CardItemAdapter = new();
-        public readonly ObservableCollection<CardItemView> CardItemViews;
+        internal readonly ObservableCollection<CardItemView> CardItemViews;
 
         private int _numberOfCardsInDeck = 0;
         private string _numberOfCardsInDeckText = "0";
@@ -38,7 +38,7 @@ namespace PokemonTCG.ViewModel
             private set { SetProperty(ref _numberOfCardsInDeckText, value); }
         }
 
-        public DeckEditorViewModel()
+        internal DeckEditorViewModel()
         {
             CardItemViews = CardItemAdapter.CardItemViews;
         }
@@ -100,7 +100,7 @@ namespace PokemonTCG.ViewModel
             return cardItems;
         }
 
-        public void ChangeCardItemCount(int oldValue, int newValue, CardItemView cardItemView)
+        internal void ChangeCardItemCount(int oldValue, int newValue, CardItemView cardItemView)
         {
             int value = newValue;
             int diff = value - oldValue;
@@ -150,7 +150,7 @@ namespace PokemonTCG.ViewModel
             await DeckDataSource.SaveDeck(deck);
         }
 
-        public void SearchStringUpdated(string text)
+        internal void SearchStringUpdated(string text)
         {
             CardItemAdapter.UpdateSearchString(text);
         }

@@ -31,6 +31,7 @@
     <None Remove="ResourceDictionary.xaml" />
     <None Remove="ResourceDictionary1.xaml" />
     <None Remove="TitlePage.xaml" />
+    <None Remove="View\CardView.xaml" />
   </ItemGroup>
   
   <ItemGroup>
@@ -116,5 +117,10 @@
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
   <ItemGroup>
     <PRIResource Remove="Game\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="View\CardView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
 </Project>

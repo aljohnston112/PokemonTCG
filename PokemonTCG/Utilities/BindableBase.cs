@@ -32,7 +32,7 @@ namespace PokemonTCG.Utilities
     /// Implementation of <see cref="INotifyPropertyChanged"/> to simplify models.
     /// </summary>
     [Windows.Foundation.Metadata.WebHostHidden]
-    public abstract class BindableBase : INotifyPropertyChanged
+    internal abstract class BindableBase : INotifyPropertyChanged
     {
         /// <summary>
         /// Multicast event for property change notifications.
@@ -70,6 +70,7 @@ namespace PokemonTCG.Utilities
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
     }
 
 }

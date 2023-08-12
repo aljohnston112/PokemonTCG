@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
 using PokemonTCG.Models;
@@ -14,12 +10,12 @@ namespace PokemonTCG.View
     internal class CardItemView
     {
 
-        public readonly string Id;
-        public readonly BitmapImage Image = new();
-        public readonly NumberBox NumberBox = new();
+        internal readonly string Id;
+        internal readonly BitmapImage Image = new();
+        internal readonly NumberBox NumberBox = new();
         private bool handlerAttached = false;
 
-        public CardItemView(CardItem card)
+        internal CardItemView(CardItem card)
         {
             Id = card.Id;
             _ = CreateBitmap(card.ImagePath);

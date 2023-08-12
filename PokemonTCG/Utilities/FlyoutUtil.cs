@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 
 namespace PokemonTCG.Utilities
@@ -10,7 +8,7 @@ namespace PokemonTCG.Utilities
     internal class FlyoutUtil
     {
 
-        public static void ShowTextFlyout(string text, FrameworkElement element)
+        internal static void ShowTextFlyout(string text, FrameworkElement element)
         {
             Flyout flyout = new();
             TextBlock textBlock = new()
@@ -23,7 +21,7 @@ namespace PokemonTCG.Utilities
             Flyout.SetAttachedFlyout(element, null);
         }
 
-        public static void ShowImageFlyout(string imagePath, FrameworkElement element)
+        internal static void ShowImageFlyout(string imagePath, FrameworkElement element)
         {
             Flyout flyout = new();
             FlyoutPresenter flyoutPresenter = new();

@@ -7,9 +7,7 @@ using PokemonTCG.Models;
 using PokemonTCG.ViewModel;
 using PokemonType = PokemonTCG.Models.PokemonType;
 using PokemonTCG.DataSources;
-using System.Collections.Immutable;
 using Microsoft.UI.Xaml.Navigation;
-using System.Xml.Linq;
 using PokemonTCG.Utilities;
 
 namespace PokemonTCG.View

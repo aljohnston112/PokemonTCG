@@ -14,13 +14,13 @@ using WinRT.Interop;
 
 namespace PokemonTCG.View
 {
-    public class GameArguments
+    internal class GameArguments
     {
 
-        public readonly string PlayerDeck;
-        public readonly string OpponentDeck;
+        internal readonly string PlayerDeck;
+        internal readonly string OpponentDeck;
 
-        public GameArguments(string playerDeck, string opponentDeck)
+        internal GameArguments(string playerDeck, string opponentDeck)
         {
             PlayerDeck = playerDeck;
             OpponentDeck = opponentDeck;
@@ -34,12 +34,13 @@ namespace PokemonTCG.View
     public sealed partial class GamePage : Page
     {
 
-        GamePageViewModel ViewModel;
+        private readonly GamePageViewModel GamePageViewModel;
+        private readonly CardViewViewModel CardViewViewModel;
 
 
         private readonly PlayerPage PlayerPage;
         private readonly PlayerPage OpponentPage;
-        private HandPage handPage = new();
+        private readonly HandPage handPage = new();
 
         private readonly PlayerPageViewModel PlayerPageViewModel = new();
         private readonly PlayerPageViewModel OpponentPageViewModel = new();
@@ -50,7 +51,7 @@ namespace PokemonTCG.View
         {
             InitializeComponent();
 
-            ViewModel = new(
+            GamePageViewModel = new(
                 (GameState gameState) =>
                     {
                         PlayerPageViewModel.OnStateChange(gameState.PlayerState);
@@ -58,6 +59,8 @@ namespace PokemonTCG.View
                         HandViewModel.SetHand(gameState.PlayerState.Hand);
                     }
                 );
+
+            CardViewViewModel = new();
 
             PlayerPage = PagePlayer;
             PlayerPage.SetViewModel(PlayerPageViewModel);
@@ -67,7 +70,7 @@ namespace PokemonTCG.View
             RotateOpponentPage();
             OpponentPage.HideAttacks();
 
-            handPage.SetViewModel(HandViewModel);
+            handPage.SetViewModels(HandViewModel, CardViewViewModel);
             ShowHand();
         }
 
@@ -75,7 +78,7 @@ namespace PokemonTCG.View
         {
             base.OnNavigatedTo(e);
             GameArguments gameArguments = e.Parameter as GameArguments;
-            _ = ViewModel.StartGame(gameArguments);
+            _ = GamePageViewModel.StartGame(gameArguments);
         }
 
         private void ShowHand()

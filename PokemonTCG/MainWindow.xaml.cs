@@ -6,15 +6,15 @@ namespace PokemonTCG
     /// <summary>
     /// Represents the window of the current Application.
     /// </summary>
-    public sealed partial class MainWindow : Window
+    internal sealed partial class MainWindow : Window
     {
         /// <summary>
         /// Naviagates to the title page.
         /// </summary>
-        public MainWindow()
+        internal MainWindow()
         {
-            this.InitializeComponent();
-            this.MainFrame.Navigate(typeof(TitlePage));
+            InitializeComponent();
+            MainFrame.Navigate(typeof(TitlePage));
         }
 
         /// <summary>

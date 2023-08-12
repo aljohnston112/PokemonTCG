@@ -13,7 +13,7 @@ namespace PokemonTCG.ViewModel
         private readonly Action<GameState> OnGameStateChanged;
         private readonly GameTemplate GameTemplate = new();
 
-        public GamePageViewModel(Action<GameState> onGameStateChanged)
+        internal GamePageViewModel(Action<GameState> onGameStateChanged)
         {
             OnGameStateChanged = onGameStateChanged;
         }

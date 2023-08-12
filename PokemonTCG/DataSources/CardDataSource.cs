@@ -1,7 +1,6 @@
 ﻿using PokemonTCG.Models;
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
@@ -253,7 +252,7 @@ namespace PokemonTCG.DataSources
         /// </summary>
         /// <param name="id">The id of the card</param>
         /// <returns>The <c>Card</c> instance that having the given id.</returns>
-        public static PokemonCard GetCardById(string id)
+        internal static PokemonCard GetCardById(string id)
         {
             return idsToCards[id];
         }

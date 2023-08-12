@@ -1,10 +1,7 @@
-﻿using Microsoft.UI.Xaml.Media.Imaging;
-using PokemonTCG.Models;
+﻿using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Windows.Data.Json;
 using Windows.Storage;
 
@@ -48,7 +45,7 @@ namespace PokemonTCG.DataSources
             return new CardItem(id, card.Number, name, card.ImageFileNames[ImageSize.LARGE] ,cardLimit, 0);
         }
 
-        public static int GetCardLimit(PokemonCard card)
+        internal static int GetCardLimit(PokemonCard card)
         {
             // Get the card limit per deck. 4 is normal
             int cardLimit = 4;

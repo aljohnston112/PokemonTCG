@@ -1,18 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace PokemonTCG.Models
 {
 
-    public enum CardSupertype
+    internal enum CardSupertype
     {
         Pokemon,
         Trainer,
         Energy
     }
 
-    public enum CardSubtype
+    internal enum CardSubtype
     {
         BASIC,
         STAGE_1,
@@ -20,7 +19,7 @@ namespace PokemonTCG.Models
         SPECIAL,
     }
 
-    public enum PokemonType
+    internal enum PokemonType
     {
         Grass,
         Fire,
@@ -35,13 +34,13 @@ namespace PokemonTCG.Models
         Colorless,
     }
 
-    public enum ImageSize
+    internal enum ImageSize
     {
         SMALL,
         LARGE
     }
 
-    public enum Rarity
+    internal enum Rarity
     {
         NONE,
         RARE_HOLO,
@@ -50,14 +49,14 @@ namespace PokemonTCG.Models
         COMMON
     }
 
-    public enum Legality
+    internal enum Legality
     {
         UNLIMITED,
         EXPANDED,
         STANDARD
     }
 
-    public enum LegalType
+    internal enum LegalType
     {
         LEGAL,
         ILLEGAL
@@ -67,34 +66,33 @@ namespace PokemonTCG.Models
     /// <summary>
     /// Contains card data.
     /// </summary>
-    public class PokemonCard
+    internal class PokemonCard
     {
-        public readonly string Id;
-        public readonly string Name;
-        public readonly CardSupertype Supertype;
-        public readonly ImmutableList<CardSubtype> Subtypes;
-        public readonly int Level;
-        public readonly int Hp;
-        public readonly ImmutableList<PokemonType> Types;
-        public readonly string EvolvesFrom;
-        public readonly ImmutableList<Ability> Abilities;
-        public readonly ImmutableList<Attack> Attacks;
-        public readonly ImmutableDictionary<PokemonType, string> Weaknesses;
-        public readonly ImmutableDictionary<PokemonType, string> Resistances;
-        public readonly ImmutableDictionary<PokemonType, int> RetreatCost;
-        public readonly int ConvertedRetreatCost;
-        public readonly ImmutableDictionary<ImageSize, string> ImageFileNames;
+        internal readonly string Id;
+        internal readonly string Name;
+        internal readonly CardSupertype Supertype;
+        internal readonly ImmutableList<CardSubtype> Subtypes;
+        internal readonly int Level;
+        internal readonly int Hp;
+        internal readonly ImmutableList<PokemonType> Types;
+        internal readonly string EvolvesFrom;
+        internal readonly ImmutableList<Ability> Abilities;
+        internal readonly ImmutableList<Attack> Attacks;
+        internal readonly ImmutableDictionary<PokemonType, string> Weaknesses;
+        internal readonly ImmutableDictionary<PokemonType, string> Resistances;
+        internal readonly ImmutableDictionary<PokemonType, int> RetreatCost;
+        internal readonly int ConvertedRetreatCost;
+        internal readonly ImmutableDictionary<ImageSize, string> ImageFileNames;
+        internal readonly string SetId;
+        internal readonly string SetName;
+        internal readonly string SetSeries;
+        internal readonly int Number;
+        internal readonly string Artist;
+        internal readonly Rarity Rarity;
+        internal readonly string FlavorText;
+        internal readonly IDictionary<Legality, LegalType> Legalities;
 
-        public readonly string SetId;
-        public readonly string SetName;
-        public readonly string SetSeries;
-        public readonly int Number;
-        public readonly string Artist;
-        public readonly Rarity Rarity;
-        public readonly string FlavorText;
-        public readonly IDictionary<Legality, LegalType> Legalities;
-
-        public PokemonCard(
+        internal PokemonCard(
             string id,
             string name,
             CardSupertype supertype,
@@ -120,29 +118,29 @@ namespace PokemonTCG.Models
             IDictionary<Legality, LegalType> legalities
         )
         {
-            this.Id = id;
-            this.Name = name;
-            this.Supertype = supertype;
-            this.Subtypes = subtypes.ToImmutableList();
-            this.Level = level;
-            this.Hp = hp;
-            this.Types = types.ToImmutableList();
-            this.EvolvesFrom = evolvesFrom;
-            this.Abilities = abilities.ToImmutableList();
-            this.Attacks = attacks.ToImmutableList();
-            this.Weaknesses = weaknesses.ToImmutableDictionary();
-            this.Resistances = resistances.ToImmutableDictionary();
-            this.RetreatCost = retreatCost.ToImmutableDictionary();
-            this.ConvertedRetreatCost = convertedRetreatCost;
-            this.ImageFileNames = imageFileNames.ToImmutableDictionary();
-            this.SetId = setId;
-            this.SetName = setName;
-            this.SetSeries = setSeries;
-            this.Number = number;
-            this.Artist = artist;
-            this.Rarity = rarity;
-            this.FlavorText = flavorText;
-            this.Legalities = legalities;
+            Id = id;
+            Name = name;
+            Supertype = supertype;
+            Subtypes = subtypes.ToImmutableList();
+            Level = level;
+            Hp = hp;
+            Types = types.ToImmutableList();
+            EvolvesFrom = evolvesFrom;
+            Abilities = abilities.ToImmutableList();
+            Attacks = attacks.ToImmutableList();
+            Weaknesses = weaknesses.ToImmutableDictionary();
+            Resistances = resistances.ToImmutableDictionary();
+            RetreatCost = retreatCost.ToImmutableDictionary();
+            ConvertedRetreatCost = convertedRetreatCost;
+            ImageFileNames = imageFileNames.ToImmutableDictionary();
+            SetId = setId;
+            SetName = setName;
+            SetSeries = setSeries;
+            Number = number;
+            Artist = artist;
+            Rarity = rarity;
+            FlavorText = flavorText;
+            Legalities = legalities;
         }
 
         private static readonly ImmutableDictionary<string, CardSupertype> cardSupertypeMap =
@@ -153,7 +151,7 @@ namespace PokemonTCG.Models
                 { "Energy", CardSupertype.Energy }
             }.ToImmutableDictionary();
 
-        public static CardSupertype GetCardSuperType(string supertype)
+        internal static CardSupertype GetCardSuperType(string supertype)
         {
             CardSupertype cardSupertype = cardSupertypeMap[supertype];
             return cardSupertype;
@@ -168,7 +166,7 @@ namespace PokemonTCG.Models
                 { "Special", CardSubtype.SPECIAL }
             }.ToImmutableDictionary();
 
-        public static CardSubtype GetCardSubType(string subtype)
+        internal static CardSubtype GetCardSubType(string subtype)
         {
             CardSubtype cardSubtype = cardSubtypeMap[subtype];
             return cardSubtype;
@@ -193,7 +191,7 @@ namespace PokemonTCG.Models
         /// </summary>
         /// <param name="pokemonType">The string that represents a <c>PokemonType</c></param>
         /// <returns>The <c>PokemonType</c> that the string corresponds to</returns>
-        public static PokemonType GetPokemonType(string pokemonType)
+        internal static PokemonType GetPokemonType(string pokemonType)
         {
             PokemonType type = pokemonTypeMap[pokemonType];
             return type;
@@ -209,7 +207,7 @@ namespace PokemonTCG.Models
                 { "Common", Models.Rarity.COMMON}
             }.ToImmutableDictionary();
 
-        public static Rarity GetRarity(string rarity)
+        internal static Rarity GetRarity(string rarity)
         {
             return rarityMap[rarity];
         }
@@ -222,7 +220,7 @@ namespace PokemonTCG.Models
                { "standard", Legality.STANDARD }
            }.ToImmutableDictionary();
 
-        public static Legality GetLegality(string legality)
+        internal static Legality GetLegality(string legality)
         {
             return legalityMap[legality];
         }
@@ -234,7 +232,7 @@ namespace PokemonTCG.Models
                { "Illegal", LegalType.ILLEGAL }
            }.ToImmutableDictionary();
 
-        public static LegalType GetLegalType(string legalType)
+        internal static LegalType GetLegalType(string legalType)
         {
             return legalTypeMap[legalType];
         }

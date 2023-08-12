@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Xml.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Media;
-using Microsoft.UI.Xaml.Media.Imaging;
-using PokemonTCG.Utilities;
+using PokemonTCG.Models;
 using PokemonTCG.ViewModel;
 
 namespace PokemonTCG.View
@@ -19,20 +12,22 @@ namespace PokemonTCG.View
     /// </summary>
     public sealed partial class HandPage : Page
     {
+        private CardViewViewModel CardViewModel;
 
         public HandPage()
         {
             InitializeComponent();
         }
 
-        public void SetViewModel(HandViewModel viewModel)
+        internal void SetViewModels(HandViewModel handViewModel, CardViewViewModel cardViewModel)
         {
-            viewModel.images.CollectionChanged += HandChanged;
+            handViewModel.Images.CollectionChanged += HandChanged;
+            CardViewModel = cardViewModel;
         }
 
         private readonly List<ColumnDefinition> ColumnDefinitions = new();
+        private readonly List<CardView> CardViews = new();
         private readonly List<string> ImagePaths = new();
-        private readonly List<Image> Images = new();
 
         private void HandChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
@@ -42,7 +37,7 @@ namespace PokemonTCG.View
                 {
                     HandGrid.ColumnDefinitions.Remove(ColumnDefinitions[^1]);
                     ColumnDefinitions.RemoveAt(ColumnDefinitions.Count - 1);
-                    Images.RemoveAt(ImagePaths.IndexOf(item));
+                    CardViews.RemoveAt(ImagePaths.IndexOf(item));
                     ImagePaths.Remove(item);
                 }
             }
@@ -58,26 +53,19 @@ namespace PokemonTCG.View
                     ColumnDefinitions.Add(cd);
                     HandGrid.ColumnDefinitions.Add(cd);
 
-                    Image image = new() {
-                        Source = new BitmapImage(new Uri(FileUtil.GetFullPath(item))),
-                        Stretch = Stretch.Uniform,
-                    };
-                    image.Tapped += ImageTapped;
-                    FlyoutBase.SetAttachedFlyout(image, ImagePreviewFlyout);
-
-                    Images.Add(image);
+                    CardView cardView = new();
+                    cardView.SetViewModel(CardViewModel);
+                    CardViewModel.SetCardViewState(new CardViewState(item, true, true, true, true));
+                    CardViews.Add(cardView);
                     ImagePaths.Add(item);
-                    Grid.SetColumn(image, Images.Count - 1);
-                    HandGrid.Children.Add(image);
+
+                    Grid.SetColumn(cardView, ImagePaths.Count - 1);
+                    HandGrid.Children.Add(cardView);
                 }
             }
         }
 
-        private void ImageTapped(object sender, TappedRoutedEventArgs e)
-        {
-            (((Flyout.GetAttachedFlyout(sender as Image)) as Flyout).Content as Image).Source = (sender as Image).Source;
-            Flyout.ShowAttachedFlyout(sender as Image);
-        }
+
     }
 
 }

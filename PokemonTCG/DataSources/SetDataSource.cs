@@ -18,7 +18,7 @@ namespace PokemonTCG.DataSources
         /// <summary>
         /// Loads all <c>Card</c> instances from folder.
         /// </summary>
-        public static async Task LoadSets()
+        internal static async Task LoadSets()
         {
             // Get the json files from the folder
             StorageFolder storageFolder = await FileUtil.GetFolder(setFolder);

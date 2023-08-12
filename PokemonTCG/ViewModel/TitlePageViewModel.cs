@@ -1,6 +1,5 @@
 ﻿using Microsoft.UI.Xaml.Controls;
 using PokemonTCG.DataSources;
-using PokemonTCG.Models;
 using PokemonTCG.View;
 using System;
 using System.Threading.Tasks;

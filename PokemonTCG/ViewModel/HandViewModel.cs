@@ -1,22 +1,21 @@
 ﻿using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using PokemonTCG.Models;
-using PokemonTCG.Utilities;
 
 namespace PokemonTCG.ViewModel
 {
 
-    public class HandViewModel
+    internal class HandViewModel
     {
 
-        public ObservableCollection<string> images = new();
+        internal ObservableCollection<string> Images = new();
 
         internal void SetHand(ImmutableList<PokemonCard> hand)
         {
-            images.Clear();
+            Images.Clear();
             foreach (PokemonCard card in hand)
             {
-                images.Add(card.ImageFileNames[ImageSize.LARGE]);
+                Images.Add(card.ImageFileNames[ImageSize.LARGE]);
             }
         }
 

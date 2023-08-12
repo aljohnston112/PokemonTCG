@@ -5,27 +5,25 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PokemonTCG.Models
 {
-    public class GameTemplate
+    internal class GameTemplate
     {
 
         private int PlayerDraws = 0;
         private int OpponentDraws = 0;
         private bool PlayerTurn;
 
-        private TurnTemplate PlayerTurnTemplate;
-        private TurnTemplate OpponentTurnTemplate;
+        private readonly TurnTemplate PlayerTurnTemplate;
+        private readonly  TurnTemplate OpponentTurnTemplate;
 
-        public static bool FlipCoin()
+        internal static bool FlipCoin()
         {
             return new Random().Next(2) == 0;
         }
 
-        public GameState SetUpGame(
+        internal GameState SetUpGame(
             PokemonDeck playerDeck,
             PokemonDeck opponentDeck
             )
@@ -120,7 +118,7 @@ namespace PokemonTCG.Models
             // TODO maybe max damage and evolution
         }
 
-        private Dictionary<PokemonCard, int> GetDamagePerEnergy(ImmutableList<PokemonCard> potentialPokemon)
+        private static Dictionary<PokemonCard, int> GetDamagePerEnergy(ImmutableList<PokemonCard> potentialPokemon)
         {
             List<PokemonCard> fastestAttackers = new();
             Dictionary<PokemonCard, int> pokemonDamage = new();
@@ -156,7 +154,7 @@ namespace PokemonTCG.Models
             return efficientAttackers;
         }
 
-        private IDictionary<PokemonCard, int> RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(GameState gameState)
+        private static IDictionary<PokemonCard, int> RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(GameState gameState)
         {
             Dictionary<PokemonCard, int> rank = new();
 
@@ -208,13 +206,13 @@ namespace PokemonTCG.Models
             return enoughEnergyForAttack;
         }
 
-        public GameState OnPlayerSelectedActivePokemon(GameState gameState)
+        internal GameState OnPlayerSelectedActivePokemon(GameState gameState)
         {
             PlayerState playerState = gameState.PlayerState.DrawCards(PlayerDraws);
             return new GameState(playerState, gameState.OpponentState);
         }
 
-        public GameState NextTurn(GameState gameState)
+        internal GameState NextTurn(GameState gameState)
         {
             GameState newGameState;
             if (PlayerTurn)

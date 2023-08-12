@@ -1,18 +1,16 @@
-﻿using System.Collections.Generic;
-
-namespace PokemonTCG.Models
+﻿namespace PokemonTCG.Models
 {
-    public class Ability
+    internal class Ability
     {
-        public readonly string Name;
-        public readonly string Text;
-        public readonly string Type;
+        internal readonly string Name;
+        internal readonly string Text;
+        internal readonly string Type;
 
-        public Ability(string name, string text, string type)
+        internal Ability(string name, string text, string type)
         {
-            this.Name = name;
-            this.Text = text;
-            this.Type = type;
+            Name = name;
+            Text = text;
+            Type = type;
         }
 
     }

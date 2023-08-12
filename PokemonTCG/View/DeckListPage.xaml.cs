@@ -21,13 +21,13 @@ namespace PokemonTCG.View
 
         private void CreateNewDeckEvent(object sender, RoutedEventArgs args)
         {
-            this.Frame.Navigate(typeof(DeckEditorPage));
+            Frame.Navigate(typeof(DeckEditorPage));
         }
 
         private void SetUpDeckClickListener(object sender, ItemClickEventArgs e)
         {
             String deckName = e.ClickedItem.ToString();
-            this.Frame.Navigate(typeof(DeckEditorPage), deckName);
+            Frame.Navigate(typeof(DeckEditorPage), deckName);
         }
 
     }

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Linq;
 using PokemonTCG.DataSources;
 using PokemonTCG.Models;
 using PokemonTCG.View;
@@ -18,9 +16,9 @@ namespace PokemonTCG.ViewModel
         {
             return CardItems.Values;
         }
-        public readonly ObservableCollection<CardItemView> CardItemViews = new();
+        internal readonly ObservableCollection<CardItemView> CardItemViews = new();
 
-        public void AddCardItems(ISet<CardItem> cardItems)
+        internal void AddCardItems(ISet<CardItem> cardItems)
         {
             foreach (var cardItem in cardItems)
             {
@@ -66,7 +64,7 @@ namespace PokemonTCG.ViewModel
             }
         }
 
-        public void UpdateSearchString(string text)
+        internal void UpdateSearchString(string text)
         {
             _sifter = _sifter.NewString(text);
             SiftCards();

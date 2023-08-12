@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace PokemonTCG.Models
 {
     internal abstract class TurnTemplate
     {
         internal abstract GameState NextTurn(GameState gameState);
+
     }
+
 }
 
 /*

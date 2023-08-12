@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
-using Microsoft.UI.Xaml.Navigation;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 
@@ -17,7 +15,7 @@ namespace PokemonTCG.View
     /// </summary>
     public sealed partial class PlayerPage : Page
     {
-        public PlayerPageViewModel ViewModel;
+        private PlayerPageViewModel ViewModel;
 
         public PlayerPage()
         {
@@ -30,8 +28,8 @@ namespace PokemonTCG.View
 
             void onPlayerStateChanged(PlayerState playerState)
             {
-                string path= FileUtil.GetFullPath(playerState.Active?.ImageFileNames[ImageSize.LARGE] ?? "/Assets/BlankCard2.png");
-                Uri uri = new Uri(path);
+                string path= FileUtil.GetFullPath(playerState.Active?.PokemonCard?.ImageFileNames[ImageSize.LARGE] ?? "/Assets/BlankCard2.png");
+                Uri uri = new(path);
                 ActiveImage.Source = new BitmapImage(uri);
 
                 if (playerState.Deck.Count > 0)
@@ -62,7 +60,7 @@ namespace PokemonTCG.View
 
                 for (int i = 0; i < playerState.Bench.Count; i++)
                 {
-                    benchImages[i].Source = new BitmapImage(new Uri(FileUtil.GetFullPath(playerState.Bench[i].ImageFileNames[ImageSize.LARGE])));
+                    benchImages[i].Source = new BitmapImage(new Uri(FileUtil.GetFullPath(playerState.Bench[i].PokemonCard.ImageFileNames[ImageSize.LARGE])));
                 }
                 for (int i = playerState.Bench.Count; i < benchImages.Count; i++)
                 {

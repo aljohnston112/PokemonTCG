@@ -5,18 +5,18 @@ using System.Diagnostics;
 
 namespace PokemonTCG.Models
 {
-    public class PokemonDeck
+    internal class PokemonDeck
     {
 
-        public readonly ImmutableArray<string> CardIds;
-        public readonly string Name;
+        internal readonly ImmutableArray<string> CardIds;
+        internal readonly string Name;
 
         /// <summary>
         /// Creates a Deck given the ids of Pokemon cards.
         /// </summary>
         /// <param name="name">The name of the deck.</param>
         /// <param name="ids">The ids of Pokemon cards</param>
-        public PokemonDeck(string name, ICollection<string> ids)
+        internal PokemonDeck(string name, ICollection<string> ids)
         {
             Debug.Assert(ids.Count == 60);
             CardIds = ids.ToImmutableArray();
@@ -26,8 +26,8 @@ namespace PokemonTCG.Models
         internal ImmutableList<string> Shuffle()
         {
             // Fisher-Yates
-            Random random = new Random();
-            List<int> visited = new List<int>();
+            Random random = new();
+            List<int> visited = new();
             List<string> shuffledIds = new(CardIds);
             for(int i = 0; i < CardIds.Length; i++)
             {
@@ -44,7 +44,7 @@ namespace PokemonTCG.Models
 
 
 
-        public static readonly PokemonDeck BLACKOUT_DECK = new(
+        internal static readonly PokemonDeck BLACKOUT_DECK = new(
             "Blackout",
             ImmutableList.Create(
                 "base1-7", "base1-79", "base1-93", "base1-84", "base1-88", "base1-34",

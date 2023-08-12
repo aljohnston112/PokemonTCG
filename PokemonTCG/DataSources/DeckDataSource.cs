@@ -13,16 +13,16 @@ namespace PokemonTCG.DataSources
 {
     internal class DeckDataSource
     {
-        public static readonly int NUMBER_OF_CARDS_PER_DECK = 60;
+        internal static readonly int NUMBER_OF_CARDS_PER_DECK = 60;
         private static readonly Mutex FileMutex = new();
         private static readonly Dictionary<string, PokemonDeck> Decks = new();
 
-        public static ImmutableDictionary<string, PokemonDeck> GetDecks()
+        internal static ImmutableDictionary<string, PokemonDeck> GetDecks()
         {
             return Decks.ToImmutableDictionary();
         }
 
-        public static async Task LoadDecks()
+        internal static async Task LoadDecks()
         {
             FileMutex.WaitOne();
             string deckFile = "\\AppData\\decks.decks";
@@ -61,7 +61,7 @@ namespace PokemonTCG.DataSources
             await SaveDeck(PokemonDeck.BLACKOUT_DECK);
         }
 
-        public static async Task SaveDeck(PokemonDeck deck)
+        internal static async Task SaveDeck(PokemonDeck deck)
         {
             FileMutex.WaitOne();
             Decks[deck.Name] = deck;

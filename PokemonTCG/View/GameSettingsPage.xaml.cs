@@ -45,5 +45,7 @@ namespace PokemonTCG.View
         {
             Frame.GoBack();
         }
+
     }
+
 }

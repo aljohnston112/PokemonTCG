@@ -14,7 +14,7 @@ namespace PokemonTCG.View
 
         public TitlePage()
         {
-            this.InitializeComponent();
+            InitializeComponent();
             titlePageViewModel.OnInit();
         }
 

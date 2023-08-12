@@ -7,7 +7,7 @@ namespace PokemonTCG
 
         private MainWindow m_window;
 
-        public App()
+        internal App()
         {
             this.InitializeComponent();
         }
