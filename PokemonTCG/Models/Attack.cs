@@ -4,9 +4,6 @@ using System.Collections.Generic;
 namespace PokemonTCG.Models
 {
 
-    /// <summary>
-    /// To be used for the <c>PokemonCard</c>s.
-    /// </summary>
     internal class Attack
     {
 
@@ -16,11 +13,6 @@ namespace PokemonTCG.Models
         internal readonly int Damage;
         internal readonly string Text;
 
-        /// <summary>
-        /// Creates an <c>Attack</c> to be used for the <c>PokemonCard</c>s.
-        /// </summary>
-        /// <param name="name">The name of the attack</param>
-        /// <param name="energyCost">The energy cost of the attack</param>
         internal Attack(
             string name, 
             Dictionary<PokemonType, int> energyCost, 

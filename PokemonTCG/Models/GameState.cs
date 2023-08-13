@@ -9,6 +9,7 @@
         internal readonly PlayerState OpponentState;
         internal readonly PokemonCard StadiumCard;
 
+
         internal GameState(
             PlayerState playerState, 
             PlayerState newOpponentState, 

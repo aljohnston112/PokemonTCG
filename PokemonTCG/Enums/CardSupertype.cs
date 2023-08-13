@@ -3,9 +3,9 @@
 
     internal enum CardSupertype
     {
-        Pokémon,
-        Trainer,
-        Energy
+        POKéMON,
+        TRAINER,
+        ENERGY
     }
 
 }

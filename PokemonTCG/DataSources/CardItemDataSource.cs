@@ -12,11 +12,6 @@ namespace PokemonTCG.DataSources
     internal class CardItemDataSource
     {
 
-        /// <summary>
-        /// Gets the card items from a set.
-        /// </summary>
-        /// <param name="deckFile">The deckFile</param>
-        /// <returns></returns>
         internal static async IAsyncEnumerable<CardItem> GetCardItemsForSet(string setName)
         {
             ICollection<PokemonCard> cards = await SetDataSource.LoadSet(setName);
@@ -42,12 +37,12 @@ namespace PokemonTCG.DataSources
                 );
         }
 
-        internal static int GetCardLimit(PokemonCard card)
+        private static int GetCardLimit(PokemonCard card)
         {
             int cardLimit = PokemonDeck.NON_ENERGY_CARD_LIMIT;
 
             // Energies do not have a limit; colorless energies do though
-            if (card.Supertype == CardSupertype.Energy && card.Name != "Double Colorless Energy")
+            if (card.Supertype == CardSupertype.ENERGY && card.Name != "Double Colorless Energy")
             {
                 cardLimit = -1;
             }

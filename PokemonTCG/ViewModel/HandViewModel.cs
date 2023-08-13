@@ -11,7 +11,7 @@ namespace PokemonTCG.ViewModel
 
         internal ObservableCollection<string> Images = new();
 
-        internal void SetHand(ImmutableList<PokemonCard> hand)
+        internal void SetHand(IImmutableList<PokemonCard> hand)
         {
             Images.Clear();
             foreach (PokemonCard card in hand)

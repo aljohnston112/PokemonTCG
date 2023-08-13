@@ -17,13 +17,13 @@ namespace PokemonTCG.View
     internal class GameArguments
     {
 
-        internal readonly string PlayerDeck;
-        internal readonly string OpponentDeck;
+        internal readonly string PlayerDeckName;
+        internal readonly string OpponentDeckName;
 
         internal GameArguments(string playerDeck, string opponentDeck)
         {
-            PlayerDeck = playerDeck;
-            OpponentDeck = opponentDeck;
+            PlayerDeckName = playerDeck;
+            OpponentDeckName = opponentDeck;
         }
 
     }
@@ -33,19 +33,18 @@ namespace PokemonTCG.View
     /// </summary>
     public sealed partial class GamePage : Page
     {
-
         private readonly GamePageViewModel GamePageViewModel;
-        private readonly CardViewViewModel CardViewViewModel;
 
-
-        private readonly PlayerPage PlayerPage;
-        private readonly PlayerPage OpponentPage;
         private readonly HandPage handPage = new();
-
-        private readonly PlayerPageViewModel PlayerPageViewModel = new();
-        private readonly PlayerPageViewModel OpponentPageViewModel = new();
         private readonly HandViewModel HandViewModel = new();
 
+        private readonly PlayerPage PlayerPage;
+        private readonly PlayerPageViewModel PlayerPageViewModel = new();
+
+        private readonly PlayerPage OpponentPage;
+        private readonly PlayerPageViewModel OpponentPageViewModel = new();
+
+        private readonly CardViewViewModel CardViewViewModel = new();
 
         public GamePage()
         {
@@ -54,18 +53,18 @@ namespace PokemonTCG.View
             GamePageViewModel = new(
                 (GameState gameState) =>
                     {
+                        HandViewModel.SetHand(gameState.PlayerState.Hand);
                         PlayerPageViewModel.OnStateChange(gameState.PlayerState);
                         OpponentPageViewModel.OnStateChange(gameState.OpponentState);
-                        HandViewModel.SetHand(gameState.PlayerState.Hand);
                     }
                 );
 
-            CardViewViewModel = new();
 
             PlayerPage = PagePlayer;
-            PlayerPage.SetViewModel(PlayerPageViewModel);
+            PlayerPage.SetViewModels(PlayerPageViewModel, CardViewViewModel);
+
             OpponentPage = PageOpponent;
-            OpponentPage.SetViewModel(OpponentPageViewModel);
+            OpponentPage.SetViewModels(OpponentPageViewModel, CardViewViewModel);
 
             RotateOpponentPage();
             OpponentPage.HideAttacks();
@@ -78,7 +77,7 @@ namespace PokemonTCG.View
         {
             base.OnNavigatedTo(e);
             GameArguments gameArguments = e.Parameter as GameArguments;
-            _ = GamePageViewModel.StartGame(gameArguments);
+            GamePageViewModel.StartGame(gameArguments);
         }
 
         private void ShowHand()

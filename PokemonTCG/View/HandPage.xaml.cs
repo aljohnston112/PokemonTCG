@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Collections.Specialized;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Media.Imaging;
 using PokemonTCG.Models;
+using PokemonTCG.Utilities;
 using PokemonTCG.ViewModel;
 
 namespace PokemonTCG.View
@@ -26,7 +31,7 @@ namespace PokemonTCG.View
         }
 
         private readonly List<ColumnDefinition> ColumnDefinitions = new();
-        private readonly List<CardView> CardViews = new();
+        private readonly List<Image> CardImages = new();
         private readonly List<string> ImagePaths = new();
 
         private void HandChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -37,7 +42,7 @@ namespace PokemonTCG.View
                 {
                     HandGrid.ColumnDefinitions.Remove(ColumnDefinitions[^1]);
                     ColumnDefinitions.RemoveAt(ColumnDefinitions.Count - 1);
-                    CardViews.RemoveAt(ImagePaths.IndexOf(item));
+                    CardImages.RemoveAt(ImagePaths.IndexOf(item));
                     ImagePaths.Remove(item);
                 }
             }
@@ -53,14 +58,23 @@ namespace PokemonTCG.View
                     ColumnDefinitions.Add(cd);
                     HandGrid.ColumnDefinitions.Add(cd);
 
-                    CardView cardView = new();
-                    cardView.SetViewModel(CardViewModel);
-                    CardViewModel.SetCardViewState(new CardViewState(item, true, true, true, true));
-                    CardViews.Add(cardView);
+                    Image image = new()
+                    {
+                        Source = new BitmapImage(new Uri(FileUtil.GetFullPath(item)))
+                    };
+                    image.Tapped += FlyoutUtil.ImageTapped;
+
+                    Flyout flyout = Resources["ImagePreviewFlyout"] as Flyout;
+                    FlyoutBase.SetAttachedFlyout(image, flyout);
+
+                    IImmutableList<string> commands = ImmutableList.Create<string>();
+                    image.ContextFlyout = FlyoutUtil.CreateCommandBarFlyout(commands);
+
+                    CardImages.Add(image);
                     ImagePaths.Add(item);
 
-                    Grid.SetColumn(cardView, ImagePaths.Count - 1);
-                    HandGrid.Children.Add(cardView);
+                    Grid.SetColumn(image, ImagePaths.Count - 1);
+                    HandGrid.Children.Add(image);
                 }
             }
         }

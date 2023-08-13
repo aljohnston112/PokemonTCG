@@ -15,22 +15,22 @@ namespace PokemonTCG.Models
     {
         private static readonly int MAX_BENCH_SIZE = 5;
 
-        internal readonly ImmutableList<PokemonCard> Deck;
-        internal readonly ImmutableList<PokemonCard> Hand;
+        internal readonly IImmutableList<PokemonCard> Deck;
+        internal readonly IImmutableList<PokemonCard> Hand;
         internal readonly PokemonCardState Active;
-        internal readonly ImmutableList<PokemonCardState> Bench;
-        internal readonly ImmutableList<PokemonCard> Prizes;
-        internal readonly ImmutableList<PokemonCard> DiscardPile;
-        internal readonly ImmutableList<PokemonCard> LostZone;
+        internal readonly IImmutableList<PokemonCardState> Bench;
+        internal readonly IImmutableList<PokemonCard> Prizes;
+        internal readonly IImmutableList<PokemonCard> DiscardPile;
+        internal readonly IImmutableList<PokemonCard> LostZone;
 
         internal PlayerState(
-            ImmutableList<PokemonCard> deck,
-            ImmutableList<PokemonCard> hand,
+            IImmutableList<PokemonCard> deck,
+            IImmutableList<PokemonCard> hand,
             PokemonCardState active,
-            ImmutableList<PokemonCardState> bench,
-            ImmutableList<PokemonCard> prizes,
-            ImmutableList<PokemonCard> discardPile,
-            ImmutableList<PokemonCard> lostZone
+            IImmutableList<PokemonCardState> bench,
+            IImmutableList<PokemonCard> prizes,
+            IImmutableList<PokemonCard> discardPile,
+            IImmutableList<PokemonCard> lostZone
         )
         {
             Deck = deck;
@@ -77,20 +77,36 @@ namespace PokemonTCG.Models
         internal PlayerState MoveFromHandToActive(PokemonCard active)
         {
             Debug.Assert(Hand.Contains(active));
-            return new PlayerState(Deck, Hand.Remove(active), new PokemonCardState(active), Bench, Prizes, DiscardPile, LostZone);
+            return new PlayerState(
+                deck: Deck,
+                hand: Hand.Remove(active),
+                active: new PokemonCardState(active),
+                bench: Bench,
+                prizes: Prizes,
+                discardPile: DiscardPile,
+                lostZone: LostZone
+                );
         }
 
         internal PlayerState MoveFromHandToBench(IList<PokemonCard> benchable)
         {
             // TODO All 4 cards of a V-UNION can be played only from the discard pile and take up one bench spot.
             Debug.Assert(benchable.Count < (MAX_BENCH_SIZE - Bench.Count));
-            ImmutableList<PokemonCard> newHand = Hand;
+            IImmutableList<PokemonCard> newHand = Hand;
             foreach (PokemonCard card in benchable)
             {
                 Debug.Assert(Hand.Contains(card));
                 newHand = newHand.Remove(card);
             }
-            return new PlayerState(Deck, newHand, Active, Bench.AddRange(benchable.Select(card => new PokemonCardState(card))), Prizes, DiscardPile, LostZone);
+            return new PlayerState(
+                deck: Deck,
+                hand: newHand,
+                active: Active,
+                bench: Bench.AddRange(benchable.Select(card => new PokemonCardState(card))),
+                prizes: Prizes,
+                discardPile: DiscardPile,
+                lostZone: LostZone
+                );
         }
 
         internal PlayerState SetUpPrizes(bool isSuddenDeath = false)
@@ -100,46 +116,36 @@ namespace PokemonTCG.Models
             {
                 numberOfPrizes = 1;
             }
-            (ImmutableList<PokemonCard> deck, ImmutableList<PokemonCard> prizes) = DeckUtil.DrawCards(Deck, numberOfPrizes);
-            return new PlayerState(deck, Hand, Active, Bench, prizes, DiscardPile, LostZone);
+            (IImmutableList<PokemonCard> newDeck, IImmutableList<PokemonCard> prizes) = DeckUtil.DrawCards(
+                Deck,
+                numberOfPrizes
+                );
+            return new PlayerState(
+                deck: newDeck,
+                hand: Hand,
+                active: Active,
+                bench: Bench,
+                prizes: prizes,
+                discardPile: DiscardPile,
+                lostZone: LostZone
+                );
         }
 
-        internal PlayerState DrawCards(int numberOfDraws)
+        internal PlayerState DrawCards(int numberToDraw)
         {
-            (ImmutableList<PokemonCard> deck, ImmutableList<PokemonCard> drawn) = DeckUtil.DrawCards(Deck, numberOfDraws);
-            return new PlayerState(deck, Hand.AddRange(drawn), Active, Bench, Prizes, DiscardPile, LostZone);
-        }
-
-        private static int IndexOfCard(ImmutableList<PokemonCardState> cardStates, string benchedCardId)
-        {
-            bool found = false;
-            int i = -1;
-            while (i < cardStates.Count && !found)
-            {
-                i++;
-                PokemonCard card = cardStates[i].PokemonCard;
-                if (card.Id == benchedCardId)
-                {
-                    found = true;
-                }
-            }
-            return i;
-        }
-
-        private static int IndexOfCard(ImmutableList<PokemonCard> cards, string benchedCardId)
-        {
-            bool found = false;
-            int i = -1;
-            while (i < cards.Count && !found)
-            {
-                i++;
-                PokemonCard card = cards[i];
-                if (card.Id == benchedCardId)
-                {
-                    found = true;
-                }
-            }
-            return i;
+            (IImmutableList<PokemonCard> newDeck, IImmutableList<PokemonCard> drawn) = DeckUtil.DrawCards(
+                Deck,
+                numberToDraw
+                );
+            return new PlayerState(
+                deck: newDeck,
+                hand: Hand.AddRange(drawn),
+                active: Active,
+                bench: Bench,
+                prizes: Prizes,
+                discardPile: DiscardPile,
+                lostZone: LostZone
+                );
         }
 
         internal PlayerState EvolveActivePokemon(string evolvedCardId)
@@ -150,14 +156,22 @@ namespace PokemonTCG.Models
             {
                 throw new ArgumentException($"The hand did not contain the specified id: {evolvedCardId}");
             }
-
             PokemonCard card = Hand[i];
+
             string lowerStageName = Active.PokemonCard.Name;
             if (lowerStageName != card.EvolvesFrom)
             {
                 throw new ArgumentException($"Card with id: {evolvedCardId} does not evolve from {lowerStageName}");
             }
-            return new PlayerState(Deck, Hand.Remove(card), Active.EvolveTo(card), Bench, Prizes, DiscardPile, LostZone);
+            return new PlayerState(
+                deck: Deck, 
+                hand: Hand.Remove(card), 
+                active: Active.EvolveTo(card), 
+                bench: Bench, 
+                prizes: Prizes,
+                discardPile: DiscardPile,
+                lostZone: LostZone
+                );
         }
 
         internal PlayerState EvolveBenchedPokemon(string benchedCardId, string evolvedCardId)
@@ -174,11 +188,19 @@ namespace PokemonTCG.Models
             {
                 throw new ArgumentException($"The hand did not contain the specified id: {evolvedCardId}");
             }
-
             PokemonCard card = Hand[iForHand];
-            List<PokemonCardState> mutableBench = Bench.ToList();
+
+            IList<PokemonCardState> mutableBench = Bench.ToList();
             mutableBench[iForBench] = Bench[iForBench].EvolveTo(card);
-            return new PlayerState(Deck, Hand.Remove(card), Active, mutableBench.ToImmutableList(), Prizes, DiscardPile, LostZone);
+            return new PlayerState(
+                deck: Deck, 
+                hand: Hand.Remove(card), 
+                active: Active, 
+                bench: mutableBench.ToImmutableList(), 
+                prizes: Prizes,
+                discardPile: DiscardPile,
+                lostZone: LostZone
+                );
         }
 
         internal PlayerState AttachEnergyToActiveFromHand(string energyCardId)
@@ -190,7 +212,15 @@ namespace PokemonTCG.Models
             }
 
             PokemonCard card = Hand[i];
-            return new PlayerState(Deck, Hand.Remove(card), Active.AttachEnergy(card), Bench, Prizes, DiscardPile, LostZone);
+            return new PlayerState(
+                deck: Deck,
+                hand: Hand.Remove(card),
+                active: Active.AttachEnergy(card),
+                bench: Bench,
+                prizes: Prizes,
+                discardPile: DiscardPile,
+                lostZone: LostZone
+                );
         }
 
         internal PlayerState AttachEnergyToBenchedFromHand(string benchedCardId, string energyCardId)
@@ -206,11 +236,51 @@ namespace PokemonTCG.Models
             {
                 throw new ArgumentException($"Energy card with id {energyCardId} was not found in the hand");
             }
-
             PokemonCard energyCard = Hand[iForHand];
+
             List<PokemonCardState> mutableBench = Bench.ToList();
             mutableBench[iForBenched] = Bench[iForBenched].AttachEnergy(energyCard);
-            return new PlayerState(Deck, Hand.Remove(energyCard), Active, mutableBench.ToImmutableList(), Prizes, DiscardPile, LostZone);
+            return new PlayerState(
+                deck: Deck,
+                hand: Hand.Remove(energyCard),
+                active: Active,
+                bench: mutableBench.ToImmutableList(),
+                prizes: Prizes,
+                discardPile: DiscardPile,
+                lostZone: LostZone
+                );
+        }
+
+        private static int IndexOfCard(IImmutableList<PokemonCardState> cardStates, string benchedCardId)
+        {
+            bool found = false;
+            int i = -1;
+            while (i < cardStates.Count && !found)
+            {
+                i++;
+                PokemonCard card = cardStates[i].PokemonCard;
+                if (card.Id == benchedCardId)
+                {
+                    found = true;
+                }
+            }
+            return i;
+        }
+
+        private static int IndexOfCard(IImmutableList<PokemonCard> cards, string benchedCardId)
+        {
+            bool found = false;
+            int i = -1;
+            while (i < cards.Count && !found)
+            {
+                i++;
+                PokemonCard card = cards[i];
+                if (card.Id == benchedCardId)
+                {
+                    found = true;
+                }
+            }
+            return i;
         }
 
     }

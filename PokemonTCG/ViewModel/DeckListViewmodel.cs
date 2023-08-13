@@ -10,9 +10,9 @@ namespace PokemonTCG.ViewModel
 
         internal readonly ObservableCollection<string> DeckNames = new();
 
-        internal void LoadDecks()
+        internal void PopulateDeckNames()
         {
-            ImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
+            IImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
             foreach (string name in decks.Keys)
             {
                 DeckNames.Add(name);

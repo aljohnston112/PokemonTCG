@@ -1,7 +1,8 @@
-﻿using System;
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Media.Imaging;
+using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Input;
+using System.Collections.Immutable;
 
 namespace PokemonTCG.Utilities
 {
@@ -21,19 +22,29 @@ namespace PokemonTCG.Utilities
             Flyout.SetAttachedFlyout(element, null);
         }
 
-        internal static void ShowImageFlyout(string imagePath, FrameworkElement element)
+        internal static CommandBarFlyout CreateCommandBarFlyout(IImmutableList<string> commands)
         {
-            Flyout flyout = new();
-            FlyoutPresenter flyoutPresenter = new();
-            Image image = new()
+            CommandBarFlyout flyout = new()
             {
-                Source = new BitmapImage(new Uri(FileUtil.GetFullPath(imagePath))),
+                AlwaysExpanded = true
             };
-            flyoutPresenter.Content = image;
-            flyout.Content = flyoutPresenter;
-            Flyout.SetAttachedFlyout(element, flyout);
-            Flyout.ShowAttachedFlyout(element);
-            Flyout.SetAttachedFlyout(element, null);
+            foreach(string command in commands)
+            {
+                AppBarButton button = new()
+                {
+                    Label = command
+                };
+                flyout.SecondaryCommands.Add(button);
+            }
+            return flyout;
+        }
+
+        internal static void ImageTapped(object sender, TappedRoutedEventArgs e)
+        {
+            Flyout flyout = FlyoutBase.GetAttachedFlyout(sender as Image) as Flyout;
+            Image image = flyout.Content as Image;
+            image.Source = (sender as Image).Source;
+            FlyoutBase.ShowAttachedFlyout(sender as Image);
         }
 
     }

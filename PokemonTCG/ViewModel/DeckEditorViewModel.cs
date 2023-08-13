@@ -1,13 +1,13 @@
-﻿using PokemonTCG.DataSources;
+﻿using Microsoft.UI.Xaml.Controls;
+using PokemonTCG.DataSources;
 using PokemonTCG.Enums;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
-using PokemonTCG.View;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace PokemonTCG.ViewModel
@@ -17,8 +17,6 @@ namespace PokemonTCG.ViewModel
     /// </summary>
     internal class DeckEditorViewModel : BindableBase
     {
-        private readonly CardItemAdapter CardItemAdapter = new();
-        internal readonly ObservableCollection<CardItemView> CardItemViews;
 
         private int _numberOfCardsInDeck = 0;
         private string _numberOfCardsInDeckText = "0";
@@ -39,33 +37,28 @@ namespace PokemonTCG.ViewModel
             private set { SetProperty(ref _numberOfCardsInDeckText, value); }
         }
 
-        internal DeckEditorViewModel()
-        {
-            CardItemViews = CardItemAdapter.CardItemViews;
-        }
-
-        internal async Task OnNavigatedTo(object deckName)
+        internal void OnNavigatedTo(object deckName, CardItemAdapter cardItemAdapter)
         {
             ISet<string> sets = GetSetsForDeck(deckName);
 
             foreach (string set in sets)
             {
-                _ = LoadCardsItemsForSet(set);
+                _ = LoadCardsItemsForSet(set, cardItemAdapter);
             }
 
             if(deckName != null)
             {
-                AddDeckCards(deckName as string);
+                AddDeckCards(deckName as string, cardItemAdapter);
             }
 
         }
 
-        private void AddDeckCards(string deckName)
+        private void AddDeckCards(string deckName, CardItemAdapter cardItemAdapter)
         {
-            ImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
+            IImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
             foreach (string id in decks[deckName].CardIds)
             {
-                CardItemAdapter.IncrementCardCountForCardWithId(id);
+                cardItemAdapter.IncrementCardCountForCardWithId(id);
                 NumberOfCardsInDeck++;
                 Debug.Assert(NumberOfCardsInDeck <= 60 && NumberOfCardsInDeck >= 0);
             }
@@ -76,7 +69,7 @@ namespace PokemonTCG.ViewModel
             ISet<string> sets = new HashSet<string>();
             if (deckName != null)
             {
-                ImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
+                IImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
                 foreach (string id in decks[deckName as string].CardIds)
                 {
                     PokemonCard card = CardDataSource.GetCardById(id);
@@ -90,33 +83,38 @@ namespace PokemonTCG.ViewModel
             return sets;
         }
 
-        private async Task LoadCardsItemsForSet(string setName)
+        private static async Task LoadCardsItemsForSet(string setName, CardItemAdapter cardItemAdapter)
         {
             await foreach (CardItem item in CardItemDataSource.GetCardItemsForSet(setName))
             {
-                CardItemAdapter.AddCardItem(item);
+                cardItemAdapter.AddCardItem(item);
             }
         }
 
-        internal void ChangeCardItemCount(int oldValue, int newValue, CardItemView cardItemView)
+        internal void ChangeCardItemCount(
+            CardItemAdapter cardItemAdapter,
+            string cardId,
+            int newValue
+            )
         {
+            int oldValue = cardItemAdapter.GetAllCardItems().Where(item => item.Id == cardId).First().Count;
             int value = newValue;
             int diff = value - oldValue;
-            if ((diff + NumberOfCardsInDeck) > DeckDataSource.NUMBER_OF_CARDS_PER_DECK)
+            if ((diff + NumberOfCardsInDeck) > PokemonDeck.NUMBER_OF_CARDS_PER_DECK)
             {
-                value = (DeckDataSource.NUMBER_OF_CARDS_PER_DECK - NumberOfCardsInDeck);
+                value = (PokemonDeck.NUMBER_OF_CARDS_PER_DECK - NumberOfCardsInDeck);
                 diff = value - oldValue;
             }
             
             NumberOfCardsInDeck += diff;
-            CardItemAdapter.SetCardCountForCardWithId(cardItemView.Id, value);
-            Debug.Assert(NumberOfCardsInDeck <= DeckDataSource.NUMBER_OF_CARDS_PER_DECK && NumberOfCardsInDeck >= 0);
+            cardItemAdapter.SetCardCountForCardWithId(cardId, value);
+            Debug.Assert(NumberOfCardsInDeck <= PokemonDeck.NUMBER_OF_CARDS_PER_DECK && NumberOfCardsInDeck >= 0);
         }
 
-        internal bool HasBasicPokemon()
+        internal static bool HasBasicPokemon(CardItemAdapter cardItemAdapter)
         {
             // TODO Fossils count as basic Pokemon
-            ImmutableArray<CardItem> cardITems = CardItemAdapter.GetAllCardItems().ToImmutableArray();
+            ImmutableArray<CardItem> cardITems = cardItemAdapter.GetAllCardItems().ToImmutableArray();
             bool hasBasicPokemon = false;
             int i = 0;
             while (i < cardITems.Length && !hasBasicPokemon)
@@ -134,48 +132,28 @@ namespace PokemonTCG.ViewModel
         /// Creates a PokemonDeck from cards that have been selected by the user and are considered in-deck.
         /// </summary>
         /// <returns>Task representing the saving of the deck.</returns>
-        internal async Task CreateDeck(string name)
+        internal static async Task SaveDeck(string name, CardItemAdapter cardItemAdapter)
         {
-            Collection<string> cards = new();
-            foreach (CardItem card in CardItemAdapter.GetAllCardItems())
+            string[] cards = new string[PokemonDeck.NUMBER_OF_CARDS_PER_DECK];
+            foreach (CardItem card in cardItemAdapter.GetAllCardItems())
             {
                 for (int i = 0; i < card.Count; i++)
                 {
-                    cards.Add(card.Id);
+                    cards[i] = (card.Id);
                 }
             }
-            PokemonDeck deck = new(name, cards);
+            PokemonDeck deck = new(name, cards.ToImmutableArray());
             await DeckDataSource.SaveDeck(deck);
         }
 
-        internal void SearchStringUpdated(string text)
+        internal static double GetCardLimit(CardItem cardItem)
         {
-            CardItemAdapter.UpdateSearchString(text);
-        }
-
-        internal void OnPokemonCheckBox(bool isChecked)
-        {
-            CardItemAdapter.IncludePokemon(isChecked);
-        }
-
-        internal void OnTrainerCheckBox(bool isChecked)
-        {
-            CardItemAdapter.IncludeTrainer(isChecked);
-        }
-
-        internal void OnEnergyCheckBox(bool isChecked)
-        {
-            CardItemAdapter.IncludeEnergy(isChecked);
-        }
-
-        internal void OnTypeCheckBox(PokemonType type, bool isChecked)
-        {
-            CardItemAdapter.InludeType(type, isChecked);
-        }
-
-        internal void InDeckCheckbox(bool isChecked)
-        {
-            CardItemAdapter.IncludeOnlyThoseFromDeck(isChecked);
+            int limit = cardItem.Limit;
+            if (limit == -1)
+            {
+                limit = 60;
+            }
+            return limit;
         }
 
     }

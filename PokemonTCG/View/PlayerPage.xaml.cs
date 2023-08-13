@@ -8,6 +8,7 @@ using Microsoft.UI.Xaml.Media.Imaging;
 using PokemonTCG.Enums;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
+using PokemonTCG.ViewModel;
 
 namespace PokemonTCG.View
 {
@@ -16,16 +17,14 @@ namespace PokemonTCG.View
     /// </summary>
     public sealed partial class PlayerPage : Page
     {
-        private PlayerPageViewModel ViewModel;
 
         public PlayerPage()
         {
             InitializeComponent();
         }
 
-        internal void SetViewModel(PlayerPageViewModel viewModel)
+        internal void SetViewModels(PlayerPageViewModel playerPageViewModel, CardViewViewModel cardViewViewModel)
         {
-            ViewModel = viewModel;
 
             void onPlayerStateChanged(PlayerState playerState)
             {
@@ -91,12 +90,7 @@ namespace PokemonTCG.View
 
             }
 
-            ViewModel.SetOnPlayerStateChanged(onPlayerStateChanged);
-        }
-
-        private void ImageTapped(object sender, TappedRoutedEventArgs e)
-        {
-            FlyoutBase.ShowAttachedFlyout((FrameworkElement)sender);
+            playerPageViewModel.SetOnPlayerStateChanged(onPlayerStateChanged);
         }
 
         internal void HideAttacks()

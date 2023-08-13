@@ -6,7 +6,7 @@
         RARE_HOLO,
         RARE,
         UNCOMMON,
-        COMMON
+        COMMON,
     }
 
 }

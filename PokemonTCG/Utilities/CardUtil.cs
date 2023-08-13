@@ -8,7 +8,7 @@ namespace PokemonTCG.Utilities
 
         internal static bool IsBasicPokemon(PokemonCard card)
         {
-            return card.Supertype == CardSupertype.Pokémon && card.Subtypes.Contains(CardSubtype.BASIC);
+            return card.Supertype == CardSupertype.POKéMON && card.Subtypes.Contains(CardSubtype.BASIC);
         }
 
         internal static PokemonType GetEnergyType(PokemonCard card)

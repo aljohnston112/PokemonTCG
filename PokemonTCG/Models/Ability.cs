@@ -16,4 +16,5 @@ namespace PokemonTCG.Models
         }
 
     }
+
 }

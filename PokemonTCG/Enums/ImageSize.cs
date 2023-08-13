@@ -3,7 +3,7 @@
     internal enum ImageSize
     {
         SMALL,
-        LARGE
+        LARGE,
     }
 
 }

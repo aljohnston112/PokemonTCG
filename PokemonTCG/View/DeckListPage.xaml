@@ -13,12 +13,12 @@
             ItemsSource="{x:Bind ViewModel.DeckNames}"
             IsItemClickEnabled="True"
             SelectionMode="None"
-            ItemClick="SetUpDeckClickListener"/>
+            ItemClick="EditDeck"/>
 
         <Button
             Name="CreateNewDeckButton"
             Content="Create New Deck"
-            Click="CreateNewDeckEvent"
+            Click="CreateNewDeck"
             HorizontalAlignment="Right"
             VerticalAlignment="Bottom" />
 

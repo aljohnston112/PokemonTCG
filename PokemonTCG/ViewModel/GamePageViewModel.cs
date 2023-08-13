@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using PokemonTCG.DataSources;
 using PokemonTCG.Models;
@@ -18,16 +19,11 @@ namespace PokemonTCG.ViewModel
             OnGameStateChanged = onGameStateChanged;
         }
 
-        internal async Task StartGame(GameArguments gameArguments)
-        { 
-            string playerDeckName = gameArguments.PlayerDeck;
-            string opponentDeckName = gameArguments.OpponentDeck;
-
-            await DeckDataSource.LoadDecks();
-            IDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
-
-            PokemonDeck playerDeck = decks[playerDeckName];
-            PokemonDeck opponentDeck = decks[opponentDeckName];
+        internal void StartGame(GameArguments gameArguments)
+        {
+            IImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
+            PokemonDeck playerDeck = decks[gameArguments.PlayerDeckName];
+            PokemonDeck opponentDeck = decks[gameArguments.OpponentDeckName];
             GameState = GameTemplate.SetUpGame(playerDeck, opponentDeck);
             OnGameStateChanged(GameState);
         }

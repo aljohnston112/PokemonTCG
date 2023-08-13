@@ -1,165 +1,131 @@
-﻿<Page
-    x:Class="PokemonTCG.View.PlayerPage"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:custom="using:PokemonTCG.View"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+﻿<Page x:Class="PokemonTCG.View.PlayerPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:custom="using:PokemonTCG.View"
+      xmlns:util="using:PokemonTCG.Utilities"
+      Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Page.Resources>
-        <!--
-        <SolidColorBrush x:Key="Color" Color="#F3D14B"/>
-        -->
-        <SolidColorBrush
-            x:Key="BackgroundColor"
-            Color="#192653" />
-
-        <Flyout
-            x:Key="ImagePreviewFlyout"
-            Placement="Right">
-
-            <!-- The flyout's DataContext must be the Image Source
-             of the image the flyout is attached to. -->
-
-            <Image
-                Source="{Binding Path=Source}"
-                MaxHeight="560"
-                MaxWidth="560"
-                Stretch="Uniform" />
-
-        </Flyout>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <XamlControlsResources xmlns="using:Microsoft.UI.Xaml.Controls" />
+                <ResourceDictionary Source="../ResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <!-- Other app resources here -->
+            <SolidColorBrush x:Key="BackgroundColor"
+                             Color="#192653" />
+        </ResourceDictionary>
 
     </Page.Resources>
 
-    <Grid
-        x:Name="GridField"
-        RowDefinitions="*, *, *"
-        ColumnDefinitions="*, *, *, *, *, *, *, *, *, *, *"
-        Padding="5"
-        Background="{StaticResource BackgroundColor}">
+    <Grid x:Name="GridField"
+          RowDefinitions="*, *, *"
+          ColumnDefinitions="*, *, *, *, *, *, *, *, *, *, *"
+          Padding="5"
+          Background="{StaticResource BackgroundColor}">
 
-        <Image
-            x:Name="ActiveImage"
-            Source="/Assets/BlankCard2.png"
-            Margin="5"
-            Grid.Row="0"
-            Grid.Column="5" 
-            Tapped="ImageTapped"
-            FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
-            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"/>
+        <Image x:Name="ActiveImage"
+               Source="/Assets/BlankCard2.png"
+               Margin="5"
+               Grid.Row="0"
+               Grid.Column="5"
+               Tapped="{x:Bind util:FlyoutUtil.ImageTapped}"
+               FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}" />
 
-        <Image
-            x:Name="DeckImage"
-            Source="/Assets/CardBack.png"
-            Margin="5"
-            Grid.Row="2"
-            Grid.Column="10" />
+        <Image x:Name="DeckImage"
+               Source="/Assets/CardBack.png"
+               Margin="5"
+               Grid.Row="2"
+               Grid.Column="10" />
 
-        <Image
-            x:Name="Bench1Image"
-            Source="/Assets/BlankCard2.png"
-            Margin="5"
-            Grid.Row="2"
-            Grid.Column="3" 
-            Tapped="ImageTapped"
-            FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
-            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"/>
+        <Image x:Name="Bench1Image"
+               Source="/Assets/BlankCard2.png"
+               Margin="5"
+               Grid.Row="2"
+               Grid.Column="3"
+               Tapped="{x:Bind util:FlyoutUtil.ImageTapped}"
+               FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}" />
 
-        <Image
-            x:Name="Bench2Image"
-            Source="/Assets/BlankCard2.png"
-            Margin="5"
-            Grid.Row="2"
-            Grid.Column="4" 
-            Tapped="ImageTapped"
-            FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
-            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"/>
+        <Image x:Name="Bench2Image"
+               Source="/Assets/BlankCard2.png"
+               Margin="5"
+               Grid.Row="2"
+               Grid.Column="4"
+               Tapped="{x:Bind util:FlyoutUtil.ImageTapped}"
+               FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}" />
 
-        <Image
-            x:Name="Bench3Image"
-            Source="/Assets/BlankCard2.png"
-            Margin="5"
-            Grid.Row="2"
-            Grid.Column="5" 
-            Tapped="ImageTapped"
-            FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
-            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"/>
+        <Image x:Name="Bench3Image"
+               Source="/Assets/BlankCard2.png"
+               Margin="5"
+               Grid.Row="2"
+               Grid.Column="5"
+               Tapped="{x:Bind util:FlyoutUtil.ImageTapped}"
+               FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}" />
 
-        <Image
-            x:Name="Bench4Image"
-            Source="/Assets/BlankCard2.png"
-            Margin="5"
-            Grid.Row="2"
-            Grid.Column="6" 
-            Tapped="ImageTapped"
-            FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
-            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"/>
+        <Image x:Name="Bench4Image"
+               Source="/Assets/BlankCard2.png"
+               Margin="5"
+               Grid.Row="2"
+               Grid.Column="6"
+               Tapped="{x:Bind util:FlyoutUtil.ImageTapped}"
+               FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}" />
 
 
-        <Image
-            x:Name="Bench5Image"
-            Source="/Assets/BlankCard2.png"
-            Margin="5"
-            Grid.Row="2"
-            Grid.Column="7" 
-            Tapped="ImageTapped"
-            FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
-            DataContext="{Binding RelativeSource={RelativeSource Mode=Self}}"/>
+        <Image x:Name="Bench5Image"
+               Source="/Assets/BlankCard2.png"
+               Margin="5"
+               Grid.Row="2"
+               Grid.Column="7"
+               Tapped="{x:Bind util:FlyoutUtil.ImageTapped}"
+               FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}" />
 
-        <Image
-            x:Name="DiscardImage"
-            Source="/Assets/BlankCard2.png"
-            Margin="5"
-            Grid.Row="1"
-            Grid.Column="10" />
+        <Image x:Name="DiscardImage"
+               Source="/Assets/BlankCard2.png"
+               Margin="5"
+               Grid.Row="1"
+               Grid.Column="10" />
 
-        <Image
-            x:Name="Prize1Image"
-            Source="/Assets/CardBack.png"
-            Margin="5"
-            Grid.Row="0"
-            Grid.Column="0" />
+        <Image x:Name="Prize1Image"
+               Source="/Assets/CardBack.png"
+               Margin="5"
+               Grid.Row="0"
+               Grid.Column="0" />
 
-        <Image
-            x:Name="Prize2Image"
-            Source="/Assets/CardBack.png"
-            Margin="5"
-            Grid.Row="0"
-            Grid.Column="1" />
+        <Image x:Name="Prize2Image"
+               Source="/Assets/CardBack.png"
+               Margin="5"
+               Grid.Row="0"
+               Grid.Column="1" />
 
-        <Image
-            x:Name="Prize3Image"
-            Source="/Assets/CardBack.png"
-            Margin="5"
-            Grid.Row="1"
-            Grid.Column="0" />
+        <Image x:Name="Prize3Image"
+               Source="/Assets/CardBack.png"
+               Margin="5"
+               Grid.Row="1"
+               Grid.Column="0" />
 
-        <Image
-            x:Name="Prize4Image"
-            Source="/Assets/CardBack.png"
-            Margin="5"
-            Grid.Row="1"
-            Grid.Column="1" />
+        <Image x:Name="Prize4Image"
+               Source="/Assets/CardBack.png"
+               Margin="5"
+               Grid.Row="1"
+               Grid.Column="1" />
 
-        <Image
-            x:Name="Prize5Image"
-            Source="/Assets/CardBack.png"
-            Margin="5"
-            Grid.Row="2"
-            Grid.Column="0" />
+        <Image x:Name="Prize5Image"
+               Source="/Assets/CardBack.png"
+               Margin="5"
+               Grid.Row="2"
+               Grid.Column="0" />
 
-        <Image
-            x:Name="Prize6Image"
-            Source="/Assets/CardBack.png"
-            Margin="5"
-            Grid.Row="2"
-            Grid.Column="1" />
+        <Image x:Name="Prize6Image"
+               Source="/Assets/CardBack.png"
+               Margin="5"
+               Grid.Row="2"
+               Grid.Column="1" />
 
-        <ComboBox
-            x:Name="ComboBoxActions"
-            Grid.Row="0"
-            Grid.Column="6"
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center">
+        <ComboBox x:Name="ComboBoxActions"
+                  Grid.Row="0"
+                  Grid.Column="6"
+                  HorizontalAlignment="Center"
+                  VerticalAlignment="Center">
 
         </ComboBox>
 

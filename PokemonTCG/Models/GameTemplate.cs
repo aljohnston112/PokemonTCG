@@ -43,6 +43,8 @@ namespace PokemonTCG.Models
                 potentialOpponentState = ShuffleAndDraw7Cards(opponentDeck);
                 playerHasBasic = potentialPlayerState.HandHasBasicPokemon();
                 opponentHasBasic = potentialOpponentState.HandHasBasicPokemon();
+                OpponentDraws++;
+                PlayerDraws++;
             }
 
             // Shuffle and draw until both players have a basic Pokemon
@@ -65,52 +67,73 @@ namespace PokemonTCG.Models
                     PlayerDraws++;
                 }
             }
+            if (PlayerDraws > OpponentDraws)
+            {
+                OpponentDraws = 0;
+            }
+            else {
+                PlayerDraws = 0;
+            }
             Debug.Assert(potentialOpponentState != null && potentialPlayerState != null);
             return new GameState(potentialPlayerState, potentialOpponentState);
         }
 
         private static PlayerState ShuffleAndDraw7Cards(PokemonDeck deck)
         {
-            ImmutableList<PokemonCard> deckState = deck.Shuffle().Select(id => CardDataSource.GetCardById(id)).ToImmutableList();
-            (ImmutableList<PokemonCard> deckOfCards, ImmutableList<PokemonCard> hand) = DeckUtil.DrawCards(deckState, 7);
+            IImmutableList<PokemonCard> deckState = 
+                DeckUtil.ShuffleDeck(deck)
+                .Select(id => CardDataSource.GetCardById(id))
+                .ToImmutableList();
+            (IImmutableList<PokemonCard> deckOfCards, IImmutableList<PokemonCard> hand) = 
+                DeckUtil.DrawCards(deckState, 7);
             return new PlayerState(
-                deckOfCards,
-                hand,
-                null,
-                ImmutableList<PokemonCard>.Empty,
-                ImmutableList<PokemonCard>.Empty,
-                ImmutableList<PokemonCard>.Empty,
-                ImmutableList<PokemonCard>.Empty
+                deck: deckOfCards,
+                hand: hand,
+                active: null,
+                bench: ImmutableList<PokemonCardState>.Empty,
+                prizes: ImmutableList<PokemonCard>.Empty,
+                discardPile: ImmutableList<PokemonCard>.Empty,
+                lostZone : ImmutableList<PokemonCard>.Empty
                 );
         }
 
         internal GameState SetUpOpponent(GameState gameState)
         {
-            ImmutableList<PokemonCard> basicPokemon = gameState.OpponentState.Hand.Where(
-                card => CardUtil.IsBasicPokemon(card)
+            IImmutableList<PokemonCard> basicPokemon = gameState.OpponentState.Hand
+                .Where(card => CardUtil.IsBasicPokemon(card)
             ).ToImmutableList();
 
-            PokemonCard active;
             PlayerState newOpponentState = gameState.OpponentState;
+            PokemonCard active;
             if (basicPokemon.Count == 1)
             {
-                active = basicPokemon.First();
+                active = basicPokemon[0];
             }
             else
             {
-                IDictionary<PokemonCard, int> rank = RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(gameState);
-                int maxRank = rank.Max(r => r.Value);
-                ImmutableList<PokemonCard> potentialPokemon = rank
-                    .Where(r => r.Value == maxRank)
-                    .ToDictionary(r => r.Key, r => r.Value).Keys
+                IDictionary<PokemonCard, int> rank = RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(
+                    gameState.OpponentState
+                    );
+                int maxRank = rank.Max(rank => rank.Value);
+                IImmutableList<PokemonCard> potentialPokemon = rank
+                    .Where(rank => rank.Value == maxRank)
+                    .Select(rank => rank.Key)
                     .ToImmutableList();
 
-                Dictionary<PokemonCard, int> efficientAttackers = GetDamagePerEnergy(potentialPokemon);
-                active = efficientAttackers.First().Key;
+                IDictionary<PokemonCard, int> efficientAttackers = GetFastestEfficientAttackers(potentialPokemon);
+                maxRank = efficientAttackers.Max(rank => rank.Value);
+                active = efficientAttackers
+                    .Where(rank => rank.Value == maxRank)
+                    .OrderByDescending(rank => rank.Value).First().Key;
+
                 rank.Remove(active);
                 newOpponentState = newOpponentState.MoveFromHandToBench(
-                rank.OrderByDescending(kv => kv.Value).Select(kv => kv.Key).Take(5).ToImmutableList()
-                );
+                    rank
+                    .OrderByDescending(rank => rank.Value)
+                    .Select(kv => kv.Key)
+                    .Take(5)
+                    .ToImmutableList()
+                    );
             }
             newOpponentState = newOpponentState.MoveFromHandToActive(active);
             newOpponentState = newOpponentState.SetUpPrizes();
@@ -119,47 +142,13 @@ namespace PokemonTCG.Models
             // TODO maybe max damage and evolution
         }
 
-        private static Dictionary<PokemonCard, int> GetDamagePerEnergy(ImmutableList<PokemonCard> potentialPokemon)
-        {
-            List<PokemonCard> fastestAttackers = new();
-            Dictionary<PokemonCard, int> pokemonDamage = new();
-            int lowestEnergy = int.MaxValue;
-
-            foreach (PokemonCard pokemon in potentialPokemon)
-            {
-                foreach (Attack attack in pokemon.Attacks)
-                {
-                    int energyCount = attack.ConvertedEnergyCost;
-                    if (energyCount < lowestEnergy)
-                    {
-                        lowestEnergy = energyCount;
-                        fastestAttackers.Clear();
-                        fastestAttackers.Add(pokemon);
-                        pokemonDamage.Clear();
-                        pokemonDamage[pokemon] = attack.Damage;
-                    }
-                    else if (energyCount == lowestEnergy)
-                    {
-                        fastestAttackers.Add(pokemon);
-                        pokemonDamage[pokemon] = attack.Damage;
-                    }
-                }
-            }
-            Dictionary<PokemonCard, int> efficientAttackers = new();
-            foreach (PokemonCard pokemon in fastestAttackers)
-            {
-                efficientAttackers[pokemon] =
-                    pokemonDamage[pokemon] /
-                    pokemon.Attacks.Where(attack => attack.ConvertedEnergyCost == lowestEnergy).Min(attack => attack.Damage);
-            }
-            return efficientAttackers;
-        }
-
-        private static IDictionary<PokemonCard, int> RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(GameState gameState)
+        private static IDictionary<PokemonCard, int> RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(
+            PlayerState opponentState
+            )
         {
             Dictionary<PokemonCard, int> rank = new();
 
-            ImmutableList<PokemonCard> basicPokemon = gameState.OpponentState.Hand.Where(
+            ImmutableList<PokemonCard> basicPokemon = opponentState.Hand.Where(
                card => CardUtil.IsBasicPokemon(card)
            ).ToImmutableList();
 
@@ -172,7 +161,7 @@ namespace PokemonTCG.Models
             {
                 foreach (Attack attack in pokemon.Attacks)
                 {
-                    bool enoughEnergyForAttack = HasEnoughEnergyForAttack(gameState, attack);
+                    bool enoughEnergyForAttack = HasEnoughEnergyForAttack(opponentState, attack);
                     if (enoughEnergyForAttack)
                     {
                         rank[pokemon]++;
@@ -182,29 +171,70 @@ namespace PokemonTCG.Models
             return rank;
         }
 
-        private static bool HasEnoughEnergyForAttack(GameState gameState, Attack attack)
+        private static bool HasEnoughEnergyForAttack(PlayerState opponentState, Attack attack)
         {
             bool enoughEnergyForAttack = true;
 
             // Count energy cards from hand
-            ImmutableDictionary<PokemonType, int> numberOfEveryEnergy = gameState.OpponentState.Hand
-                .Where(card => card.Supertype == CardSupertype.Energy)
+            IImmutableDictionary<PokemonType, int> numberOfEveryEnergy = opponentState.Hand
+                .Where(card => card.Supertype == CardSupertype.ENERGY)
                 .GroupBy(card => CardUtil.GetEnergyType(card))
                 .ToImmutableDictionary(group => group.Key, group => group.Count());
-            int numberOfEnergies = gameState.OpponentState.Hand
-                .Where(card => card.Supertype == CardSupertype.Energy)
+            int numberOfEnergies = opponentState.Hand
+                .Where(card => card.Supertype == CardSupertype.ENERGY)
                 .Count();
 
             foreach ((PokemonType type, int count) in attack.EnergyCost)
             {
-                if ((!numberOfEveryEnergy.ContainsKey(type) ||
-                    (numberOfEveryEnergy[type] < count)) ||
+                if ((!numberOfEveryEnergy.ContainsKey(type) || (numberOfEveryEnergy[type] < count)) ||
                     (type == PokemonType.Colorless && numberOfEnergies < count))
                 {
                     enoughEnergyForAttack = false;
                 }
             }
             return enoughEnergyForAttack;
+        }
+
+        private static IDictionary<PokemonCard, int> GetFastestEfficientAttackers(
+            IImmutableList<PokemonCard> potentialPokemon
+            )
+        {
+            HashSet<PokemonCard> fastestAttackers = new();
+            Dictionary<PokemonCard, int> pokemonToDamage = new();
+            int lowestEnergy = int.MaxValue;
+
+            foreach (PokemonCard pokemon in potentialPokemon)
+            {
+                foreach (Attack attack in pokemon.Attacks)
+                {
+                    int energyCount = attack.ConvertedEnergyCost;
+                    if (energyCount < lowestEnergy)
+                    {
+                        lowestEnergy = energyCount;
+                        fastestAttackers.Clear();
+                        fastestAttackers.Add(pokemon);
+                        pokemonToDamage.Clear();
+                        pokemonToDamage[pokemon] = attack.Damage;
+                    }
+                    else if (energyCount == lowestEnergy)
+                    {
+                        int damage = attack.Damage;
+                        fastestAttackers.Add(pokemon);
+                        if (pokemonToDamage.ContainsKey(pokemon))
+                        {
+                            damage = Math.Max(damage, pokemonToDamage[pokemon]);
+                        }
+                        pokemonToDamage[pokemon] = damage;
+                    }
+                }
+            }
+
+            Dictionary<PokemonCard, int> efficientAttackers = new();
+            foreach (PokemonCard pokemon in fastestAttackers)
+            {
+                efficientAttackers[pokemon] = pokemonToDamage[pokemon] / lowestEnergy;
+            }
+            return efficientAttackers;
         }
 
         internal GameState OnPlayerSelectedActivePokemon(GameState gameState)
@@ -219,9 +249,11 @@ namespace PokemonTCG.Models
             if (PlayerTurn)
             {
                 newGameState = PlayerTurnTemplate.NextTurn(gameState);
+                PlayerTurn = false;
             } else
             {
                 newGameState = OpponentTurnTemplate.NextTurn(gameState);
+                PlayerTurn = true;
             }
             return newGameState;
         }

@@ -1,14 +1,12 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Image = Microsoft.UI.Xaml.Controls.Image;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Controls.Primitives;
-using PokemonTCG.Models;
 using PokemonTCG.ViewModel;
-using PokemonTCG.DataSources;
 using Microsoft.UI.Xaml.Navigation;
 using PokemonTCG.Utilities;
-using PokemonTCG.Enums;
+using System.Collections.ObjectModel;
+using PokemonTCG.Models;
 
 namespace PokemonTCG.View
 {
@@ -18,20 +16,18 @@ namespace PokemonTCG.View
     public sealed partial class DeckEditorPage : Page
     {
         private readonly DeckEditorViewModel ViewModel = new();
+        private readonly CardItemAdapter CardItemAdapter = new();
 
         public DeckEditorPage()
         {
             InitializeComponent();
-            DataContext = ViewModel;
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-
             object deckName = e.Parameter;
-            CardGridView.ItemsSource = ViewModel.CardItemViews;
-            _ = ViewModel.OnNavigatedTo(deckName);
+            ViewModel.OnNavigatedTo(deckName, CardItemAdapter);
             SetUpCheckBoxes();
         }
 
@@ -41,26 +37,14 @@ namespace PokemonTCG.View
         private void SetUpCheckBoxes()
         {
 
-            // For the supertype checkboxes
+            // Supertype checkboxes
             void superTypesCallback(DependencyObject sender, DependencyProperty property)
             {
                 CheckBox checkBox = sender as CheckBox;
                 if (checkBox.IsChecked.HasValue)
                 {
                     string text = checkBox.Content.ToString();
-                    CardSupertype supertype = EnumUtil.Parse<CardSupertype>(text);
-                    if (supertype == CardSupertype.Pokémon)
-                    {
-                        ViewModel.OnPokemonCheckBox(checkBox.IsChecked.Value);
-                    }
-                    else if (supertype == CardSupertype.Trainer)
-                    {
-                        ViewModel.OnTrainerCheckBox(checkBox.IsChecked.Value);
-                    }
-                    else if (supertype == CardSupertype.Energy)
-                    {
-                        ViewModel.OnEnergyCheckBox(checkBox.IsChecked.Value);
-                    }
+                    CardItemAdapter.IncludeSupertype(text, checkBox.IsChecked.Value);
                 }
             }
 
@@ -75,14 +59,13 @@ namespace PokemonTCG.View
                 if (checkBox.IsChecked.HasValue)
                 {
                     string text = checkBox.Content.ToString();
-                    PokemonType type = EnumUtil.Parse<PokemonType>(text);
-                    ViewModel.OnTypeCheckBox(type, checkBox.IsChecked.Value);
+                    CardItemAdapter.InludeType(text, checkBox.IsChecked.Value);
                 }
             }
 
-            foreach (UIElement element in StackPanelTypes.Children)
+            foreach (UIElement checkBox in StackPanelTypes.Children)
             {
-                element.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, pokemonTypesCallback);
+                checkBox.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, pokemonTypesCallback);
             }
 
             // For the in deck checkbox
@@ -91,15 +74,19 @@ namespace PokemonTCG.View
                 CheckBox checkBox = sender as CheckBox;
                 if (checkBox.IsChecked.HasValue)
                 {
-                    ViewModel.InDeckCheckbox(checkBox.IsChecked.Value);
+                    CardItemAdapter.IncludeOnlyThoseInDeck(checkBox.IsChecked.Value);
                 }
             }
             CheckBoxInDeck.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, inDeckCallback);
+        }
 
+        private void SearchTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        {
+            CardItemAdapter.UpdateSearchString(sender.Text);
         }
 
         /// <summary>
-        /// The callback for the GridView named CardGridView
+        /// The callback for the CardGridView.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
@@ -108,47 +95,58 @@ namespace PokemonTCG.View
             if (args.InRecycleQueue)
             {
                 Grid templateRoot = args.ItemContainer.ContentTemplateRoot as Grid;
-                GridViewItem image = templateRoot.FindName("CardImage") as GridViewItem;
-                image.Content = null;
-                (templateRoot.FindName("NumberBox") as GridViewItem).Content = null;
+                Image image = templateRoot.FindName("CardImage") as Image;
+                image.Source = null;
+                image.Tapped -= FlyoutUtil.ImageTapped;
             }
 
             if (args.Phase == 0)
             {
-                args.RegisterUpdateCallback(UpdateListViewCard);
+                args.RegisterUpdateCallback(UpdateListViewCardItem);
                 args.Handled = true;
             }
 
         }
 
         /// <summary>
-        /// The callback for updating an item in the GridView named CardGridView.
+        /// The callback for updating an item in the CardGridView.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private void UpdateListViewCard(ListViewBase sender, ContainerContentChangingEventArgs args)
+        private void UpdateListViewCardItem(ListViewBase sender, ContainerContentChangingEventArgs args)
         {
             if (args.Phase == 1)
             {
-                CardItemView item = args.Item as CardItemView;
-                void numberBoxHandler(NumberBox box, NumberBoxValueChangedEventArgs args)
-                {
-                    if (!double.IsNaN(args.NewValue))
-                    {
-                        ViewModel.ChangeCardItemCount((int)args.OldValue, (int)args.NewValue, item);
-                    }
-                }
-
-                item.SetNumberBoxHandler(numberBoxHandler);
+                CardItem cardItem = args.Item as CardItem;
+                Grid templateRoot = args.ItemContainer.ContentTemplateRoot as Grid;
+                Image image = templateRoot.FindName("CardImage") as Image;
+                image.Tapped += FlyoutUtil.ImageTapped;
+                NumberBox numberBox = templateRoot.FindName("NumberBox") as NumberBox;
+                numberBox.Maximum = DeckEditorViewModel.GetCardLimit(cardItem);
+                numberBox.Tag = cardItem;
             }
 
         }
+
+        private void NumberBoxHandler(NumberBox box, NumberBoxValueChangedEventArgs args)
+        {
+            CardItem cardItem = box.Tag as CardItem;
+            if (cardItem != null && !double.IsNaN(args.NewValue))
+            {
+                ViewModel.ChangeCardItemCount(
+                    cardItemAdapter: CardItemAdapter,
+                    cardId: cardItem.Id,
+                    newValue: (int)args.NewValue
+                    );
+            }
+        }
+
         /// <summary>
         /// For when the user clicks to submit a deck.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>
-        private async void SubmitDeckEvent(object sender, RoutedEventArgs args)
+        private async void SubmitDeck(object sender, RoutedEventArgs args)
         {
             // TODO Warn that duplicate name overwrites
             string name = TextBlockDeckName.Text;
@@ -156,41 +154,30 @@ namespace PokemonTCG.View
             {
                 FlyoutUtil.ShowTextFlyout("A deck name is needed to make a deck.", SubmitDeckButton);
             }
-            else if (ViewModel.NumberOfCardsInDeck != DeckDataSource.NUMBER_OF_CARDS_PER_DECK)
+            else if (ViewModel.NumberOfCardsInDeck != PokemonDeck.NUMBER_OF_CARDS_PER_DECK)
             {
-                FlyoutUtil.ShowTextFlyout("60 cards are need to make a deck.", SubmitDeckButton);
+                FlyoutUtil.ShowTextFlyout($"{PokemonDeck.NUMBER_OF_CARDS_PER_DECK} cards are need to make a deck.", SubmitDeckButton);
             }
-            else if (!ViewModel.HasBasicPokemon())
+            else if (!DeckEditorViewModel.HasBasicPokemon(CardItemAdapter))
             {
                 FlyoutUtil.ShowTextFlyout("At least one basic Pokemon is needed to make a deck.", SubmitDeckButton);
             }
             // TODO Only one Radiant Pokemon
             // TODO Only one of each Prism star Pokemon
-            // TODO Only one ACE sPEC trainer card
+            // TODO Only one ACE SPEC trainer card
             else
             {
                 FlyoutUtil.ShowTextFlyout("Saving deck", SubmitDeckButton);
-                await ViewModel.CreateDeck(name);
+                await DeckEditorViewModel.SaveDeck(name, CardItemAdapter);
                 Frame.GoBack();
             }
         }
 
-        private void CancelDeckEvent(object sender, RoutedEventArgs args)
+        private void CancelDeck(object sender, RoutedEventArgs args)
         {
-            this.Frame.GoBack();
+            Frame.GoBack();
         }
-
-        private void ImageTapped(object sender, TappedRoutedEventArgs e)
-        {
-            FlyoutBase.ShowAttachedFlyout((FrameworkElement)sender);
-        }
-
-        private void SearchTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
-        {
-            string text = sender.Text;
-            ViewModel.SearchStringUpdated(text);
-        }
-
+        
     }
 
 }

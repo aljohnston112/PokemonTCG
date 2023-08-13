@@ -4,7 +4,7 @@
     {
         UNLIMITED,
         EXPANDED,
-        STANDARD
+        STANDARD,
     }
 
 }

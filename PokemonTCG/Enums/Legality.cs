@@ -3,7 +3,7 @@
     internal enum Legality
     {
         LEGAL,
-        ILLEGAL
+        ILLEGAL,
     }
 
 }

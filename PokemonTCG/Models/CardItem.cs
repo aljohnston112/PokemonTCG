@@ -3,7 +3,7 @@ namespace PokemonTCG.Models
 {
 
     /// <summary>
-    /// The backing class for the <c>DeckEditor</c>'s <c>ListView</c>.
+    /// The data class for the <c>DeckEditor</c>'s <c>ListView</c>.
     /// </summary>
     internal class CardItem
     {

@@ -13,18 +13,19 @@ namespace PokemonTCG.View
     {
 
         private readonly DeckListViewmodel ViewModel = new();
+
         public DeckListPage()
         {
             InitializeComponent();
-            ViewModel.LoadDecks();
+            ViewModel.PopulateDeckNames();
         }
 
-        private void CreateNewDeckEvent(object sender, RoutedEventArgs args)
+        private void CreateNewDeck(object sender, RoutedEventArgs args)
         {
             Frame.Navigate(typeof(DeckEditorPage));
         }
 
-        private void SetUpDeckClickListener(object sender, ItemClickEventArgs e)
+        private void EditDeck(object sender, ItemClickEventArgs e)
         {
             String deckName = e.ClickedItem.ToString();
             Frame.Navigate(typeof(DeckEditorPage), deckName);

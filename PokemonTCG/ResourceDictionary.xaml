@@ -1,8 +1,19 @@
-﻿<ResourceDictionary
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:PokemonTCG">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="using:PokemonTCG"
+                    xmlns:util="using:PokemonTCG.Utilities">
 
-    
-    
+    <Flyout x:Key="ImagePreviewFlyout"
+            Placement="Right">
+
+        <!-- The flyout's DataContext must be the Image Source
+             of the image the flyout is attached to. -->
+        
+        <Image x:Name="PreviewImage"
+               MaxHeight="560"
+               MaxWidth="560"
+               Stretch="Uniform"/>
+
+    </Flyout>
+
 </ResourceDictionary>

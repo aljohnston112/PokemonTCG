@@ -11,9 +11,9 @@ namespace PokemonTCG.DataSources
 {
     internal class SetDataSource
     {
-        internal static readonly string setFolder = "\\Assets\\sets\\";
+        private static readonly Dictionary<string, ICollection<PokemonCard>> SetsToCards = new();
 
-        private static readonly Dictionary<string, ICollection<PokemonCard>> setsToCards = new();
+        internal static readonly string setFolder = "\\Assets\\sets\\";
 
         /// <summary>
         /// Loads all <c>Card</c> instances.
@@ -29,21 +29,21 @@ namespace PokemonTCG.DataSources
             foreach (StorageFile file in fileList.Where(name => name.Name != "sets.json"))
             {
                 string setName = file.Name[..file.Name.IndexOf(".")];
-                if (!setsToCards.ContainsKey(setName))
+                if (!SetsToCards.ContainsKey(setName))
                 {
                     ICollection<PokemonCard> cards = await CardDataSource.LoadCardsFromSet(file);
-                    setsToCards.Add(setName, cards);
+                    SetsToCards.Add(setName, cards);
                 }
             }
         }
 
         internal static async Task<ICollection<PokemonCard>> LoadSet(string setName)
         {
-            if (!setsToCards.ContainsKey(setName))
+            if (!SetsToCards.ContainsKey(setName))
             {
                 await LoadSets();
             }
-            return setsToCards[setName];
+            return SetsToCards[setName];
         }
 
     }

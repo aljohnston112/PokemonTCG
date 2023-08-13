@@ -5,13 +5,13 @@ namespace PokemonTCG.Models
     internal class PokemonCardState
     {
         internal readonly PokemonCard PokemonCard;
-        internal readonly ImmutableList<PokemonCard> Energy;
-        internal readonly ImmutableList<PokemonCard> EvolvedFrom;
+        internal readonly IImmutableList<PokemonCard> Energy;
+        internal readonly IImmutableList<PokemonCard> EvolvedFrom;
 
         internal PokemonCardState(
             PokemonCard pokemonCard,
-            ImmutableList<PokemonCard> energy,
-            ImmutableList<PokemonCard> evolvedFrom
+            IImmutableList<PokemonCard> energy,
+            IImmutableList<PokemonCard> evolvedFrom
             )
         {
             PokemonCard = pokemonCard;
@@ -30,12 +30,20 @@ namespace PokemonTCG.Models
 
         internal PokemonCardState AttachEnergy(PokemonCard card)
         {
-            return new PokemonCardState(PokemonCard, Energy.Add(card), EvolvedFrom);
+            return new PokemonCardState(
+                pokemonCard: PokemonCard, 
+                energy: Energy.Add(card),
+                evolvedFrom: EvolvedFrom
+                );
         }
 
         internal PokemonCardState EvolveTo(PokemonCard evolvedCard)
         {
-            return new PokemonCardState(evolvedCard, Energy, EvolvedFrom.Add(PokemonCard));
+            return new PokemonCardState(
+                pokemonCard: evolvedCard,
+                energy: Energy,
+                evolvedFrom: EvolvedFrom.Add(PokemonCard)
+                );
         }
 
     }

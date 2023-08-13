@@ -16,7 +16,7 @@ namespace PokemonTCG.View
         public GameSettingsPage()
         {
             InitializeComponent();
-            ViewModel.LoadDecks();
+            ViewModel.PopulateDeckNames();
         }
 
         private void StartGameButtonClicked(object sender, RoutedEventArgs e)
