@@ -6,7 +6,7 @@ using System;
 namespace PokemonTCG.View
 {
     /// <summary>
-    /// Displays a UI that lists the user's decks.
+    /// Displays a UI that lists the user's decks and pre-made decks.
     /// Also lets the user create a new deck.
     /// </summary>
     public sealed partial class DeckListPage : Page

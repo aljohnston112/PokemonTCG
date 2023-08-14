@@ -156,6 +156,27 @@ namespace PokemonTCG.ViewModel
             return limit;
         }
 
+        internal string CheckUserInput(string name, CardItemAdapter cardItemAdapter)
+        {
+            string errorMessage = null;
+            // TODO Warn that duplicate name overwrites
+            if (name.Length == 0)
+            {
+                errorMessage = "A deck name is needed to make a deck.";
+            }
+            else if (NumberOfCardsInDeck != PokemonDeck.NUMBER_OF_CARDS_PER_DECK)
+            {
+                errorMessage = $"{PokemonDeck.NUMBER_OF_CARDS_PER_DECK} cards are need to make a deck.";
+            }
+            else if (!HasBasicPokemon(cardItemAdapter))
+            {
+                errorMessage = "At least one basic Pokemon is needed to make a deck.";
+            }
+            // TODO Only one Radiant Pokemon
+            // TODO Only one of each Prism star Pokemon
+            // TODO Only one ACE SPEC trainer card
+            return errorMessage;
+        }
     }
 
 }

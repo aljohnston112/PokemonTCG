@@ -6,13 +6,17 @@
     <Flyout x:Key="ImagePreviewFlyout"
             Placement="Right">
 
+        <Flyout.FlyoutPresenterStyle>
+            <Style TargetType="FlyoutPresenter">
+
+            </Style>
+        </Flyout.FlyoutPresenterStyle>
+
         <!-- The flyout's DataContext must be the Image Source
              of the image the flyout is attached to. -->
         
         <Image x:Name="PreviewImage"
-               MaxHeight="560"
-               MaxWidth="560"
-               Stretch="Uniform"/>
+               MaxHeight="540"/>
 
     </Flyout>
 

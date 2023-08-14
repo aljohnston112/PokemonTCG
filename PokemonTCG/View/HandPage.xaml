@@ -1,7 +1,6 @@
 ﻿<Page x:Class="PokemonTCG.View.HandPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:local="using:PokemonTCG.View"
       Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
 
@@ -17,6 +16,7 @@
 
     <Grid x:Name="HandGrid"
           RowDefinitions="*">
+        
     </Grid>
 
 </Page>

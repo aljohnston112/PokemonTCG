@@ -119,56 +119,57 @@ namespace PokemonTCG.View
             {
                 CardItem cardItem = args.Item as CardItem;
                 Grid templateRoot = args.ItemContainer.ContentTemplateRoot as Grid;
-                Image image = templateRoot.FindName("CardImage") as Image;
-                image.Tapped += FlyoutUtil.ImageTapped;
                 NumberBox numberBox = templateRoot.FindName("NumberBox") as NumberBox;
                 numberBox.Maximum = DeckEditorViewModel.GetCardLimit(cardItem);
                 numberBox.Tag = cardItem;
+
+                Image image = templateRoot.FindName("CardImage") as Image;
+                image.Tapped += FlyoutUtil.ImageTapped;
             }
 
         }
 
         private void NumberBoxHandler(NumberBox box, NumberBoxValueChangedEventArgs args)
         {
-            CardItem cardItem = box.Tag as CardItem;
-            if (cardItem != null && !double.IsNaN(args.NewValue))
+            // Removes focus from the number box when the user presses enter.
+            if(FocusManager.GetFocusedElement(RootGrid.XamlRoot)?.GetType() == typeof(TextBox)){
+                CardGridView.Focus(FocusState.Programmatic);
+            }
+            if (box.Tag is CardItem cardItem)
             {
-                ViewModel.ChangeCardItemCount(
-                    cardItemAdapter: CardItemAdapter,
-                    cardId: cardItem.Id,
-                    newValue: (int)args.NewValue
-                    );
+                if (!double.IsNaN(args.NewValue))
+                {
+                    ViewModel.ChangeCardItemCount(
+                        cardItemAdapter: CardItemAdapter,
+                        cardId: cardItem.Id,
+                        newValue: (int)args.NewValue
+                        );
+                }
+                else
+                {
+                    ViewModel.ChangeCardItemCount(
+                       cardItemAdapter: CardItemAdapter,
+                       cardId: cardItem.Id,
+                       newValue: 0
+                       );
+                    // No input does not update the binding when the previous input was 0, so it has to be set manually
+                    box.Value = 0;
+                }
             }
         }
 
-        /// <summary>
-        /// For when the user clicks to submit a deck.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="args"></param>
         private async void SubmitDeck(object sender, RoutedEventArgs args)
         {
-            // TODO Warn that duplicate name overwrites
-            string name = TextBlockDeckName.Text;
-            if (name.Length == 0)
+            string deckName = TextBlockDeckName.Text;
+            string errorText = ViewModel.CheckUserInput(deckName, CardItemAdapter);
+            if(errorText != null)
             {
-                FlyoutUtil.ShowTextFlyout("A deck name is needed to make a deck.", SubmitDeckButton);
+                FlyoutUtil.ShowTextFlyout(errorText, SubmitDeckButton);
             }
-            else if (ViewModel.NumberOfCardsInDeck != PokemonDeck.NUMBER_OF_CARDS_PER_DECK)
-            {
-                FlyoutUtil.ShowTextFlyout($"{PokemonDeck.NUMBER_OF_CARDS_PER_DECK} cards are need to make a deck.", SubmitDeckButton);
-            }
-            else if (!DeckEditorViewModel.HasBasicPokemon(CardItemAdapter))
-            {
-                FlyoutUtil.ShowTextFlyout("At least one basic Pokemon is needed to make a deck.", SubmitDeckButton);
-            }
-            // TODO Only one Radiant Pokemon
-            // TODO Only one of each Prism star Pokemon
-            // TODO Only one ACE SPEC trainer card
             else
             {
                 FlyoutUtil.ShowTextFlyout("Saving deck", SubmitDeckButton);
-                await DeckEditorViewModel.SaveDeck(name, CardItemAdapter);
+                await DeckEditorViewModel.SaveDeck(deckName, CardItemAdapter);
                 Frame.GoBack();
             }
         }
@@ -177,7 +178,7 @@ namespace PokemonTCG.View
         {
             Frame.GoBack();
         }
-        
+
     }
 
 }

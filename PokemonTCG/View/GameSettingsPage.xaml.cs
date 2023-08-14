@@ -19,7 +19,7 @@ namespace PokemonTCG.View
             ViewModel.PopulateDeckNames();
         }
 
-        private void StartGameButtonClicked(object sender, RoutedEventArgs e)
+        private void StartGame(object sender, RoutedEventArgs e)
         {
             if (PlayerDeckComboBox.SelectedItem == null)
             {

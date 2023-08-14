@@ -25,10 +25,13 @@ namespace PokemonTCG.DataSources
             return DeckNamesToDecks.ToImmutableDictionary();
         }
 
-        internal static async Task SaveDeck(PokemonDeck deck)
+        internal static async Task SaveDeck(PokemonDeck deck, bool decksFileExists = true)
         {
             // Current decks must be loaded before writing a new file or they will get overitten.
-            await LoadDecks();
+            if (decksFileExists)
+            {
+                await LoadDecks();
+            }
 
             FileMutex.WaitOne();
             DeckNamesToDecks[deck.Name] = deck;
@@ -97,8 +100,12 @@ namespace PokemonTCG.DataSources
 
         private static async Task<StorageFile> GetDecksFile()
         {
-            StorageFile decksFile = await FileUtil.GetFile(DECK_FILE);
-            if (decksFile == null)
+            StorageFile decksFile;
+            try
+            {
+                decksFile = await FileUtil.GetFile(DECK_FILE);
+            }
+            catch (FileNotFoundException)
             {
                 FileMutex.ReleaseMutex();
                 SavePreMadeDecks();
@@ -110,7 +117,7 @@ namespace PokemonTCG.DataSources
 
         private static async void SavePreMadeDecks()
         {
-            await SaveDeck(PokemonDeck.BLACKOUT_DECK);
+            await SaveDeck(PokemonDeck.BLACKOUT_DECK, decksFileExists: false);
         }
 
     }

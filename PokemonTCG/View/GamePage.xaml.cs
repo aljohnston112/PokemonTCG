@@ -29,7 +29,7 @@ namespace PokemonTCG.View
     }
 
     /// <summary>
-    /// The UI for the game.
+    /// The UI for the playing field.
     /// </summary>
     public sealed partial class GamePage : Page
     {
@@ -44,7 +44,7 @@ namespace PokemonTCG.View
         private readonly PlayerPage OpponentPage;
         private readonly PlayerPageViewModel OpponentPageViewModel = new();
 
-        private readonly CardViewViewModel CardViewViewModel = new();
+        private readonly CardStateViewModel CardStateViewModel = new();
 
         public GamePage()
         {
@@ -59,18 +59,15 @@ namespace PokemonTCG.View
                     }
                 );
 
+            handPage.SetViewModels(HandViewModel, CardStateViewModel);
+            ShowHand();
 
             PlayerPage = PagePlayer;
-            PlayerPage.SetViewModels(PlayerPageViewModel, CardViewViewModel);
+            PlayerPage.SetViewModels(PlayerPageViewModel, CardStateViewModel);
 
             OpponentPage = PageOpponent;
-            OpponentPage.SetViewModels(OpponentPageViewModel, CardViewViewModel);
-
+            OpponentPage.SetViewModels(OpponentPageViewModel, CardStateViewModel);
             RotateOpponentPage();
-            OpponentPage.HideAttacks();
-
-            handPage.SetViewModels(HandViewModel, CardViewViewModel);
-            ShowHand();
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -82,8 +79,8 @@ namespace PokemonTCG.View
 
         private void ShowHand()
         {
-            int width = 480;
-            int height = 270;
+            int width = 960;
+            int height = 540;
             ApplicationView.PreferredLaunchViewSize = new Size(width, height);
             ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
 
@@ -91,10 +88,10 @@ namespace PokemonTCG.View
             {
                 Content = handPage
             };
-            IntPtr hWnd = WindowNative.GetWindowHandle(window);
-            WindowId windowId = Win32Interop.GetWindowIdFromWindow(hWnd);
-            AppWindow appWindow = AppWindow.GetFromWindowId(windowId);
-            appWindow?.Resize(new SizeInt32(width, height));
+            IntPtr handWindowHandle = WindowNative.GetWindowHandle(window);
+            WindowId handWindowId = Win32Interop.GetWindowIdFromWindow(handWindowHandle);
+            AppWindow handWindow = AppWindow.GetFromWindowId(handWindowId);
+            handWindow?.Resize(new SizeInt32(width, height));
             window.Activate();
         }
 

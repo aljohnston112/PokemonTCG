@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
-using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
 using PokemonTCG.Enums;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
-using PokemonTCG.ViewModel;
 
 namespace PokemonTCG.View
 {
@@ -23,12 +19,18 @@ namespace PokemonTCG.View
             InitializeComponent();
         }
 
-        internal void SetViewModels(PlayerPageViewModel playerPageViewModel, CardViewViewModel cardViewViewModel)
+        internal void SetViewModels(
+            PlayerPageViewModel playerPageViewModel, 
+            CardStateViewModel cardViewViewModel
+            )
         {
 
             void onPlayerStateChanged(PlayerState playerState)
             {
-                string path= FileUtil.GetFullPath(playerState.Active?.PokemonCard?.ImagePaths[ImageSize.LARGE] ?? "/Assets/BlankCard2.png");
+                string path= FileUtil.GetFullPath(
+                    playerState.Active?.PokemonCard?.ImagePaths[ImageSize.LARGE] ??
+                    "/Assets/BlankCard2.png"
+                    );
                 Uri uri = new(path);
                 ActiveImage.Source = new BitmapImage(uri);
 
@@ -85,17 +87,9 @@ namespace PokemonTCG.View
                 {
                     prizeImages[i].Source = new BitmapImage(new Uri(FileUtil.GetFullPath("/Assets/BlankCard2.png")));
                 }
-
-                // TODO ComboBoxActions
-
             }
 
             playerPageViewModel.SetOnPlayerStateChanged(onPlayerStateChanged);
-        }
-
-        internal void HideAttacks()
-        {
-            ComboBoxActions.Visibility = Visibility.Collapsed;
         }
 
     }

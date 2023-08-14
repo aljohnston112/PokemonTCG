@@ -1,6 +1,7 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using PokemonTCG.ViewModel;
+using System.Threading.Tasks;
 
 namespace PokemonTCG.View
 {
@@ -10,32 +11,24 @@ namespace PokemonTCG.View
     public sealed partial class TitlePage : Page
     {
 
+        private readonly Task LoadAssetTask;
         private readonly TitlePageViewModel titlePageViewModel = new();
 
         public TitlePage()
         {
             InitializeComponent();
-            titlePageViewModel.OnInit();
+            LoadAssetTask = TitlePageViewModel.LoadAssets();
         }
 
-
-        /// <summary>
-        /// Called when the user clicks to see the deck list.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ButtonDeckListClicked(object sender, RoutedEventArgs e)
+        private async Task NavigateToDeckListPage(object sender, RoutedEventArgs e)
         {
-            titlePageViewModel.ButtonDeckListClicked(this.Frame);
+            await LoadAssetTask;
+            Frame.Navigate(typeof(DeckListPage));
         }
 
-        /// <summary>
-        /// Called when the user clicks to start a game.
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void ButtonGameSettingsClicked(object sender, RoutedEventArgs e)
+        private async Task NavigateToGameSettingsPage(object sender, RoutedEventArgs e)
         {
+            await LoadAssetTask;
             Frame.Navigate(typeof(GameSettingsPage));
         }
 
