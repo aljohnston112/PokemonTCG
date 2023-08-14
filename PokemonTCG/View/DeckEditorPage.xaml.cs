@@ -1,11 +1,9 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using PokemonTCG.ViewModel;
 using Microsoft.UI.Xaml.Navigation;
 using PokemonTCG.Utilities;
-using System.Collections.ObjectModel;
 using PokemonTCG.Models;
 
 namespace PokemonTCG.View
@@ -74,7 +72,7 @@ namespace PokemonTCG.View
                 CheckBox checkBox = sender as CheckBox;
                 if (checkBox.IsChecked.HasValue)
                 {
-                    CardItemAdapter.IncludeOnlyThoseInDeck(checkBox.IsChecked.Value);
+                    CardItemAdapter.IncludeOnlyCardsInDeck(checkBox.IsChecked.Value);
                 }
             }
             CheckBoxInDeck.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, inDeckCallback);

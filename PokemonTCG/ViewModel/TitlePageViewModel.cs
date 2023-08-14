@@ -1,7 +1,4 @@
-﻿using Microsoft.UI.Xaml.Controls;
-using PokemonTCG.DataSources;
-using PokemonTCG.View;
-using System;
+﻿using PokemonTCG.DataSources;
 using System.Threading.Tasks;
 
 namespace PokemonTCG.ViewModel
@@ -10,7 +7,7 @@ namespace PokemonTCG.ViewModel
     {
 
         /// <summary>
-        /// Call to start a task that loads the sets and decks from disk.
+        /// Starts a task that loads the sets and decks from disk.
         /// </summary>
         internal static async Task LoadAssets()
         {

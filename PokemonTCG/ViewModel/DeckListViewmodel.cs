@@ -13,9 +13,9 @@ namespace PokemonTCG.ViewModel
         internal void PopulateDeckNames()
         {
             IImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
-            foreach (string name in decks.Keys)
+            foreach (string deckName in decks.Keys)
             {
-                DeckNames.Add(name);
+                DeckNames.Add(deckName);
             }
         }
 

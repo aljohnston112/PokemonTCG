@@ -14,19 +14,6 @@ using WinRT.Interop;
 
 namespace PokemonTCG.View
 {
-    internal class GameArguments
-    {
-
-        internal readonly string PlayerDeckName;
-        internal readonly string OpponentDeckName;
-
-        internal GameArguments(string playerDeck, string opponentDeck)
-        {
-            PlayerDeckName = playerDeck;
-            OpponentDeckName = opponentDeck;
-        }
-
-    }
 
     /// <summary>
     /// The UI for the playing field.

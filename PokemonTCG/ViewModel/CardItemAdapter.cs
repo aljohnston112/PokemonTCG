@@ -1,32 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Microsoft.UI.Xaml.Controls;
-using PokemonTCG.DataSources;
 using PokemonTCG.Enums;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
-using PokemonTCG.View;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PokemonTCG.ViewModel
 {
     internal class CardItemAdapter
     {
-        private CardSifter _sifter = new();
+        private CardSifter CardSifter = new();
         private readonly IDictionary<string, CardItem> _cardItems = new Dictionary<string, CardItem>();
+        internal readonly ObservableCollection<CardItem> CardItems = new();
 
-        internal IEnumerable<CardItem> GetAllCardItems()
+        internal ICollection<CardItem> GetAllCardItems()
         {
             return _cardItems.Values;
         }
-        internal readonly ObservableCollection<CardItem> CardItems = new();
 
         internal void AddCardItem(CardItem cardItem)
         {
-            string id = cardItem.Id;
-            _cardItems.Add(id, cardItem);
-            CardItems.Add(cardItem);
+            _cardItems.Add(cardItem.Id, cardItem);
             SiftCards();
         }
 
@@ -34,8 +28,17 @@ namespace PokemonTCG.ViewModel
         {
             CardItem cardItem = _cardItems[id];
             int count = cardItem.Count + 1;
-            AssertCount(count, cardItem.Limit);
             SetCardCountForCardWithId(cardItem.Id, count);
+        }
+
+        internal void SetCardCountForCardWithId(string id, int count)
+        {
+            CardItem cardItem = _cardItems[id];
+            AssertCount(
+                count: count,
+                limit: cardItem.Limit
+                );
+            _cardItems[id] = cardItem.WithCount(count);
         }
 
         private static void AssertCount(int count, int limit)
@@ -46,37 +49,32 @@ namespace PokemonTCG.ViewModel
             }
         }
 
-        internal void SetCardCountForCardWithId(string id, int count)
-        {
-            _cardItems[id] = _cardItems[id].WithCount(count);
-        }
-
         private void SiftCards()
         {
-            ICollection<CardItem> cards = _sifter.Sift(_cardItems.Values);
+            ICollection<CardItem> cards = CardSifter.Sift(_cardItems.Values);
             CardItems.Clear();
             foreach (CardItem card in cards)
             {
-                CardItems.Add(_cardItems[card.Id]);
+                CardItems.Add(card);
             }
+        }
+
+        internal void UpdateSearchString(string text)
+        {
+            CardSifter = CardSifter.WithNewSearchString(text);
+            SiftCards();
         }
 
         internal void InludeType(string type, bool inludeType)
         {
             PokemonType pokemonType = EnumUtil.Parse<PokemonType>(type);
-            _sifter = _sifter.WithTypeIncluded(pokemonType, inludeType);
+            CardSifter = CardSifter.WithTypeIncluded(pokemonType, inludeType);
             SiftCards();
         }
 
-        internal void UpdateSearchString(string text)
+        internal void IncludeOnlyCardsInDeck(bool deckCardsOnly)
         {
-            _sifter = _sifter.WithNewSearchString(text);
-            SiftCards();
-        }
-
-        internal void IncludeOnlyThoseInDeck(bool deckCardsOnly)
-        {
-            _sifter = _sifter.IncludeOnlyThoseFromDeck(deckCardsOnly);
+            CardSifter = CardSifter.IncludeOnlyCardsFromDeck(deckCardsOnly);
             SiftCards();
         }
 
@@ -99,20 +97,20 @@ namespace PokemonTCG.ViewModel
 
         private void IncludePokemon(bool includePokemon)
         {
-            _sifter = _sifter.WithPokemonIncluded(includePokemon);
+            CardSifter = CardSifter.WithPokemonIncluded(includePokemon);
             SiftCards();
         }
 
 
         private void IncludeTrainer(bool includeTrainer)
         {
-            _sifter = _sifter.WithTrainersIncluded(includeTrainer);
+            CardSifter = CardSifter.WithTrainersIncluded(includeTrainer);
             SiftCards();
         }
 
         private void IncludeEnergy(bool includeEnergy)
         {
-            _sifter = _sifter.WithEnergiesIncluded(includeEnergy);
+            CardSifter = CardSifter.WithEnergiesIncluded(includeEnergy);
             SiftCards();
         }
 

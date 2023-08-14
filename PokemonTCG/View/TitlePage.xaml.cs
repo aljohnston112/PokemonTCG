@@ -12,7 +12,6 @@ namespace PokemonTCG.View
     {
 
         private readonly Task LoadAssetTask;
-        private readonly TitlePageViewModel titlePageViewModel = new();
 
         public TitlePage()
         {
@@ -20,13 +19,13 @@ namespace PokemonTCG.View
             LoadAssetTask = TitlePageViewModel.LoadAssets();
         }
 
-        private async Task NavigateToDeckListPage(object sender, RoutedEventArgs e)
+        private async void NavigateToDeckListPage(object sender, RoutedEventArgs e)
         {
             await LoadAssetTask;
             Frame.Navigate(typeof(DeckListPage));
         }
 
-        private async Task NavigateToGameSettingsPage(object sender, RoutedEventArgs e)
+        private async void NavigateToGameSettingsPage(object sender, RoutedEventArgs e)
         {
             await LoadAssetTask;
             Frame.Navigate(typeof(GameSettingsPage));

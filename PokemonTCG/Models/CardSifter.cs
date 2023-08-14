@@ -175,7 +175,7 @@ namespace PokemonTCG.Models
                 );
         }
 
-        internal CardSifter IncludeOnlyThoseFromDeck(bool includeOnlyThoseFromDeck)
+        internal CardSifter IncludeOnlyCardsFromDeck(bool includeOnlyThoseFromDeck)
         {
             return new CardSifter(
                 typesToInclude: TypesToInclude,
