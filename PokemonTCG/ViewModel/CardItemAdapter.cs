@@ -21,7 +21,7 @@ namespace PokemonTCG.ViewModel
         internal void AddCardItem(CardItem cardItem)
         {
             _cardItems.Add(cardItem.Id, cardItem);
-            SiftCards();
+            CardItems.Add(cardItem);
         }
 
         internal void IncrementCardCountForCardWithId(string id)
@@ -39,6 +39,7 @@ namespace PokemonTCG.ViewModel
                 limit: cardItem.Limit
                 );
             _cardItems[id] = cardItem.WithCount(count);
+            SiftCards();
         }
 
         private static void AssertCount(int count, int limit)

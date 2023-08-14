@@ -35,13 +35,13 @@ namespace PokemonTCG.ViewModel
             private set { SetProperty(ref _numberOfCardsInDeckText, value); }
         }
 
-        internal void OnNavigatedTo(object deckName, CardItemAdapter cardItemAdapter)
+        internal async Task OnNavigatedTo(object deckName, CardItemAdapter cardItemAdapter)
         {
             ISet<string> deckSets = GetSetsForDeck(deckName);
 
             foreach (string deckSet in deckSets)
             {
-                _ = LoadCardsItemsForSet(deckSet, cardItemAdapter);
+                await LoadCardsItemsForSet(deckSet, cardItemAdapter);
             }
 
             if(deckName != null)

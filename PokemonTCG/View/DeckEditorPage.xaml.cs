@@ -5,6 +5,8 @@ using PokemonTCG.ViewModel;
 using Microsoft.UI.Xaml.Navigation;
 using PokemonTCG.Utilities;
 using PokemonTCG.Models;
+using System;
+using System.Threading.Tasks;
 
 namespace PokemonTCG.View
 {
@@ -21,11 +23,11 @@ namespace PokemonTCG.View
             InitializeComponent();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
             object deckName = e.Parameter;
-            ViewModel.OnNavigatedTo(deckName, CardItemAdapter);
+            await ViewModel.OnNavigatedTo(deckName, CardItemAdapter);
             SetUpCheckBoxes();
         }
 
@@ -119,21 +121,17 @@ namespace PokemonTCG.View
                 Grid templateRoot = args.ItemContainer.ContentTemplateRoot as Grid;
                 NumberBox numberBox = templateRoot.FindName("NumberBox") as NumberBox;
                 numberBox.Maximum = DeckEditorViewModel.GetCardLimit(cardItem);
+                numberBox.Value = cardItem.Count;
                 numberBox.Tag = cardItem;
 
                 Image image = templateRoot.FindName("CardImage") as Image;
                 image.Tapped += FlyoutUtil.ImageTapped;
             }
-
         }
 
         private void NumberBoxHandler(NumberBox box, NumberBoxValueChangedEventArgs args)
         {
-            // Removes focus from the number box when the user presses enter.
-            if(FocusManager.GetFocusedElement(RootGrid.XamlRoot)?.GetType() == typeof(TextBox)){
-                CardGridView.Focus(FocusState.Programmatic);
-            }
-            if (box.Tag is CardItem cardItem)
+            if (box.Tag is CardItem cardItem && args.OldValue != args.NewValue)
             {
                 if (!double.IsNaN(args.NewValue))
                 {

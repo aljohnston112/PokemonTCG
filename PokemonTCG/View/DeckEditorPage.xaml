@@ -37,8 +37,6 @@
                                Minimum="0"
                                SmallChange="1"
                                SpinButtonPlacementMode="Inline"
-                               Value="{x:Bind Count, Mode=OneWay}"
-                               ValueChanged="NumberBoxHandler"
                                Grid.Column="1"
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
