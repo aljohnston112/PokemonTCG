@@ -40,9 +40,9 @@ namespace PokemonTCG.View
             GamePageViewModel = new(
                 (GameState gameState) =>
                     {
-                        HandViewModel.SetHand(gameState.PlayerState.Hand);
-                        PlayerPageViewModel.OnStateChange(gameState.PlayerState);
-                        OpponentPageViewModel.OnStateChange(gameState.OpponentState);
+                        HandViewModel.SetHand(gameState.GameFieldState.PlayerState.Hand);
+                        PlayerPageViewModel.OnStateChange(gameState.GameFieldState.PlayerState);
+                        OpponentPageViewModel.OnStateChange(gameState.GameFieldState.OpponentState);
                     }
                 );
 

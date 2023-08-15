@@ -1,9 +1,12 @@
 ﻿
 namespace PokemonTCG.Models
 {
-    internal abstract class TurnTemplate
+    internal class TurnState
     {
-        internal abstract GameState NextTurn(GameState gameState);
+        internal static GameState NextTurn(GameState gameState)
+        {
+            return new GameState(!gameState.PlayersTurn, gameState.GameFieldState);
+        }
 
     }
 

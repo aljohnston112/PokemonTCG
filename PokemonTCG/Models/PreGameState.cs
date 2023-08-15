@@ -9,30 +9,39 @@ using System.Linq;
 
 namespace PokemonTCG.Models
 {
-    internal class GameTemplate
+
+    internal class PreGameState
     {
 
-        private int PlayerDraws = 0;
-        private int OpponentDraws = 0;
-        private bool PlayerTurn;
+        private readonly bool PlayerGoesFirst;
+        private readonly int PlayerDraws = 0;
+        private readonly int OpponentDraws = 0;
 
-        private readonly TurnTemplate PlayerTurnTemplate;
-        private readonly  TurnTemplate OpponentTurnTemplate;
+        internal readonly GameFieldState GameFieldState;
 
-        internal static bool FlipCoin()
+        private PreGameState(
+            GameFieldState gameFieldState, 
+            bool playerGoesFirst, 
+            int playerDraws, 
+            int opponentDraws
+            )
         {
-            return new Random().Next(2) == 0;
+            GameFieldState = gameFieldState;
+            PlayerGoesFirst = playerGoesFirst;
+            PlayerDraws = playerDraws;
+            OpponentDraws = opponentDraws;
         }
 
-        internal GameState SetUpGame(
+        internal static PreGameState StartPreGame(
             PokemonDeck playerDeck,
             PokemonDeck opponentDeck
             )
         {
-            PlayerTurn = FlipCoin();
-
             bool playerHasBasic = false;
             bool opponentHasBasic = false;
+
+            int playerDraws = 0;
+            int opponentDraws = 0;
 
             // Shuffle and draw until at least one player has a basic Pokemon
             PlayerState potentialPlayerState = null;
@@ -43,8 +52,8 @@ namespace PokemonTCG.Models
                 potentialOpponentState = ShuffleAndDraw7Cards(opponentDeck);
                 playerHasBasic = potentialPlayerState.HandHasBasicPokemon();
                 opponentHasBasic = potentialOpponentState.HandHasBasicPokemon();
-                OpponentDraws++;
-                PlayerDraws++;
+                opponentDraws++;
+                playerDraws++;
             }
 
             // Shuffle and draw until both players have a basic Pokemon
@@ -54,7 +63,7 @@ namespace PokemonTCG.Models
                 {
                     potentialPlayerState = ShuffleAndDraw7Cards(playerDeck);
                     playerHasBasic = potentialPlayerState.HandHasBasicPokemon();
-                    OpponentDraws++;
+                    opponentDraws++;
                 }
             }
 
@@ -64,27 +73,35 @@ namespace PokemonTCG.Models
                 {
                     potentialOpponentState = ShuffleAndDraw7Cards(opponentDeck);
                     opponentHasBasic = potentialOpponentState.HandHasBasicPokemon();
-                    PlayerDraws++;
+                    playerDraws++;
                 }
             }
-            if (PlayerDraws > OpponentDraws)
+            if (playerDraws > opponentDraws)
             {
-                OpponentDraws = 0;
+                opponentDraws = 0;
             }
-            else {
-                PlayerDraws = 0;
+            else
+            {
+                playerDraws = 0;
             }
             Debug.Assert(potentialOpponentState != null && potentialPlayerState != null);
-            return new GameState(potentialPlayerState, potentialOpponentState);
+            bool playerGoesFirst = CoinUtil.FlipCoin();
+            GameFieldState gameFieldState = new(potentialPlayerState, potentialOpponentState);
+            return new PreGameState(
+                gameFieldState: gameFieldState, 
+                playerGoesFirst: playerGoesFirst, 
+                playerDraws: playerDraws, 
+                opponentDraws: opponentDraws
+                );
         }
 
         private static PlayerState ShuffleAndDraw7Cards(PokemonDeck deck)
         {
-            IImmutableList<PokemonCard> deckState = 
+            IImmutableList<PokemonCard> deckState =
                 DeckUtil.ShuffleDeck(deck)
                 .Select(id => CardDataSource.GetCardById(id))
                 .ToImmutableList();
-            (IImmutableList<PokemonCard> deckOfCards, IImmutableList<PokemonCard> hand) = 
+            (IImmutableList<PokemonCard> deckOfCards, IImmutableList<PokemonCard> hand) =
                 DeckUtil.DrawCards(deckState, 7);
             return new PlayerState(
                 deck: deckOfCards,
@@ -93,17 +110,17 @@ namespace PokemonTCG.Models
                 bench: ImmutableList<PokemonCardState>.Empty,
                 prizes: ImmutableList<PokemonCard>.Empty,
                 discardPile: ImmutableList<PokemonCard>.Empty,
-                lostZone : ImmutableList<PokemonCard>.Empty
+                lostZone: ImmutableList<PokemonCard>.Empty
                 );
         }
 
-        internal GameState SetUpOpponent(GameState gameState)
+        internal static GameState SetUpOpponent(PreGameState preGameState)
         {
-            IImmutableList<PokemonCard> basicPokemon = gameState.OpponentState.Hand
+            IImmutableList<PokemonCard> basicPokemon = preGameState.GameFieldState.OpponentState.Hand
                 .Where(card => CardUtil.IsBasicPokemon(card)
             ).ToImmutableList();
 
-            PlayerState newOpponentState = gameState.OpponentState;
+            PlayerState newOpponentState = preGameState.GameFieldState.OpponentState;
             PokemonCard active;
             if (basicPokemon.Count == 1)
             {
@@ -111,8 +128,9 @@ namespace PokemonTCG.Models
             }
             else
             {
+                // TODO maybe max damage and evolution
                 IDictionary<PokemonCard, int> rank = RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(
-                    gameState.OpponentState
+                    preGameState.GameFieldState.OpponentState
                     );
                 int maxRank = rank.Max(rank => rank.Value);
                 IImmutableList<PokemonCard> potentialPokemon = rank
@@ -137,9 +155,9 @@ namespace PokemonTCG.Models
             }
             newOpponentState = newOpponentState.MoveFromHandToActive(active);
             newOpponentState = newOpponentState.SetUpPrizes();
-            newOpponentState = newOpponentState.DrawCards(OpponentDraws);
-            return new GameState(gameState.PlayerState, newOpponentState);
-            // TODO maybe max damage and evolution
+            newOpponentState = newOpponentState.DrawCards(preGameState.OpponentDraws);
+            PlayerState newPlayerState = preGameState.GameFieldState.PlayerState.DrawCards(preGameState.PlayerDraws);
+            return new GameState(preGameState.PlayerGoesFirst, new GameFieldState(newPlayerState, newOpponentState));
         }
 
         private static IDictionary<PokemonCard, int> RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(
@@ -237,45 +255,6 @@ namespace PokemonTCG.Models
             return efficientAttackers;
         }
 
-        internal GameState OnPlayerSelectedActivePokemon(GameState gameState)
-        {
-            PlayerState playerState = gameState.PlayerState.DrawCards(PlayerDraws);
-            return new GameState(playerState, gameState.OpponentState);
-        }
-
-        internal GameState NextTurn(GameState gameState)
-        {
-            GameState newGameState;
-            if (PlayerTurn)
-            {
-                newGameState = PlayerTurnTemplate.NextTurn(gameState);
-                PlayerTurn = false;
-            } else
-            {
-                newGameState = OpponentTurnTemplate.NextTurn(gameState);
-                PlayerTurn = true;
-            }
-            return newGameState;
-        }
-
     }
-}
 
-/*
- * 1. Pick who goes first randomly.
- * 2. Shuffle deck.
- * 3. Draw 7 cards.
- * 4. Check for basic Pokemon. Fossils count as basic Pokemon.
- * 5. If no basic Pokemon, go to 2 after opponent reaches step 6.
- * 6. Select an active basic Pokemon.
- * 7. For each time step 2 was repeated after 5, opponent draws 1 card minus any times they had to repeat step 2 after 5.
- * 8. Put up to 5 Pokemon on the bench.
- * 9. Reveal all Pokemon in play.
- * 10. First turn.
- * 11. Second player's turn.
- * 12. First player's turn. Go to 11 unless the game ends.
- *          The game ends when one player takes all their prizes, 
- *          does not have any Pokemon left in play, 
- *          or has no cards left to draw at the beginning of their turn.
- * Sudden death happens if both players win at the same time, unless one meets two of the conditions and the other does not.
- */
+}

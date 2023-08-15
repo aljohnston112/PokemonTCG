@@ -4,22 +4,47 @@
     /// <summary>
     /// To be used for card context actions in the game page and the hand page.
     /// </summary>
-    class CardViewState
+    class CardActionState
     {
-       
 
-        internal CardViewState(
-           
-            )
+
+        internal CardActionState(GameState gameState)
         {
-            
+            if (gameState.IsPreGame)
+            {
+
+            }
         }
 
     }
 
 }
 
-/* Pokemon
+/*
+ * Hand Pokemon
+ *      Put on bench
+ *      Make Active
+ * 
+ * Active Pokemon
+ *      Use ability
+ *      Attack
+ *      Evolve
+ *      Retreat
+ *      Attach energy
+ * 
+ * Bench Pokemon
+ *      Use ability
+ *      Evolve
+ *      Make active
+ *      Attach energy
+ *      
+ * Trainer cards
+ *      Use
+ */
+
+
+/* 
+ * Pokemon
  *      Use ability - If ability condition is met
  *          Bench
  *          Active
@@ -41,5 +66,4 @@
  *          
  * Trainer - If trainer condition is met
  *      Use
- * 
  */
