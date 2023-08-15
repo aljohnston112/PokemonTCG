@@ -1,4 +1,6 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System.Threading.Tasks;
+using Microsoft.UI.Xaml;
+using PokemonTCG.DataSources;
 
 namespace PokemonTCG
 {
@@ -20,10 +22,22 @@ namespace PokemonTCG
         /// Provides event information for the Application.OnLaunched event.
         /// The Arguments and UWPLaunchActivatedEventArgs properties are not supported in Windows App SDK apps.
         /// </param>
-        protected override void OnLaunched(LaunchActivatedEventArgs args)
+        protected override async void OnLaunched(LaunchActivatedEventArgs args)
         {
+            await LoadAssets();
             m_window = new MainWindow();
             m_window.Activate();
+        }
+
+        /// <summary>
+        /// Starts a task that loads the sets and decks from disk.
+        /// </summary>
+        internal static async Task LoadAssets()
+        {
+            await SetDataSource.LoadSets();
+            await DeckDataSource.LoadDecks();
+            // await CardFunctionGenerator.GenerateCardFunctions();
+
         }
 
     }

@@ -32,7 +32,6 @@ namespace PokemonTCG.View
         private readonly PlayerPageViewModel OpponentPageViewModel = new();
 
         private readonly CardStateViewModel CardStateViewModel = new();
-
         public GamePage()
         {
             InitializeComponent();

@@ -3,6 +3,7 @@ using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using Windows.Data.Json;
 using Windows.Storage;
 
@@ -14,7 +15,7 @@ namespace PokemonTCG.DataSources
 
         internal static async IAsyncEnumerable<CardItem> GetCardItemsForSet(string setName)
         {
-            ICollection<PokemonCard> cards = await SetDataSource.LoadSet(setName);
+            IImmutableList<PokemonCard> cards = await SetDataSource.LoadSet(setName);
 
             foreach (PokemonCard card in cards)
             {

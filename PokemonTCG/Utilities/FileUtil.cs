@@ -25,6 +25,12 @@ namespace PokemonTCG.Utilities
             return await StorageFile.GetFileFromPathAsync(sourcePath);
         }
 
+        internal static async Task<StorageFolder> GetFolder(string folder)
+        {
+            string sourcePath = BASE_PATH + folder;
+            return await StorageFolder.GetFolderFromPathAsync(sourcePath);
+        }
+
         internal static string GetFullPath(string fileUrl)
         {
             return BASE_PATH + fileUrl;

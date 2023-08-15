@@ -88,10 +88,10 @@ namespace PokemonTCG.Models
                 );
         }
 
-        internal static GameState MoveFromHandToActive(GameState gamestate, PokemonCard active)
+        internal static GameState MoveFromHandToActive(GameState gamestate, object active)
         {
             return gamestate.WithPlayerState(
-                gamestate.GameFieldState.PlayerState.MoveFromHandToActive(active)
+                gamestate.GameFieldState.PlayerState.MoveFromHandToActive(active as PokemonCard)
                 );
         }
 
@@ -113,6 +113,13 @@ namespace PokemonTCG.Models
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone
+                );
+        }
+
+        internal static GameState MoveFromHandToBench(GameState gameState, object benchable)
+        {
+            return gameState.WithPlayerState(
+                gameState.GameFieldState.PlayerState.MoveFromHandToBench(benchable as IList<PokemonCard>)
                 );
         }
 

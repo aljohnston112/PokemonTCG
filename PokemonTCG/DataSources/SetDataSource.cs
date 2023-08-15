@@ -6,19 +6,20 @@ using Windows.Storage.Search;
 using Windows.Storage;
 using PokemonTCG.Models;
 using System.Linq;
+using System.Collections.Immutable;
 
 namespace PokemonTCG.DataSources
 {
     internal class SetDataSource
     {
-        private static readonly Dictionary<string, ICollection<PokemonCard>> SetsToCards = new();
+        private static readonly Dictionary<string, IImmutableList<PokemonCard>> SetsToCards = new();
 
         internal static readonly string setFolder = "\\Assets\\sets\\";
 
         /// <summary>
         /// Loads all <c>Card</c> instances.
         /// </summary>
-        internal static async Task LoadSets()
+        internal static async Task<IImmutableDictionary<string, IImmutableList<PokemonCard>>> LoadSets()
         {
             StorageFolder storageFolder = await StorageFolder.GetFolderFromPathAsync(FileUtil.GetFullPath(setFolder));
             List<string> fileTypeFilter = new() { ".json" };
@@ -31,13 +32,14 @@ namespace PokemonTCG.DataSources
                 string setName = file.Name[..file.Name.IndexOf(".")];
                 if (!SetsToCards.ContainsKey(setName))
                 {
-                    ICollection<PokemonCard> cards = await CardDataSource.LoadCardsFromSet(file);
+                    IImmutableList<PokemonCard> cards = await CardDataSource.LoadCardsFromSet(file);
                     SetsToCards.Add(setName, cards);
                 }
             }
+            return SetsToCards.ToImmutableDictionary();
         }
 
-        internal static async Task<ICollection<PokemonCard>> LoadSet(string setName)
+        internal static async Task<IImmutableList<PokemonCard>> LoadSet(string setName)
         {
             if (!SetsToCards.ContainsKey(setName))
             {

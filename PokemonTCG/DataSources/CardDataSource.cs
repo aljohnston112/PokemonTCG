@@ -3,6 +3,7 @@ using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading.Tasks;
 using Windows.Data.Json;
 using Windows.Storage;
@@ -22,7 +23,7 @@ namespace PokemonTCG.DataSources
         /// <param name="file">The json file containing the card information for the set.</param>
         /// <returns>A <c>Task<ICollection<Card>>/c> that returns the collection of cards in the set.</returns>
         /// <exception cref="Exception">Throws an exception if the supertype of the card is not "Pok\u00e9mon", "Trainer", or "Energy"</exception>
-        internal async static Task<ICollection<PokemonCard>> LoadCardsFromSet(StorageFile file)
+        internal async static Task<IImmutableList<PokemonCard>> LoadCardsFromSet(StorageFile file)
         {
             // Read the file
             string jsonText = await FileIO.ReadTextAsync(file);
@@ -277,7 +278,7 @@ namespace PokemonTCG.DataSources
                     idsToCards.Add(id, card);
                 }
             }
-            return idsToCards.Values;
+            return idsToCards.Values.ToImmutableList();
         }
 
         /// <summary>

@@ -1,10 +1,8 @@
 ﻿using PokemonTCG.Enums;
 using PokemonTCG.Utilities;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using static PokemonTCG.Models.GameState;
 
 namespace PokemonTCG.Models
 {
@@ -28,25 +26,37 @@ namespace PokemonTCG.Models
         }
 
         private IImmutableList<IImmutableDictionary<string, GameFunction>> SetUpHandActions(
-            GameState gameState, 
+            GameState gameState,
             IImmutableList<PokemonCard> hand
             )
         {
-            
-            foreach(PokemonCard card in hand)
+
+            foreach (PokemonCard card in hand)
             {
                 Dictionary<string, GameFunction> cardActions = new();
                 if (card.Supertype == CardSupertype.POKéMON)
                 {
-                    if (gameState.IsPreGame)
-                    {
-                        GameFunction function =  gameState.GameFieldState.PlayerState.MoveFromHandToActive
-                        cardActions["Make active"] = ;
-                    }
                     if (CardUtil.IsBasicPokemon(card))
                     {
+                        if (gameState.IsPreGame)
+                        {
 
+                            cardActions["Make active"] = new(PlayerState.MoveFromHandToActive);
+                            if (CardUtil.NumberOfBasicPokemon(hand) > 1)
+                            {
+                                cardActions["Put on bench"] = new(PlayerState.MoveFromHandToBench);
+                            }
+                        }
+                        else
+                        {
+                            cardActions["Put on bench"] = new(PlayerState.MoveFromHandToBench);
+                        }
+                        
                     }
+                }
+                else if (card.Supertype == CardSupertype.TRAINER)
+                {
+
                 }
             }
             throw new NotImplementedException();

@@ -11,23 +11,19 @@ namespace PokemonTCG.View
     public sealed partial class TitlePage : Page
     {
 
-        private readonly Task LoadAssetTask;
 
         public TitlePage()
         {
             InitializeComponent();
-            LoadAssetTask = TitlePageViewModel.LoadAssets();
         }
 
         private async void NavigateToDeckListPage(object sender, RoutedEventArgs e)
         {
-            await LoadAssetTask;
             Frame.Navigate(typeof(DeckListPage));
         }
 
         private async void NavigateToGameSettingsPage(object sender, RoutedEventArgs e)
         {
-            await LoadAssetTask;
             Frame.Navigate(typeof(GameSettingsPage));
         }
 
