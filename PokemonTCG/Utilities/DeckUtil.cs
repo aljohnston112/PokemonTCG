@@ -22,7 +22,9 @@ namespace PokemonTCG.Utilities
             for (int i = CardIds.Count -1; i > 0; i--)
             {
                 int j = random.Next(i + 1);
+                string temp = shuffledIds[j];
                 shuffledIds[j] = (shuffledIds[i]);
+                shuffledIds[i] = temp;
             }
             return shuffledIds.ToImmutableList();
         }

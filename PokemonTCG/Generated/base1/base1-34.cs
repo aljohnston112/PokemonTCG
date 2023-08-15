@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_34
+    internal class Base1_34
     {
-    
 
-        internal bool KarateChop_CanUse(GameState gameState)
+        internal static bool KarateChop_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState KarateChop_Use(GameState gameState)
+        internal static GameState KarateChop_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool Submission_CanUse(GameState gameState)
+        internal static bool Submission_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Submission_Use(GameState gameState)
+        internal static GameState Submission_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

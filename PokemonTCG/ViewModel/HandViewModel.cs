@@ -1,25 +1,25 @@
-﻿using System.Collections.Immutable;
-using System.Collections.ObjectModel;
-using PokemonTCG.Enums;
-using PokemonTCG.Models;
+﻿using PokemonTCG.Models;
+using PokemonTCG.Utilities;
 
 namespace PokemonTCG.ViewModel
 {
 
-    internal class HandViewModel
+    internal class HandViewModel: BindableBase
     {
 
-        internal ObservableCollection<string> Images = new();
-
-        internal void SetHand(IImmutableList<PokemonCard> hand)
+        private HandCardActionState _handCardActionState;
+        internal HandCardActionState HandCardActionState
         {
-            Images.Clear();
-            foreach (PokemonCard card in hand)
-            {
-                Images.Add(card.ImagePaths[ImageSize.LARGE]);
-            }
+            get { return _handCardActionState; }
+            set { SetProperty(ref _handCardActionState, value); }
         }
 
-    }
+        internal void GameStateChanged(GameState gameState)
+        {
+            HandCardActionState = new HandCardActionState(gameState);
+        }
 
+
+
+    }
 }

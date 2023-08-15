@@ -5,20 +5,18 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_90
+    internal class Base1_90
     {
-    
 
-        internal bool SuperPotion_CanUse(GameState gameState)
+        internal static bool SuperPotion_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal void SuperPotion_Use(GameState gameState)
+        internal static void SuperPotion_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

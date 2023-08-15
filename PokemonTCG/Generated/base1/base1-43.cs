@@ -5,20 +5,18 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_43
+    internal class Base1_43
     {
-    
 
-        internal bool Psyshock_CanUse(GameState gameState)
+        internal static bool Psyshock_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Psyshock_Use(GameState gameState)
+        internal static GameState Psyshock_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

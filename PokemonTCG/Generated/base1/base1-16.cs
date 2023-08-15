@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_16
+    internal class Base1_16
     {
-    
 
-        internal bool Thunder_CanUse(GameState gameState)
+        internal static bool Thunder_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Thunder_Use(GameState gameState)
+        internal static GameState Thunder_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool Thunderbolt_CanUse(GameState gameState)
+        internal static bool Thunderbolt_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Thunderbolt_Use(GameState gameState)
+        internal static GameState Thunderbolt_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

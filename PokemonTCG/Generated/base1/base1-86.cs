@@ -5,20 +5,18 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_86
+    internal class Base1_86
     {
-    
 
-        internal bool PokémonFlute_CanUse(GameState gameState)
+        internal static bool PokémonFlute_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal void PokémonFlute_Use(GameState gameState)
+        internal static void PokémonFlute_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

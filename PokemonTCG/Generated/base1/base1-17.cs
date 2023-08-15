@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_17
+    internal class Base1_17
     {
-    
 
-        internal bool Twineedle_CanUse(GameState gameState)
+        internal static bool Twineedle_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Twineedle_Use(GameState gameState)
+        internal static GameState Twineedle_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool PoisonSting_CanUse(GameState gameState)
+        internal static bool PoisonSting_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState PoisonSting_Use(GameState gameState)
+        internal static GameState PoisonSting_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

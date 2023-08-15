@@ -36,8 +36,7 @@ namespace PokemonTCG
         {
             await SetDataSource.LoadSets();
             await DeckDataSource.LoadDecks();
-            // await CardFunctionGenerator.GenerateCardFunctions();
-
+            await CardFunctionGenerator.GenerateCardFunctions();
         }
 
     }

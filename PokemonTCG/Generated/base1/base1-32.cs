@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_32
+    internal class Base1_32
     {
-    
 
-        internal bool Recover_CanUse(GameState gameState)
+        internal static bool Recover_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Recover_Use(GameState gameState)
+        internal static GameState Recover_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool SuperPsy_CanUse(GameState gameState)
+        internal static bool SuperPsy_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState SuperPsy_Use(GameState gameState)
+        internal static GameState SuperPsy_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

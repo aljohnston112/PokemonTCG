@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_33
+    internal class Base1_33
     {
-    
 
-        internal bool Stiffen_CanUse(GameState gameState)
+        internal static bool Stiffen_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Stiffen_Use(GameState gameState)
+        internal static GameState Stiffen_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool Poisonpowder_CanUse(GameState gameState)
+        internal static bool Poisonpowder_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Poisonpowder_Use(GameState gameState)
+        internal static GameState Poisonpowder_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

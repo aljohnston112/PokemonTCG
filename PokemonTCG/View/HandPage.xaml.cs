@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Linq;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
+using PokemonTCG.DataSources;
+using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using PokemonTCG.ViewModel;
+using static PokemonTCG.Models.HandCardActionState;
 
 namespace PokemonTCG.View
 {
@@ -17,58 +22,82 @@ namespace PokemonTCG.View
     public sealed partial class HandPage : Page
     {
 
+        private GamePageViewModel GameViewModel;
+        private HandViewModel HandViewModel = new();
+
         public HandPage()
         {
             InitializeComponent();
         }
 
-        internal void SetViewModels(HandViewModel handViewModel, CardStateViewModel cardViewModel)
+        internal void SetViewModels(GamePageViewModel gamePageViewModel)
         {
-            handViewModel.Images.CollectionChanged += HandChanged;
+            GameViewModel = gamePageViewModel;
+            GameViewModel.PropertyChanged += GameStateChanged;
+
+            HandViewModel.PropertyChanged += HandChanged;
         }
 
-        private readonly List<Image> CardImages = new();
-        private readonly List<string> ImagePaths = new();
-
-        private void HandChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void GameStateChanged(object sender, PropertyChangedEventArgs e)
         {
-            if(e.OldItems != null)
+            if (e.PropertyName == "GameState")
             {
-                foreach (string item in e.OldItems)
-                {
-                    HandGrid.ColumnDefinitions.RemoveAt(HandGrid.ColumnDefinitions.Count - 1);
-                    CardImages.RemoveAt(ImagePaths.IndexOf(item));
-                    ImagePaths.Remove(item);
-                }
+                HandViewModel.GameStateChanged(GameViewModel.GameState);
             }
+        }
 
-            if (e.NewItems != null)
+        private void HandChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "HandCardActionState")
             {
-                foreach (string item in e.NewItems)
+                HandGrid.ColumnDefinitions.Clear();
+                HandGrid.Children.Clear();
+                int i = 0;
+                foreach (CardActionState actionState in HandViewModel.HandCardActionState.HandActions)
                 {
-                    ColumnDefinition columnDefinition = new()
-                    {
-                        Width = new GridLength(1, GridUnitType.Star)
-                    };
-                    HandGrid.ColumnDefinitions.Add(columnDefinition);
-
                     Image image = new()
                     {
-                        Source = new BitmapImage(new Uri(FileUtil.GetFullPath(item)))
+                        Source = new BitmapImage(new Uri(FileUtil.GetFullPath(actionState.Card.ImagePaths[Enums.ImageSize.LARGE])))
                     };
                     image.Tapped += FlyoutUtil.ImageTapped;
 
                     Flyout flyout = Resources["ImagePreviewFlyout"] as Flyout;
                     FlyoutBase.SetAttachedFlyout(image, flyout);
 
-                    IImmutableList<string> commands = ImmutableList.Create<string>();
-                    image.ContextFlyout = FlyoutUtil.CreateCommandBarFlyout(commands);
+                    IImmutableDictionary<string, CardFunction> cardActions = actionState.Actions;
+                    if (cardActions.Count > 0)
+                    {
+                        Dictionary<string, TappedEventHandler> commands = new();
+                        foreach ((string command, CardFunction function) in cardActions)
+                        {
+                            if(command == MAKE_ACTIVE_ACTION)
+                            {
+                                commands[MAKE_ACTIVE_ACTION] = new TappedEventHandler(
+                                        (object sender, TappedRoutedEventArgs e) =>
+                                        GameViewModel.UpdateGameState(function.Invoke(GameViewModel.GameState, actionState.Card)));
+                            } else if (command == PUT_ON_BENCH_ACTION)
+                            {
+                                commands[PUT_ON_BENCH_ACTION] = new TappedEventHandler(
+                                        (object sender, TappedRoutedEventArgs e) =>
+                                        GameViewModel.UpdateGameState(function.Invoke(GameViewModel.GameState, actionState.Card)));
+                            } else if(command == USE_ACTION)
+                            {
+                                commands[USE_ACTION] = new TappedEventHandler(
+                                        (object sender, TappedRoutedEventArgs e) =>
+                                        GameViewModel.UpdateGameState(function.Invoke(GameViewModel.GameState)));
+                            }
+                        }
+                        image.ContextFlyout = FlyoutUtil.CreateCommandBarFlyout(commands.ToImmutableDictionary());
+                    }
 
-                    CardImages.Add(image);
-                    ImagePaths.Add(item);
-
-                    Grid.SetColumn(image, ImagePaths.Count - 1);
+                    Grid.SetColumn(image, i);
+                    ColumnDefinition columnDefinition = new()
+                    {
+                        Width = new GridLength(1, GridUnitType.Star)
+                    };
+                    HandGrid.ColumnDefinitions.Add(columnDefinition);
                     HandGrid.Children.Add(image);
+                    i++;
                 }
             }
         }

@@ -74,13 +74,13 @@ namespace PokemonTCG.Models
             return hasBasic;
         }
 
-        internal PlayerState MoveFromHandToActive(PokemonCard active)
+        internal PlayerState MoveFromHandToActive(PokemonCard newActive)
         {
-            Debug.Assert(Hand.Contains(active));
+            Debug.Assert(Hand.Contains(newActive));
             return new PlayerState(
                 deck: Deck,
-                hand: Hand.Remove(active),
-                active: new PokemonCardState(active),
+                hand: Hand.Remove(newActive),
+                active: new PokemonCardState(newActive),
                 bench: Bench,
                 prizes: Prizes,
                 discardPile: DiscardPile,
@@ -88,10 +88,10 @@ namespace PokemonTCG.Models
                 );
         }
 
-        internal static GameState MoveFromHandToActive(GameState gamestate, object active)
+        internal static GameState MoveFromHandToActive(GameState gamestate, object[] newActive)
         {
             return gamestate.WithPlayerState(
-                gamestate.GameFieldState.PlayerState.MoveFromHandToActive(active as PokemonCard)
+                gamestate.GameFieldState.PlayerState.MoveFromHandToActive(newActive[0] as PokemonCard)
                 );
         }
 
@@ -99,27 +99,37 @@ namespace PokemonTCG.Models
         {
             // TODO All 4 cards of a V-UNION can be played only from the discard pile and take up one bench spot.
             Debug.Assert(benchable.Count < (MAX_BENCH_SIZE - Bench.Count));
-            IImmutableList<PokemonCard> newHand = Hand;
+            Debug.Assert(benchable.Count > 0);
+            PlayerState newPlayerState = null;
             foreach (PokemonCard card in benchable)
             {
-                Debug.Assert(Hand.Contains(card));
-                newHand = newHand.Remove(card);
+                newPlayerState = MoveFromHandToBench(card);
             }
+            return newPlayerState;
+        }
+
+        internal PlayerState MoveFromHandToBench(PokemonCard card)
+        {
+            // TODO All 4 cards of a V-UNION can be played only from the discard pile and take up one bench spot.
+            Debug.Assert((MAX_BENCH_SIZE > Bench.Count));
+            IImmutableList<PokemonCard> newHand = Hand;
+            Debug.Assert(Hand.Contains(card));
+            newHand = newHand.Remove(card);
             return new PlayerState(
                 deck: Deck,
                 hand: newHand,
                 active: Active,
-                bench: Bench.AddRange(benchable.Select(card => new PokemonCardState(card))),
+                bench: Bench.Add(new PokemonCardState(card)),
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone
                 );
         }
 
-        internal static GameState MoveFromHandToBench(GameState gameState, object benchable)
+        internal static GameState MoveFromHandToBench(GameState gameState, object[] benchable)
         {
             return gameState.WithPlayerState(
-                gameState.GameFieldState.PlayerState.MoveFromHandToBench(benchable as IList<PokemonCard>)
+                gameState.GameFieldState.PlayerState.MoveFromHandToBench(benchable[0] as PokemonCard)
                 );
         }
 

@@ -20,8 +20,7 @@ namespace PokemonTCG.View
         }
 
         internal void SetViewModels(
-            PlayerPageViewModel playerPageViewModel, 
-            CardStateViewModel cardViewViewModel
+            PlayerPageViewModel playerPageViewModel
             )
         {
 

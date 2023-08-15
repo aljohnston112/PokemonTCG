@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_13
+    internal class Base1_13
     {
-    
 
-        internal bool WaterGun_CanUse(GameState gameState)
+        internal static bool WaterGun_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState WaterGun_Use(GameState gameState)
+        internal static GameState WaterGun_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool Whirlpool_CanUse(GameState gameState)
+        internal static bool Whirlpool_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Whirlpool_Use(GameState gameState)
+        internal static GameState Whirlpool_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

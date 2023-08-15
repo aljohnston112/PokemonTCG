@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_46
+    internal class Base1_46
     {
-    
 
-        internal bool Scratch_CanUse(GameState gameState)
+        internal static bool Scratch_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Scratch_Use(GameState gameState)
+        internal static GameState Scratch_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool Ember_CanUse(GameState gameState)
+        internal static bool Ember_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Ember_Use(GameState gameState)
+        internal static GameState Ember_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

@@ -5,20 +5,18 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_76
+    internal class Base1_76
     {
-    
 
-        internal bool PokémonBreeder_CanUse(GameState gameState)
+        internal static bool PokémonBreeder_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal void PokémonBreeder_Use(GameState gameState)
+        internal static void PokémonBreeder_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

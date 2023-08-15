@@ -1,5 +1,5 @@
-﻿using System;
-using PokemonTCG.Models;
+﻿using PokemonTCG.Models;
+using PokemonTCG.Utilities;
 
 namespace PokemonTCG.ViewModel
 {
@@ -17,23 +17,27 @@ namespace PokemonTCG.ViewModel
 
     }
 
-    internal class GamePageViewModel
+    internal class GamePageViewModel: BindableBase
     {
-        private readonly Action<GameState> OnGameStateChanged;
 
-        internal GamePageViewModel(Action<GameState> onGameStateChanged)
+        private GameState _gameState = null;
+        internal GameState GameState
         {
-            OnGameStateChanged = onGameStateChanged;
+            get { return _gameState; }
+            set { SetProperty(ref _gameState, value); }
         }
 
         internal void StartGame(GameArguments gameArguments)
         {
-            OnGameStateChanged(new GameState(gameArguments));
+            UpdateGameState(new GameState(gameArguments));
         }
 
-        private void UpdateGameState(GameState gameState)
+        internal void UpdateGameState(GameState gameState)
         {
-            OnGameStateChanged(gameState);
+            if (GameState != gameState)
+            {
+                GameState = gameState;
+            }
         }
 
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Immutable;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -45,7 +46,7 @@ namespace PokemonTCG.DataSources
                     if (card.Supertype == CardSupertype.POKéMON)
                     {
                         fileContent = GenerateCardFileContent(
-                            card.Id.Replace("-", "_"),
+                            CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id.Replace("-", "_")),
                             card.Attacks.Select(attack => attack.Name.Replace(" ", "").Replace("-", "_")).ToImmutableList(),
                             card.Abilities.Select(ability => ability.Name.Replace(" ", "").Replace("-", "_")).ToImmutableList(),
                             null
@@ -54,7 +55,7 @@ namespace PokemonTCG.DataSources
                     else
                     {
                         fileContent = GenerateCardFileContent(
-                            card.Id.Replace("-", "_"),
+                            CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id.Replace("-", "_")),
                             ImmutableList.Create<string>(),
                             ImmutableList.Create<string>(),
                             card.Name.Replace(" ", "").Replace("-", "_")
@@ -81,54 +82,50 @@ namespace PokemonTCG.Generated
     
     internal class " + cardClassName + @"
     {
-    
 ";
 
             foreach (string attackName in attacks)
             {
                 template += @"
-        internal bool " + attackName + @"_CanUse(GameState gameState)
+        internal static bool " + attackName + @"_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState " + attackName + @"_Use(GameState gameState)
+        internal static GameState " + attackName + @"_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 ";
             }
 
             foreach (string abilityName in abilities)
             {
                 template += @"
-        internal bool " + abilityName + @"_CanUse(GameState gameState)
+        internal static bool " + abilityName + @"_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState " + abilityName + @"_Use(GameState gameState)
+        internal static GameState " + abilityName + @"_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 ";
             }
             if (trainer != null)
             {
 
                 template += @"
-        internal bool " + trainer + @"_CanUse(GameState gameState)
+        internal static bool " + trainer + @"_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal void " + trainer + @"_Use(GameState gameState)
+        internal static void " + trainer + @"_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 ";
             }
 

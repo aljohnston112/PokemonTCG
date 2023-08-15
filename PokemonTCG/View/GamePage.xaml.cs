@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -20,10 +21,9 @@ namespace PokemonTCG.View
     /// </summary>
     public sealed partial class GamePage : Page
     {
-        private readonly GamePageViewModel GamePageViewModel;
+        private readonly GamePageViewModel GamePageViewModel = new();
 
         private readonly HandPage handPage = new();
-        private readonly HandViewModel HandViewModel = new();
 
         private readonly PlayerPage PlayerPage;
         private readonly PlayerPageViewModel PlayerPageViewModel = new();
@@ -31,29 +31,31 @@ namespace PokemonTCG.View
         private readonly PlayerPage OpponentPage;
         private readonly PlayerPageViewModel OpponentPageViewModel = new();
 
-        private readonly CardStateViewModel CardStateViewModel = new();
         public GamePage()
         {
             InitializeComponent();
 
-            GamePageViewModel = new(
-                (GameState gameState) =>
-                    {
-                        HandViewModel.SetHand(gameState.GameFieldState.PlayerState.Hand);
-                        PlayerPageViewModel.OnStateChange(gameState.GameFieldState.PlayerState);
-                        OpponentPageViewModel.OnStateChange(gameState.GameFieldState.OpponentState);
-                    }
-                );
+            GamePageViewModel.PropertyChanged += OnGameStateChange;
 
-            handPage.SetViewModels(HandViewModel, CardStateViewModel);
+            handPage.SetViewModels(GamePageViewModel);
             ShowHand();
 
             PlayerPage = PagePlayer;
-            PlayerPage.SetViewModels(PlayerPageViewModel, CardStateViewModel);
+            PlayerPage.SetViewModels(PlayerPageViewModel);
 
             OpponentPage = PageOpponent;
-            OpponentPage.SetViewModels(OpponentPageViewModel, CardStateViewModel);
+            OpponentPage.SetViewModels(OpponentPageViewModel);
             RotateOpponentPage();
+        }
+
+        private void OnGameStateChange(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "GameState")
+            {
+                GameState gameState = GamePageViewModel.GameState;
+                PlayerPageViewModel.OnStateChange(gameState.GameFieldState.PlayerState);
+                OpponentPageViewModel.OnStateChange(gameState.GameFieldState.OpponentState);
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)

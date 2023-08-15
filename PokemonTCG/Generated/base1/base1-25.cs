@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_25
+    internal class Base1_25
     {
-    
 
-        internal bool AuroraBeam_CanUse(GameState gameState)
+        internal static bool AuroraBeam_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState AuroraBeam_Use(GameState gameState)
+        internal static GameState AuroraBeam_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool IceBeam_CanUse(GameState gameState)
+        internal static bool IceBeam_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState IceBeam_Use(GameState gameState)
+        internal static GameState IceBeam_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

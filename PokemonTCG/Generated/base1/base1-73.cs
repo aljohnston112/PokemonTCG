@@ -5,20 +5,18 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_73
+    internal class Base1_73
     {
-    
 
-        internal bool ImpostorProfessorOak_CanUse(GameState gameState)
+        internal static bool ImpostorProfessorOak_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal void ImpostorProfessorOak_Use(GameState gameState)
+        internal static void ImpostorProfessorOak_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

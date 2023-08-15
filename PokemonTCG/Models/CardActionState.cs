@@ -1,114 +1,20 @@
-﻿using PokemonTCG.Enums;
-using PokemonTCG.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
+﻿using System.Collections.Immutable;
+using static PokemonTCG.Models.HandCardActionState;
 
 namespace PokemonTCG.Models
 {
-
-    /// <summary>
-    /// To be used for card context actions in the game page and the hand page.
-    /// </summary>
-    class CardActionState
+    internal class CardActionState
     {
 
-        internal delegate GameState GameFunction(GameState gameState, params object[] arguments);
+        internal readonly PokemonCard Card;
+        internal readonly IImmutableDictionary<string, CardFunction> Actions;
 
-        internal IImmutableList<IImmutableDictionary<string, GameFunction>> HandActions;
-        internal IImmutableList<IImmutableDictionary<string, GameFunction>> BenchActions;
-        internal IImmutableDictionary<string, GameFunction> ActiveActions;
-
-        internal CardActionState(GameState gameState)
+        internal CardActionState(PokemonCard card, IImmutableDictionary<string, CardFunction> actions)
         {
-            SetUpHandActions(gameState, gameState.GameFieldState.PlayerState.Hand);
-
+            Card = card;
+            Actions = actions;
         }
 
-        private IImmutableList<IImmutableDictionary<string, GameFunction>> SetUpHandActions(
-            GameState gameState,
-            IImmutableList<PokemonCard> hand
-            )
-        {
-
-            foreach (PokemonCard card in hand)
-            {
-                Dictionary<string, GameFunction> cardActions = new();
-                if (card.Supertype == CardSupertype.POKéMON)
-                {
-                    if (CardUtil.IsBasicPokemon(card))
-                    {
-                        if (gameState.IsPreGame)
-                        {
-
-                            cardActions["Make active"] = new(PlayerState.MoveFromHandToActive);
-                            if (CardUtil.NumberOfBasicPokemon(hand) > 1)
-                            {
-                                cardActions["Put on bench"] = new(PlayerState.MoveFromHandToBench);
-                            }
-                        }
-                        else
-                        {
-                            cardActions["Put on bench"] = new(PlayerState.MoveFromHandToBench);
-                        }
-                        
-                    }
-                }
-                else if (card.Supertype == CardSupertype.TRAINER)
-                {
-
-                }
-            }
-            throw new NotImplementedException();
-        }
     }
 
 }
-
-/*
- * Hand Pokemon
- *      Put on bench
- *      Make Active
- * 
- * Active Pokemon
- *      Use ability
- *      Attack
- *      Evolve
- *      Retreat
- *      Attach energy
- * 
- * Bench Pokemon
- *      Use ability
- *      Evolve
- *      Make active
- *      Attach energy
- *      
- * Trainer cards
- *      Use
- */
-
-
-/* 
- * Pokemon
- *      Use ability - If ability condition is met
- *          Bench
- *          Active
- *      Attack - If energy condition is met and attack condition is met
- *          Active
- *      Put on bench - "If room on bench and is a basic Pokemon" or "All 4 cards of a V-UNION (from the discard pile)".
- *          Hand
- *      Evolve - If evolution is available in hand and evolves from the Pokemon to be evolved
- *          Active
- *          Bench
- *      Retreat - If retreat cost is met
- *          Active
- *      Make active - If start of game or active was knocked out
- *          Hand
- *          Bench
- *      Attach energy - If not done
- *          Active
- *          Bench
- *          
- * Trainer - If trainer condition is met
- *      Use
- */

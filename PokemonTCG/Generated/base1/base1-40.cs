@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_40
+    internal class Base1_40
     {
-    
 
-        internal bool Bite_CanUse(GameState gameState)
+        internal static bool Bite_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Bite_Use(GameState gameState)
+        internal static GameState Bite_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool SuperFang_CanUse(GameState gameState)
+        internal static bool SuperFang_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState SuperFang_Use(GameState gameState)
+        internal static GameState SuperFang_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

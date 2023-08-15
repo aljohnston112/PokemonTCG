@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_5
+    internal class Base1_5
     {
-    
 
-        internal bool Sing_CanUse(GameState gameState)
+        internal static bool Sing_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Sing_Use(GameState gameState)
+        internal static GameState Sing_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool Metronome_CanUse(GameState gameState)
+        internal static bool Metronome_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Metronome_Use(GameState gameState)
+        internal static GameState Metronome_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

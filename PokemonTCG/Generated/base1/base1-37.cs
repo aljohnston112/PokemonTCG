@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_37
+    internal class Base1_37
     {
-    
 
-        internal bool DoubleKick_CanUse(GameState gameState)
+        internal static bool DoubleKick_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState DoubleKick_Use(GameState gameState)
+        internal static GameState DoubleKick_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool HornDrill_CanUse(GameState gameState)
+        internal static bool HornDrill_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState HornDrill_Use(GameState gameState)
+        internal static GameState HornDrill_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_36
+    internal class Base1_36
     {
-    
 
-        internal bool FirePunch_CanUse(GameState gameState)
+        internal static bool FirePunch_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState FirePunch_Use(GameState gameState)
+        internal static GameState FirePunch_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool Flamethrower_CanUse(GameState gameState)
+        internal static bool Flamethrower_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Flamethrower_Use(GameState gameState)
+        internal static GameState Flamethrower_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

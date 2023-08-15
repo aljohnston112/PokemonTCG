@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_35
+    internal class Base1_35
     {
-    
 
-        internal bool Tackle_CanUse(GameState gameState)
+        internal static bool Tackle_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Tackle_Use(GameState gameState)
+        internal static GameState Tackle_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool Flail_CanUse(GameState gameState)
+        internal static bool Flail_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Flail_Use(GameState gameState)
+        internal static GameState Flail_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 

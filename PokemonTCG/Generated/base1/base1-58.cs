@@ -5,31 +5,28 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class base1_58
+    internal class Base1_58
     {
-    
 
-        internal bool Gnaw_CanUse(GameState gameState)
+        internal static bool Gnaw_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState Gnaw_Use(GameState gameState)
+        internal static GameState Gnaw_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-
-        internal bool ThunderJolt_CanUse(GameState gameState)
+        internal static bool ThunderJolt_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal GameState ThunderJolt_Use(GameState gameState)
+        internal static GameState ThunderJolt_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
-
 
     }
 
