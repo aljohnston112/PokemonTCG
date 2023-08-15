@@ -88,6 +88,13 @@ namespace PokemonTCG.Models
                 );
         }
 
+        internal static GameState MoveFromHandToActive(GameState gamestate, PokemonCard active)
+        {
+            return gamestate.WithPlayerState(
+                gamestate.GameFieldState.PlayerState.MoveFromHandToActive(active)
+                );
+        }
+
         internal PlayerState MoveFromHandToBench(IList<PokemonCard> benchable)
         {
             // TODO All 4 cards of a V-UNION can be played only from the discard pile and take up one bench spot.
@@ -164,10 +171,10 @@ namespace PokemonTCG.Models
                 throw new ArgumentException($"Card with id: {evolvedCardId} does not evolve from {lowerStageName}");
             }
             return new PlayerState(
-                deck: Deck, 
-                hand: Hand.Remove(card), 
-                active: Active.EvolveTo(card), 
-                bench: Bench, 
+                deck: Deck,
+                hand: Hand.Remove(card),
+                active: Active.EvolveTo(card),
+                bench: Bench,
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone
@@ -193,10 +200,10 @@ namespace PokemonTCG.Models
             IList<PokemonCardState> mutableBench = Bench.ToList();
             mutableBench[iForBench] = Bench[iForBench].EvolveTo(card);
             return new PlayerState(
-                deck: Deck, 
-                hand: Hand.Remove(card), 
-                active: Active, 
-                bench: mutableBench.ToImmutableList(), 
+                deck: Deck,
+                hand: Hand.Remove(card),
+                active: Active,
+                bench: mutableBench.ToImmutableList(),
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone

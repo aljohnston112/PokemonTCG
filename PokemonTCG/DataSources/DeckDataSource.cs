@@ -15,9 +15,9 @@ namespace PokemonTCG.DataSources
     internal class DeckDataSource
     {
         // TODO File backups in case of failure.
+        private const string DECK_FILE = "\\AppData\\decks.decks";
 
         private static readonly Mutex FileMutex = new();
-        private static readonly string DECK_FILE = "\\AppData\\decks.decks";
         private static readonly Dictionary<string, PokemonDeck> DeckNamesToDecks = new();
 
         internal static IImmutableDictionary<string, PokemonDeck> GetDecks()

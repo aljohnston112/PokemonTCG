@@ -30,9 +30,15 @@ namespace PokemonTCG.Models
             GameFieldState = gameFieldState;
         }
 
+
         internal GameState OnUsersFirstTurnSetUp()
         {
-            return PreGameState.SetUpOpponent(PreGameState);
+            return PreGameState.SetUpOpponent();
+        }
+
+        internal GameState WithPlayerState(PlayerState playerState)
+        {
+            return new GameState(PlayersTurn, GameFieldState.WithPlayerState(playerState));
         }
 
         internal static GameState NextTurn(GameState gameState)

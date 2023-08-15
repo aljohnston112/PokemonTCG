@@ -1,4 +1,12 @@
-﻿namespace PokemonTCG.Models
+﻿using PokemonTCG.Enums;
+using PokemonTCG.Utilities;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using static PokemonTCG.Models.GameState;
+
+namespace PokemonTCG.Models
 {
 
     /// <summary>
@@ -7,15 +15,42 @@
     class CardActionState
     {
 
+        internal delegate GameState GameFunction(GameState gameState, params object[] arguments);
+
+        internal IImmutableList<IImmutableDictionary<string, GameFunction>> HandActions;
+        internal IImmutableList<IImmutableDictionary<string, GameFunction>> BenchActions;
+        internal IImmutableDictionary<string, GameFunction> ActiveActions;
 
         internal CardActionState(GameState gameState)
         {
-            if (gameState.IsPreGame)
-            {
+            SetUpHandActions(gameState, gameState.GameFieldState.PlayerState.Hand);
 
-            }
         }
 
+        private IImmutableList<IImmutableDictionary<string, GameFunction>> SetUpHandActions(
+            GameState gameState, 
+            IImmutableList<PokemonCard> hand
+            )
+        {
+            
+            foreach(PokemonCard card in hand)
+            {
+                Dictionary<string, GameFunction> cardActions = new();
+                if (card.Supertype == CardSupertype.POKéMON)
+                {
+                    if (gameState.IsPreGame)
+                    {
+                        GameFunction function =  gameState.GameFieldState.PlayerState.MoveFromHandToActive
+                        cardActions["Make active"] = ;
+                    }
+                    if (CardUtil.IsBasicPokemon(card))
+                    {
+
+                    }
+                }
+            }
+            throw new NotImplementedException();
+        }
     }
 
 }

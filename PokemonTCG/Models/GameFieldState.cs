@@ -1,4 +1,6 @@
-﻿namespace PokemonTCG.Models
+﻿using System;
+
+namespace PokemonTCG.Models
 {
     /// <summary>
     /// The state of the game. To be used for the <c>GamePage</c>
@@ -8,7 +10,6 @@
         internal readonly PlayerState PlayerState;
         internal readonly PlayerState OpponentState;
         internal readonly PokemonCard StadiumCard;
-
 
         internal GameFieldState(
             PlayerState playerState, 
@@ -32,6 +33,11 @@
         {
             // TODO Stadium cards replace any stadium cards in play.You can't play a stadium that is already active. 
             return new GameFieldState(PlayerState, OpponentState, card);
+        }
+
+        internal GameFieldState WithPlayerState(PlayerState playerState)
+        {
+            return new GameFieldState(playerState, OpponentState, StadiumCard);
         }
 
         // TODO I need to figure out how to design the cards and their effects.

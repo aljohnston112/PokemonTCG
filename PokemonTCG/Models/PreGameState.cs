@@ -114,13 +114,13 @@ namespace PokemonTCG.Models
                 );
         }
 
-        internal static GameState SetUpOpponent(PreGameState preGameState)
+        internal GameState SetUpOpponent()
         {
-            IImmutableList<PokemonCard> basicPokemon = preGameState.GameFieldState.OpponentState.Hand
+            IImmutableList<PokemonCard> basicPokemon = GameFieldState.OpponentState.Hand
                 .Where(card => CardUtil.IsBasicPokemon(card)
             ).ToImmutableList();
 
-            PlayerState newOpponentState = preGameState.GameFieldState.OpponentState;
+            PlayerState newOpponentState = GameFieldState.OpponentState;
             PokemonCard active;
             if (basicPokemon.Count == 1)
             {
@@ -130,7 +130,7 @@ namespace PokemonTCG.Models
             {
                 // TODO maybe max damage and evolution
                 IDictionary<PokemonCard, int> rank = RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(
-                    preGameState.GameFieldState.OpponentState
+                    GameFieldState.OpponentState
                     );
                 int maxRank = rank.Max(rank => rank.Value);
                 IImmutableList<PokemonCard> potentialPokemon = rank
@@ -155,9 +155,9 @@ namespace PokemonTCG.Models
             }
             newOpponentState = newOpponentState.MoveFromHandToActive(active);
             newOpponentState = newOpponentState.SetUpPrizes();
-            newOpponentState = newOpponentState.DrawCards(preGameState.OpponentDraws);
-            PlayerState newPlayerState = preGameState.GameFieldState.PlayerState.DrawCards(preGameState.PlayerDraws);
-            return new GameState(preGameState.PlayerGoesFirst, new GameFieldState(newPlayerState, newOpponentState));
+            newOpponentState = newOpponentState.DrawCards(OpponentDraws);
+            PlayerState newPlayerState = GameFieldState.PlayerState.DrawCards(PlayerDraws);
+            return new GameState(PlayerGoesFirst, new GameFieldState(newPlayerState, newOpponentState));
         }
 
         private static IDictionary<PokemonCard, int> RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(
