@@ -1,11 +1,38 @@
 ﻿
+using System;
+
 namespace PokemonTCG.Models
 {
     internal class TurnState
     {
+
         internal static GameState NextTurn(GameState gameState)
         {
-            return new GameState(!gameState.PlayersTurn, gameState.GameFieldState);
+            GameState newGameState;
+            if (gameState.PlayersTurn) {
+                newGameState = PlayersNextTurn(gameState);
+            } else
+            {
+                newGameState = OpponentsNextTurn(gameState);
+            }
+
+            return newGameState;
+        }
+
+        private static GameState OpponentsNextTurn(GameState gameState)
+        {
+            PlayerState opponentState = gameState.OpponentState;
+            opponentState = opponentState.AfterDrawingCards(1);
+            return gameState.WithOpponentState(opponentState);
+        }
+
+        private static GameState PlayersNextTurn(GameState gameState)
+        {
+            PlayerState playerState = gameState.PlayerState;
+            playerState = playerState.AfterDrawingCards(1);
+            return gameState
+                .WithPlayerState(playerState)
+                .WithPlayersTurn(true);
         }
 
     }
@@ -17,7 +44,8 @@ namespace PokemonTCG.Models
  * 2. Do any of the following in any order.
  *      a. Put any number of basic Pokemon on the bench. 
  *              All 4 cards of a V-UNION can be played only from the discard pile and take up one bench spot.
- *      b. Evolve a Pokemon who has a name that matches the "evolves from" of another card. Cannot be done on a Pokemon's first turn in play.
+ *      b. Evolve a Pokemon who has a name that matches the "evolves from" of another card. 
+ *         Cannot be done on a Pokemon's first turn in play.
  *                  Level is not part of a card name. 
  *                  Symbols are except δ (Delta Species). 
  *                  Owner is part of the name. Form is part of the name.

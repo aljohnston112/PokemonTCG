@@ -8,22 +8,24 @@ namespace PokemonTCG.Generated
     internal class Base1_7
     {
 
-        internal static bool Jab_CanUse(GameState gameState)
+        internal static bool Jab_CanUse(GameState gameState, object[] attack)
+        {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            return canUse;
+        }
+
+        internal static GameState Jab_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState Jab_Use(GameState gameState)
+        internal static bool Special_Punch_CanUse(GameState gameState, object[] attack)
         {
-            throw new NotImplementedException();
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            return canUse;
         }
 
-        internal static bool SpecialPunch_CanUse(GameState gameState)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static GameState SpecialPunch_Use(GameState gameState)
+        internal static GameState Special_Punch_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }

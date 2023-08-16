@@ -89,7 +89,7 @@ namespace PokemonTCG.Models
                 PokemonCard card = CardDataSource.GetCardById(cardItem.Id);
 
                 // Get types
-                ImmutableList<PokemonType> types;
+                IImmutableList<PokemonType> types;
                 if (card.Supertype == CardSupertype.POKéMON)
                 {
                     types = card.Types;

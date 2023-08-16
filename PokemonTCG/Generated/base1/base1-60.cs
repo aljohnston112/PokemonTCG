@@ -8,22 +8,26 @@ namespace PokemonTCG.Generated
     internal class Base1_60
     {
 
-        internal static bool SmashKick_CanUse(GameState gameState)
+        internal static bool Smash_Kick_CanUse(GameState gameState, object[] attack)
+        {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            throw new NotImplementedException();
+            return canUse;
+        }
+
+        internal static GameState Smash_Kick_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState SmashKick_Use(GameState gameState)
+        internal static bool Flame_Tail_CanUse(GameState gameState, object[] attack)
         {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
             throw new NotImplementedException();
+            return canUse;
         }
 
-        internal static bool FlameTail_CanUse(GameState gameState)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static GameState FlameTail_Use(GameState gameState)
+        internal static GameState Flame_Tail_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }

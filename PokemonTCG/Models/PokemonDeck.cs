@@ -35,11 +35,13 @@ namespace PokemonTCG.Models
                 "base1-62", "base1-62", "base1-62",
                 "base1-34", "base1-34",
                 "base1-52", "base1-52", "base1-52", "base1-52",
+                // Trainers
                 "base1-79",
                 "base1-84",
                 "base1-88",
                 "base1-93", 
                 "base1-92", "base1-92", "base1-92", "base1-92",
+                // Energy
                 "base1-97", "base1-97", "base1-97", "base1-97",
                 "base1-97", "base1-97", "base1-97", "base1-97", 
                 "base1-97", "base1-97", "base1-97", "base1-97", 

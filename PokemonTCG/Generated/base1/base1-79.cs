@@ -8,12 +8,12 @@ namespace PokemonTCG.Generated
     internal class Base1_79
     {
 
-        internal static bool SuperEnergyRemoval_CanUse(GameState gameState)
+        internal static bool Super_Energy_Removal_CanUse(GameState gameState)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
-        internal static void SuperEnergyRemoval_Use(GameState gameState)
+        internal static void Super_Energy_Removal_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

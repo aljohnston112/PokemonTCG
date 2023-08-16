@@ -8,22 +8,26 @@ namespace PokemonTCG.Generated
     internal class Base1_36
     {
 
-        internal static bool FirePunch_CanUse(GameState gameState)
+        internal static bool Fire_Punch_CanUse(GameState gameState, object[] attack)
+        {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            throw new NotImplementedException();
+            return canUse;
+        }
+
+        internal static GameState Fire_Punch_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState FirePunch_Use(GameState gameState)
+        internal static bool Flamethrower_CanUse(GameState gameState, object[] attack)
         {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
             throw new NotImplementedException();
+            return canUse;
         }
 
-        internal static bool Flamethrower_CanUse(GameState gameState)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static GameState Flamethrower_Use(GameState gameState)
+        internal static GameState Flamethrower_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }

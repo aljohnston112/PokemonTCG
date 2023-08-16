@@ -1,6 +1,9 @@
 ﻿using PokemonTCG.Enums;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Reflection.Emit;
+using System.Xml.Linq;
+using Windows.System;
 
 namespace PokemonTCG.Models
 {
@@ -13,18 +16,18 @@ namespace PokemonTCG.Models
         internal readonly string Id;
         internal readonly string Name;
         internal readonly CardSupertype Supertype;
-        internal readonly ImmutableList<CardSubtype> Subtypes;
+        internal readonly IImmutableList<CardSubtype> Subtypes;
         internal readonly int Level;
         internal readonly int Hp;
-        internal readonly ImmutableList<PokemonType> Types;
+        internal readonly IImmutableList<PokemonType> Types;
         internal readonly string EvolvesFrom;
-        internal readonly ImmutableList<Ability> Abilities;
-        internal readonly ImmutableList<Attack> Attacks;
-        internal readonly ImmutableDictionary<PokemonType, Modifier> Weaknesses;
-        internal readonly ImmutableDictionary<PokemonType, Modifier> Resistances;
-        internal readonly ImmutableDictionary<PokemonType, int> RetreatCost;
+        internal readonly IImmutableList<Ability> Abilities;
+        internal readonly IImmutableList<Attack> Attacks;
+        internal readonly IImmutableDictionary<PokemonType, Modifier> Weaknesses;
+        internal readonly IImmutableDictionary<PokemonType, Modifier> Resistances;
+        internal readonly IImmutableDictionary<PokemonType, int> RetreatCost;
         internal readonly int ConvertedRetreatCost;
-        internal readonly ImmutableDictionary<ImageSize, string> ImagePaths;
+        internal readonly IImmutableDictionary<ImageSize, string> ImagePaths;
         internal readonly string SetId;
         internal readonly string SetName;
         internal readonly string SetSeries;
@@ -32,24 +35,24 @@ namespace PokemonTCG.Models
         internal readonly string Artist;
         internal readonly Rarity Rarity;
         internal readonly string FlavorText;
-        internal readonly IDictionary<LegalFormat, Legality> Legalities;
+        internal readonly IImmutableDictionary<LegalFormat, Legality> Legalities;
 
         internal PokemonCard(
             string id,
             string name,
             CardSupertype supertype,
-            List<CardSubtype> subtypes,
+            IImmutableList<CardSubtype> subtypes,
             int level,
             int hp,
-            List<PokemonType> types,
+            IImmutableList<PokemonType> types,
             string evolvesFrom,
-            List<Ability> abilities,
-            List<Attack> attacks,
-            Dictionary<PokemonType, Modifier> weaknesses,
-            Dictionary<PokemonType, Modifier> resistances,
-            Dictionary<PokemonType, int> retreatCost,
+            IImmutableList<Ability> abilities,
+            IImmutableList<Attack> attacks,
+            IImmutableDictionary<PokemonType, Modifier> weaknesses,
+            IImmutableDictionary<PokemonType, Modifier> resistances,
+            IImmutableDictionary<PokemonType, int> retreatCost,
             int convertedRetreatCost,
-            Dictionary<ImageSize, string> imagePaths,
+            IImmutableDictionary<ImageSize, string> imagePaths,
             string setId,
             string setName,
             string setSeries,
@@ -57,24 +60,24 @@ namespace PokemonTCG.Models
             string artist,
             Rarity rarity,
             string flavorText,
-            IDictionary<LegalFormat, Legality> legalities
+            IImmutableDictionary<LegalFormat, Legality> legalities
         )
         {
             Id = id;
             Name = name;
             Supertype = supertype;
-            Subtypes = subtypes.ToImmutableList();
+            Subtypes = subtypes;
             Level = level;
             Hp = hp;
-            Types = types.ToImmutableList();
+            Types = types;
             EvolvesFrom = evolvesFrom;
-            Abilities = abilities.ToImmutableList();
-            Attacks = attacks.ToImmutableList();
-            Weaknesses = weaknesses.ToImmutableDictionary();
-            Resistances = resistances.ToImmutableDictionary();
-            RetreatCost = retreatCost.ToImmutableDictionary();
+            Abilities = abilities;
+            Attacks = attacks;
+            Weaknesses = weaknesses;
+            Resistances = resistances;
+            RetreatCost = retreatCost;
             ConvertedRetreatCost = convertedRetreatCost;
-            ImagePaths = imagePaths.ToImmutableDictionary();
+            ImagePaths = imagePaths;
             SetId = setId;
             SetName = setName;
             SetSeries = setSeries;
@@ -83,6 +86,35 @@ namespace PokemonTCG.Models
             Rarity = rarity;
             FlavorText = flavorText;
             Legalities = legalities;
+        }
+
+        internal PokemonCard WithoutAttack(Attack attack)
+        {
+            return new PokemonCard(
+                id: Id,
+                name: Name,
+                supertype: Supertype,
+                subtypes: Subtypes,
+                level: Level,
+                hp: Hp,
+                types: Types,
+                evolvesFrom: EvolvesFrom,
+                abilities: Abilities,
+                attacks: Attacks.Remove(attack),
+                weaknesses: Weaknesses,
+                resistances: Resistances,
+                retreatCost: RetreatCost,
+                convertedRetreatCost: ConvertedRetreatCost,
+                imagePaths: ImagePaths,
+                setId: SetId,
+                setName: SetName,
+                setSeries: SetSeries,
+                number: Number,
+                artist: Artist,
+                rarity: Rarity,
+                flavorText: FlavorText,
+                legalities: Legalities
+                );
         }
 
     }

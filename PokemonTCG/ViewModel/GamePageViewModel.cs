@@ -32,6 +32,12 @@ namespace PokemonTCG.ViewModel
             UpdateGameState(new GameState(gameArguments));
         }
 
+        internal void OnUsersFirstTurnSetUp()
+        {
+            // * 9. Reveal all Pokemon in play.
+            UpdateGameState(GameState.OnUsersFirstTurnSetUp());
+        }
+        
         internal void UpdateGameState(GameState gameState)
         {
             if (GameState != gameState)

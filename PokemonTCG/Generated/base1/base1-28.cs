@@ -8,12 +8,14 @@ namespace PokemonTCG.Generated
     internal class Base1_28
     {
 
-        internal static bool Flare_CanUse(GameState gameState)
+        internal static bool Flare_CanUse(GameState gameState, object[] attack)
         {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
             throw new NotImplementedException();
+            return canUse;
         }
 
-        internal static GameState Flare_Use(GameState gameState)
+        internal static GameState Flare_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }

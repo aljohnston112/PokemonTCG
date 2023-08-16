@@ -8,12 +8,14 @@ namespace PokemonTCG.Generated
     internal class Base1_68
     {
 
-        internal static bool ConfuseRay_CanUse(GameState gameState)
+        internal static bool Confuse_Ray_CanUse(GameState gameState, object[] attack)
         {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
             throw new NotImplementedException();
+            return canUse;
         }
 
-        internal static GameState ConfuseRay_Use(GameState gameState)
+        internal static GameState Confuse_Ray_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }

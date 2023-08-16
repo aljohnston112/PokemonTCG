@@ -8,22 +8,26 @@ namespace PokemonTCG.Generated
     internal class Base1_19
     {
 
-        internal static bool Slash_CanUse(GameState gameState)
+        internal static bool Slash_CanUse(GameState gameState, object[] attack)
+        {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            throw new NotImplementedException();
+            return canUse;
+        }
+
+        internal static GameState Slash_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState Slash_Use(GameState gameState)
+        internal static bool Earthquake_CanUse(GameState gameState, object[] attack)
         {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
             throw new NotImplementedException();
+            return canUse;
         }
 
-        internal static bool Earthquake_CanUse(GameState gameState)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static GameState Earthquake_Use(GameState gameState)
+        internal static GameState Earthquake_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }

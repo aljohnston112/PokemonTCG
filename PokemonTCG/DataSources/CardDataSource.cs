@@ -254,18 +254,18 @@ namespace PokemonTCG.DataSources
                         id: id,
                         name: name,
                         supertype: supertype,
-                        subtypes: subtypes,
+                        subtypes: subtypes.ToImmutableList(),
                         level: level,
                         hp: hp,
-                        types: pokemonTypes,
+                        types: pokemonTypes.ToImmutableList(),
                         evolvesFrom: evolvesFrom,
-                        abilities: abilities,
-                        attacks: attacks,
-                        weaknesses: weaknesses,
-                        resistances: resistances,
-                        retreatCost: retreatCost,
+                        abilities: abilities.ToImmutableList(),
+                        attacks: attacks.ToImmutableList(),
+                        weaknesses: weaknesses.ToImmutableDictionary(),
+                        resistances: resistances.ToImmutableDictionary(),
+                        retreatCost: retreatCost.ToImmutableDictionary(),
                         convertedRetreatCost: convertedRetreatCost,
-                        imagePaths: imagePaths,
+                        imagePaths: imagePaths.ToImmutableDictionary(),
                         setId: setId,
                         setName: setName,
                         setSeries: setSeries,
@@ -273,7 +273,7 @@ namespace PokemonTCG.DataSources
                         artist: artist,
                         rarity: rarity,
                         flavorText: flavorText,
-                        legalities: legalities
+                        legalities: legalities.ToImmutableDictionary()
                         );
                     idsToCards.Add(id, card);
                 }

@@ -8,22 +8,26 @@ namespace PokemonTCG.Generated
     internal class Base1_25
     {
 
-        internal static bool AuroraBeam_CanUse(GameState gameState)
+        internal static bool Aurora_Beam_CanUse(GameState gameState, object[] attack)
+        {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            throw new NotImplementedException();
+            return canUse;
+        }
+
+        internal static GameState Aurora_Beam_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState AuroraBeam_Use(GameState gameState)
+        internal static bool Ice_Beam_CanUse(GameState gameState, object[] attack)
         {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
             throw new NotImplementedException();
+            return canUse;
         }
 
-        internal static bool IceBeam_CanUse(GameState gameState)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static GameState IceBeam_Use(GameState gameState)
+        internal static GameState Ice_Beam_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }

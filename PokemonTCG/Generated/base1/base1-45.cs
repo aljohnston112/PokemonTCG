@@ -8,12 +8,14 @@ namespace PokemonTCG.Generated
     internal class Base1_45
     {
 
-        internal static bool StringShot_CanUse(GameState gameState)
+        internal static bool String_Shot_CanUse(GameState gameState, object[] attack)
         {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
             throw new NotImplementedException();
+            return canUse;
         }
 
-        internal static GameState StringShot_Use(GameState gameState)
+        internal static GameState String_Shot_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }

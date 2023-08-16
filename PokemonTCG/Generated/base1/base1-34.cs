@@ -8,22 +8,24 @@ namespace PokemonTCG.Generated
     internal class Base1_34
     {
 
-        internal static bool KarateChop_CanUse(GameState gameState)
+        internal static bool Karate_Chop_CanUse(GameState gameState, object[] attack)
+        {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            return canUse;
+        }
+
+        internal static GameState Karate_Chop_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState KarateChop_Use(GameState gameState)
+        internal static bool Submission_CanUse(GameState gameState, object[] attack)
         {
-            throw new NotImplementedException();
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            return canUse;
         }
 
-        internal static bool Submission_CanUse(GameState gameState)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static GameState Submission_Use(GameState gameState)
+        internal static GameState Submission_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }

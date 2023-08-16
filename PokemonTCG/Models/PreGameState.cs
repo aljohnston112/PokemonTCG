@@ -13,30 +13,19 @@ namespace PokemonTCG.Models
     internal class PreGameState
     {
 
-        private readonly bool PlayerGoesFirst;
         private readonly int PlayerDraws = 0;
         private readonly int OpponentDraws = 0;
 
-        internal readonly GameFieldState GameFieldState;
+        internal readonly GameState GameState;
 
-        private PreGameState(
-            GameFieldState gameFieldState, 
-            bool playerGoesFirst, 
-            int playerDraws, 
-            int opponentDraws
-            )
-        {
-            GameFieldState = gameFieldState;
-            PlayerGoesFirst = playerGoesFirst;
-            PlayerDraws = playerDraws;
-            OpponentDraws = opponentDraws;
-        }
-
-        internal static PreGameState StartPreGame(
+        internal PreGameState(
             PokemonDeck playerDeck,
             PokemonDeck opponentDeck
             )
         {
+            // * 1. Pick who goes first randomly.
+            bool playerGoesFirst = CoinUtil.FlipCoin();
+
             bool playerHasBasic = false;
             bool opponentHasBasic = false;
 
@@ -46,15 +35,6 @@ namespace PokemonTCG.Models
             // Shuffle and draw until at least one player has a basic Pokemon
             PlayerState potentialPlayerState = null;
             PlayerState potentialOpponentState = null;
-            while (!playerHasBasic && !opponentHasBasic)
-            {
-                potentialPlayerState = ShuffleAndDraw7Cards(playerDeck);
-                potentialOpponentState = ShuffleAndDraw7Cards(opponentDeck);
-                playerHasBasic = potentialPlayerState.HandHasBasicPokemon();
-                opponentHasBasic = potentialOpponentState.HandHasBasicPokemon();
-                opponentDraws++;
-                playerDraws++;
-            }
 
             // Shuffle and draw until both players have a basic Pokemon
             if (!playerHasBasic)
@@ -62,6 +42,9 @@ namespace PokemonTCG.Models
                 while (!playerHasBasic)
                 {
                     potentialPlayerState = ShuffleAndDraw7Cards(playerDeck);
+                    // * 4. Check for basic Pokemon.
+                    // * 5. If no basic Pokemon, go to 2 after opponent reaches step 6.
+                    // Not sure why step 6 matters here.
                     playerHasBasic = potentialPlayerState.HandHasBasicPokemon();
                     opponentDraws++;
                 }
@@ -85,24 +68,28 @@ namespace PokemonTCG.Models
                 playerDraws = 0;
             }
             Debug.Assert(potentialOpponentState != null && potentialPlayerState != null);
-            bool playerGoesFirst = CoinUtil.FlipCoin();
-            GameFieldState gameFieldState = new(potentialPlayerState, potentialOpponentState);
-            return new PreGameState(
-                gameFieldState: gameFieldState, 
-                playerGoesFirst: playerGoesFirst, 
-                playerDraws: playerDraws, 
-                opponentDraws: opponentDraws
+            PlayerDraws = playerDraws;
+            OpponentDraws = opponentDraws;
+            GameState = new(
+                playersTurn: playerGoesFirst,
+                playerState: potentialPlayerState, 
+                opponentState: potentialOpponentState,
+                stadiumCard: null
                 );
         }
 
         private static PlayerState ShuffleAndDraw7Cards(PokemonDeck deck)
         {
+            // * 2. Shuffle deck.
             IImmutableList<PokemonCard> deckState =
                 DeckUtil.ShuffleDeck(deck)
                 .Select(id => CardDataSource.GetCardById(id))
                 .ToImmutableList();
+
+            // * 3. Draw 7 cards.
             (IImmutableList<PokemonCard> deckOfCards, IImmutableList<PokemonCard> hand) =
                 DeckUtil.DrawCards(deckState, 7);
+
             return new PlayerState(
                 deck: deckOfCards,
                 hand: hand,
@@ -116,21 +103,26 @@ namespace PokemonTCG.Models
 
         internal GameState SetUpOpponent()
         {
-            IImmutableList<PokemonCard> basicPokemon = GameFieldState.OpponentState.Hand
-                .Where(card => CardUtil.IsBasicPokemon(card)
-            ).ToImmutableList();
-
-            PlayerState newOpponentState = GameFieldState.OpponentState;
+            // * 6. Select an active basic Pokemon.
             PokemonCard active;
+            IImmutableList<PokemonCard> basicPokemon = GameState.OpponentState.Hand
+                .Where(card => CardUtil.IsBasicPokemon(card))
+                .ToImmutableList();
+
+            //  * 7. For each time step 2 was repeated after 5,
+            //  opponent draws 1 card minus any times they had to repeat step 2 after 5.
+            PlayerState newOpponentState = GameState.OpponentState.AfterDrawingCards(OpponentDraws);
+            PlayerState newPlayerState = GameState.PlayerState.AfterDrawingCards(PlayerDraws);
             if (basicPokemon.Count == 1)
             {
                 active = basicPokemon[0];
             }
             else
             {
+                // * 8. Put up to 5 Pokemon on the bench.
                 // TODO maybe max damage and evolution
                 IDictionary<PokemonCard, int> rank = RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(
-                    GameFieldState.OpponentState
+                    GameState.OpponentState
                     );
                 int maxRank = rank.Max(rank => rank.Value);
                 IImmutableList<PokemonCard> potentialPokemon = rank
@@ -145,7 +137,7 @@ namespace PokemonTCG.Models
                     .OrderByDescending(rank => rank.Value).First().Key;
 
                 rank.Remove(active);
-                newOpponentState = newOpponentState.MoveFromHandToBench(
+                newOpponentState = newOpponentState.AfterMovingFromHandToBench(
                     rank
                     .OrderByDescending(rank => rank.Value)
                     .Select(kv => kv.Key)
@@ -153,11 +145,15 @@ namespace PokemonTCG.Models
                     .ToImmutableList()
                     );
             }
-            newOpponentState = newOpponentState.MoveFromHandToActive(active);
-            newOpponentState = newOpponentState.SetUpPrizes();
-            newOpponentState = newOpponentState.DrawCards(OpponentDraws);
-            PlayerState newPlayerState = GameFieldState.PlayerState.DrawCards(PlayerDraws);
-            return new GameState(PlayerGoesFirst, new GameFieldState(newPlayerState, newOpponentState));
+            newOpponentState = newOpponentState.AfterMovingFromHandToActive(active);
+            newOpponentState = newOpponentState.AfterSettingUpPrizes();
+
+            return new GameState(
+                playersTurn: GameState.PlayersTurn, 
+                playerState: newPlayerState,
+                opponentState: newOpponentState,
+                stadiumCard: GameState.StadiumCard
+                );
         }
 
         private static IDictionary<PokemonCard, int> RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(
@@ -179,7 +175,7 @@ namespace PokemonTCG.Models
             {
                 foreach (Attack attack in pokemon.Attacks)
                 {
-                    bool enoughEnergyForAttack = HasEnoughEnergyForAttack(opponentState, attack);
+                    bool enoughEnergyForAttack = CardUtil.IsEnoughEnergyForAttack(opponentState.Hand, attack);
                     if (enoughEnergyForAttack)
                     {
                         rank[pokemon]++;
@@ -187,30 +183,6 @@ namespace PokemonTCG.Models
                 }
             }
             return rank;
-        }
-
-        private static bool HasEnoughEnergyForAttack(PlayerState opponentState, Attack attack)
-        {
-            bool enoughEnergyForAttack = true;
-
-            // Count energy cards from hand
-            IImmutableDictionary<PokemonType, int> numberOfEveryEnergy = opponentState.Hand
-                .Where(card => card.Supertype == CardSupertype.ENERGY)
-                .GroupBy(card => CardUtil.GetEnergyType(card))
-                .ToImmutableDictionary(group => group.Key, group => group.Count());
-            int numberOfEnergies = opponentState.Hand
-                .Where(card => card.Supertype == CardSupertype.ENERGY)
-                .Count();
-
-            foreach ((PokemonType type, int count) in attack.EnergyCost)
-            {
-                if ((!numberOfEveryEnergy.ContainsKey(type) || (numberOfEveryEnergy[type] < count)) ||
-                    (type == PokemonType.Colorless && numberOfEnergies < count))
-                {
-                    enoughEnergyForAttack = false;
-                }
-            }
-            return enoughEnergyForAttack;
         }
 
         private static IDictionary<PokemonCard, int> GetFastestEfficientAttackers(

@@ -8,22 +8,26 @@ namespace PokemonTCG.Generated
     internal class Base1_16
     {
 
-        internal static bool Thunder_CanUse(GameState gameState)
+        internal static bool Thunder_CanUse(GameState gameState, object[] attack)
+        {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            throw new NotImplementedException();
+            return canUse;
+        }
+
+        internal static GameState Thunder_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState Thunder_Use(GameState gameState)
+        internal static bool Thunderbolt_CanUse(GameState gameState, object[] attack)
         {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
             throw new NotImplementedException();
+            return canUse;
         }
 
-        internal static bool Thunderbolt_CanUse(GameState gameState)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal static GameState Thunderbolt_Use(GameState gameState)
+        internal static GameState Thunderbolt_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }

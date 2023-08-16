@@ -32,43 +32,56 @@ namespace PokemonTCG.DataSources
             IImmutableDictionary<string, IImmutableList<PokemonCard>> sets = await SetDataSource.LoadSets();
             foreach ((string setName, IImmutableList<PokemonCard> cards) in sets)
             {
-                StorageFolder setFolder = await rootFolder.CreateFolderAsync(
-                    setName + "\\",
-                    CreationCollisionOption.OpenIfExists
-                    );
-                foreach (PokemonCard card in cards)
+                StorageFolder setFolder;
+                try
                 {
-                    StorageFile storageFile = await setFolder.CreateFileAsync(
-                        card.Id + ".cs",
-                        CreationCollisionOption.ReplaceExisting
-                        );
-                    string fileContent;
-                    if (card.Supertype == CardSupertype.POKéMON)
+                    setFolder = await rootFolder.CreateFolderAsync(
+                    setName + "\\",
+                    CreationCollisionOption.FailIfExists
+                    );
+                } catch(SystemException e)
+                {
+                    setFolder = null;
+                }
+                if (setFolder != null)
+                {
+                    foreach (PokemonCard card in cards)
                     {
-                        fileContent = GenerateCardFileContent(
-                            CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id.Replace("-", "_")),
-                            card.Attacks.Select(attack => attack.Name.Replace(" ", "").Replace("-", "_")).ToImmutableList(),
-                            card.Abilities.Select(ability => ability.Name.Replace(" ", "").Replace("-", "_")).ToImmutableList(),
-                            null
+                        StorageFile storageFile = await setFolder.CreateFileAsync(
+                            card.Id + ".cs",
+                            CreationCollisionOption.ReplaceExisting
                             );
+                        string fileContent = null;
+                        if (card.Supertype == CardSupertype.POKéMON)
+                        {
+                            fileContent = GenerateCardFileContent(
+                                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id),
+                                card.Attacks,
+                                card.Abilities.Select(ability => ability.Name).ToImmutableList(),
+                                null
+                                );
+                        }
+                        else if(card.Supertype == CardSupertype.TRAINER)
+                        {
+                            fileContent = GenerateCardFileContent(
+                                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id),
+                                ImmutableList.Create<Attack>(),
+                                ImmutableList.Create<string>(),
+                                card.Name
+                                );
+                        }
+                        if (fileContent != null)
+                        {
+                            await FileIO.WriteTextAsync(storageFile, fileContent);
+                        }
                     }
-                    else
-                    {
-                        fileContent = GenerateCardFileContent(
-                            CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id.Replace("-", "_")),
-                            ImmutableList.Create<string>(),
-                            ImmutableList.Create<string>(),
-                            card.Name.Replace(" ", "").Replace("-", "_")
-                            );
-                    }
-                    await FileIO.WriteTextAsync(storageFile, fileContent);
                 }
             }
         }
 
         internal static string GenerateCardFileContent(
             string cardClassName,
-            IImmutableList<string> attacks,
+            IImmutableList<Attack> attacks,
             IImmutableList<string> abilities,
             string trainer
             )
@@ -80,19 +93,22 @@ using PokemonTCG.Models;
 namespace PokemonTCG.Generated 
 {
     
-    internal class " + cardClassName + @"
+    internal class " + cardClassName.Replace("-", "_").Replace(" ", "_") + @"
     {
 ";
 
-            foreach (string attackName in attacks)
+            foreach (Attack attack in attacks)
             {
+                string attackName = attack.Name.Replace("-", "_").Replace(" ", "_");
                 template += @"
-        internal static bool " + attackName + @"_CanUse(GameState gameState)
+        internal static bool " + attackName + @"_CanUse(GameState gameState, object[] attack)
         {
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
             throw new NotImplementedException();
+            return canUse;
         }
 
-        internal static GameState " + attackName + @"_Use(GameState gameState)
+        internal static GameState " + attackName + @"_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }
@@ -101,13 +117,14 @@ namespace PokemonTCG.Generated
 
             foreach (string abilityName in abilities)
             {
+                string newAbilityName = abilityName.Replace("-", "_").Replace(" ", "_");
                 template += @"
-        internal static bool " + abilityName + @"_CanUse(GameState gameState)
+        internal static bool " + newAbilityName + @"_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState " + abilityName + @"_Use(GameState gameState)
+        internal static GameState " + newAbilityName + @"_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
@@ -115,14 +132,14 @@ namespace PokemonTCG.Generated
             }
             if (trainer != null)
             {
-
+                string trainerName = trainer.Replace("-", "_").Replace(" ", "_");
                 template += @"
-        internal static bool " + trainer + @"_CanUse(GameState gameState)
+        internal static bool " + trainerName + @"_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal static void " + trainer + @"_Use(GameState gameState)
+        internal static void " + trainerName + @"_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

@@ -8,12 +8,12 @@ namespace PokemonTCG.Generated
     internal class Base1_93
     {
 
-        internal static bool GustofWind_CanUse(GameState gameState)
+        internal static bool Gust_of_Wind_CanUse(GameState gameState)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
-        internal static void GustofWind_Use(GameState gameState)
+        internal static void Gust_of_Wind_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

@@ -10,7 +10,7 @@ namespace PokemonTCG.Generated
 
         internal static bool PlusPower_CanUse(GameState gameState)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         internal static void PlusPower_Use(GameState gameState)

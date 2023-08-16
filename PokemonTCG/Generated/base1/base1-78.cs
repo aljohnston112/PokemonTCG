@@ -8,12 +8,12 @@ namespace PokemonTCG.Generated
     internal class Base1_78
     {
 
-        internal static bool ScoopUp_CanUse(GameState gameState)
+        internal static bool Scoop_Up_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal static void ScoopUp_Use(GameState gameState)
+        internal static void Scoop_Up_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

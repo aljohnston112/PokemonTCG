@@ -24,7 +24,7 @@ namespace PokemonTCG.Models
 
         internal HandCardActionState(GameState gameState)
         {
-            HandActions = GetHandActions(gameState, gameState.GameFieldState.PlayerState.Hand);
+            HandActions = GetHandActions(gameState, gameState.PlayerState.Hand);
         }
 
         private static ImmutableList<CardActionState> GetHandActions(
@@ -42,17 +42,17 @@ namespace PokemonTCG.Models
                     {
                         if (gameState.IsPreGame)
                         {
-                            cardActions[MAKE_ACTIVE_ACTION] = new(PlayerState.MoveFromHandToActive);
+                            cardActions[MAKE_ACTIVE_ACTION] = new(GameState.AfterMovingFromPlayersHandToActive);
                             if (CardUtil.NumberOfBasicPokemon(hand) > 1)
                             {
-                                cardActions[PUT_ON_BENCH_ACTION] = new(PlayerState.MoveFromHandToBench);
+                                cardActions[PUT_ON_BENCH_ACTION] = new(GameState.AfterMovingFromPlayersHandToBench);
                             }
                         }
                         else
                         {
-                            cardActions[PUT_ON_BENCH_ACTION] = new(PlayerState.MoveFromHandToBench);
+                            cardActions[PUT_ON_BENCH_ACTION] = new(GameState.AfterMovingFromPlayersHandToBench);
                         }
-                        
+
                     }
                 }
                 else if (card.Supertype == CardSupertype.TRAINER)
@@ -73,9 +73,9 @@ namespace PokemonTCG.Models
         private static CardFunction GetUseFunction(PokemonCard card, string toUse)
         {
 
-            string namespaceName = card.SetId.Replace(" ", "").Replace("-", "_");
-            string className = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id);
-            string methodName = toUse.Replace(" ", "").Replace("-", "_") + "_Use";
+            string namespaceName = "PokemonTCG.Generated";
+            string className = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id).Replace(" ", "_").Replace("-", "_");
+            string methodName = toUse.Replace(" ", "_").Replace("-", "_") + "_Use";
 
             Type type = Type.GetType($"{namespaceName}.{className}");
             MethodInfo methodInfo = type?.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
@@ -85,8 +85,8 @@ namespace PokemonTCG.Models
         private static bool CanUse(GameState gameState, PokemonCard card)
         {
             string namespaceName = "PokemonTCG.Generated";
-            string className = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id.Replace(" ", "").Replace("-", "_"));
-            string methodName = card.Name.Replace(" ", "").Replace("-", "_") + "_CanUse";
+            string className = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id.Replace(" ", "_").Replace("-", "_"));
+            string methodName = card.Name.Replace(" ", "_").Replace("-", "_") + "_CanUse";
 
             Type type = Type.GetType($"{namespaceName}.{className}");
             MethodInfo methodInfo = type?.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);

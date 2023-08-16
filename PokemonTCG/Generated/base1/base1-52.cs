@@ -8,12 +8,13 @@ namespace PokemonTCG.Generated
     internal class Base1_52
     {
 
-        internal static bool LowKick_CanUse(GameState gameState)
+        internal static bool Low_Kick_CanUse(GameState gameState, object[] attack)
         {
-            throw new NotImplementedException();
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            return canUse;
         }
 
-        internal static GameState LowKick_Use(GameState gameState)
+        internal static GameState Low_Kick_Use(GameState gameState, object[] attack)
         {
             throw new NotImplementedException();
         }
