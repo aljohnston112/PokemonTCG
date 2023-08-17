@@ -111,11 +111,13 @@ namespace PokemonTCG.Models
         {
             // TODO All 4 cards of a V-UNION can be played only from the discard pile and take up one bench spot.
             Debug.Assert(benchable.Count < (MAX_BENCH_SIZE - Bench.Count));
-            Debug.Assert(benchable.Count > 0);
-            PlayerState newPlayerState = null;
-            foreach (PokemonCard card in benchable)
+            PlayerState newPlayerState = this;
+            if (benchable.Count > 0)
             {
-                newPlayerState = AfterMovingFromHandToBench(card);
+                foreach (PokemonCard card in benchable)
+                {
+                    newPlayerState = AfterMovingFromHandToBench(card);
+                }
             }
             return newPlayerState;
         }

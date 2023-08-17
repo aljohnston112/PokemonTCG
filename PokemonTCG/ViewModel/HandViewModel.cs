@@ -19,7 +19,6 @@ namespace PokemonTCG.ViewModel
             HandCardActionState = new HandCardActionState(gameState);
         }
 
-
-
     }
+
 }

@@ -4,7 +4,6 @@ using System.Collections.Immutable;
 using System.ComponentModel;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
 using PokemonTCG.Models;
@@ -21,7 +20,7 @@ namespace PokemonTCG.View
     {
 
         private GamePageViewModel GameViewModel;
-        private HandViewModel HandViewModel = new();
+        private readonly HandViewModel HandViewModel = new();
 
         public HandPage()
         {
@@ -40,7 +39,12 @@ namespace PokemonTCG.View
         {
             if (e.PropertyName == "GameState")
             {
-                HandViewModel.GameStateChanged(GameViewModel.GameState);
+                GameState gameState = GameViewModel.GameState;
+                HandViewModel.GameStateChanged(gameState);
+                if (gameState.IsPreGame && gameState.PlayerState.Active != null)
+                {
+                    StartGameButton.Visibility = Visibility.Visible;
+                }
             }
         }
 
@@ -57,10 +61,7 @@ namespace PokemonTCG.View
                     {
                         Source = new BitmapImage(new Uri(FileUtil.GetFullPath(actionState.Card.ImagePaths[Enums.ImageSize.LARGE])))
                     };
-                    image.Tapped += FlyoutUtil.ImageTapped;
-
-                    Flyout flyout = Resources["ImagePreviewFlyout"] as Flyout;
-                    FlyoutBase.SetAttachedFlyout(image, flyout);
+                    FlyoutUtil.SetImageTappedFlyout(Resources, image);
 
                     IImmutableDictionary<string, CardFunction> cardActions = actionState.Actions;
                     if (cardActions.Count > 0)
@@ -68,17 +69,19 @@ namespace PokemonTCG.View
                         Dictionary<string, TappedEventHandler> commands = new();
                         foreach ((string command, CardFunction function) in cardActions)
                         {
-                            if(command == MAKE_ACTIVE_ACTION)
+                            if (command == MAKE_ACTIVE_ACTION)
                             {
                                 commands[MAKE_ACTIVE_ACTION] = new TappedEventHandler(
                                         (object sender, TappedRoutedEventArgs e) =>
                                         GameViewModel.UpdateGameState(function.Invoke(GameViewModel.GameState, actionState.Card)));
-                            } else if (command == PUT_ON_BENCH_ACTION)
+                            }
+                            else if (command == PUT_ON_BENCH_ACTION)
                             {
                                 commands[PUT_ON_BENCH_ACTION] = new TappedEventHandler(
                                         (object sender, TappedRoutedEventArgs e) =>
                                         GameViewModel.UpdateGameState(function.Invoke(GameViewModel.GameState, actionState.Card)));
-                            } else if(command == USE_ACTION)
+                            }
+                            else if (command == USE_ACTION)
                             {
                                 commands[USE_ACTION] = new TappedEventHandler(
                                         (object sender, TappedRoutedEventArgs e) =>
@@ -87,7 +90,6 @@ namespace PokemonTCG.View
                         }
                         image.ContextFlyout = FlyoutUtil.CreateCommandBarFlyout(commands.ToImmutableDictionary());
                     }
-
                     Grid.SetColumn(image, i);
                     ColumnDefinition columnDefinition = new()
                     {
@@ -98,6 +100,11 @@ namespace PokemonTCG.View
                     i++;
                 }
             }
+        }
+
+        private void OnUsersFirstTurnSetUp(object sender, TappedRoutedEventArgs e)
+        {
+            GameViewModel.OnUsersFirstTurnSetUp();
         }
 
     }

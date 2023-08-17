@@ -119,12 +119,12 @@ namespace PokemonTCG.Generated
             {
                 string newAbilityName = abilityName.Replace("-", "_").Replace(" ", "_");
                 template += @"
-        internal static bool " + newAbilityName + @"_CanUse(GameState gameState)
+        internal static bool " + newAbilityName + @"_CanUse(GameState gameState, object[] parameters)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState " + newAbilityName + @"_Use(GameState gameState)
+        internal static GameState " + newAbilityName + @"_Use(GameState gameState, object[] parameters)
         {
             throw new NotImplementedException();
         }
@@ -134,12 +134,12 @@ namespace PokemonTCG.Generated
             {
                 string trainerName = trainer.Replace("-", "_").Replace(" ", "_");
                 template += @"
-        internal static bool " + trainerName + @"_CanUse(GameState gameState)
+        internal static bool " + trainerName + @"_CanUse(GameState gameState, object[] parameters)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState " + trainerName + @"_Use(GameState gameState)
+        internal static GameState " + trainerName + @"_Use(GameState gameState, object[] parameters)
         {
             throw new NotImplementedException();
         }

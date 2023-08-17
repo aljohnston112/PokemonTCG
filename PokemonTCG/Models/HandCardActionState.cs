@@ -36,32 +36,42 @@ namespace PokemonTCG.Models
             foreach (PokemonCard card in hand)
             {
                 Dictionary<string, CardFunction> cardActions = new();
-                if (card.Supertype == CardSupertype.POKéMON)
+                if (gameState.IsPreGame || gameState.PlayersTurn)
                 {
-                    if (CardUtil.IsBasicPokemon(card))
+                    if (card.Supertype == CardSupertype.POKéMON)
                     {
-                        if (gameState.IsPreGame)
+                        if (CardUtil.IsBasicPokemon(card))
                         {
-                            cardActions[MAKE_ACTIVE_ACTION] = new(GameState.AfterMovingFromPlayersHandToActive);
-                            if (CardUtil.NumberOfBasicPokemon(hand) > 1)
+                            if (gameState.IsPreGame)
                             {
-                                cardActions[PUT_ON_BENCH_ACTION] = new(GameState.AfterMovingFromPlayersHandToBench);
+                                if (gameState.PlayerState.Active == null)
+                                {
+                                    cardActions[MAKE_ACTIVE_ACTION] = new(GameState.AfterMovingFromPlayersHandToActive);
+                                }
+                                if (CardUtil.NumberOfBasicPokemon(hand) > 1 ||
+                                    (CardUtil.NumberOfBasicPokemon(hand) > 0) && gameState.PlayerState.Active != null)
+                                {
+                                    cardActions[PUT_ON_BENCH_ACTION] = new(GameState.AfterMovingFromPlayersHandToBench);
+                                }
                             }
-                        }
-                        else
-                        {
-                            cardActions[PUT_ON_BENCH_ACTION] = new(GameState.AfterMovingFromPlayersHandToBench);
-                        }
+                            else
+                            {
+                                if (gameState.PlayerState.Bench.Count < 5)
+                                {
+                                    cardActions[PUT_ON_BENCH_ACTION] = new(GameState.AfterMovingFromPlayersHandToBench);
+                                }
+                            }
 
+                        }
                     }
-                }
-                else if (card.Supertype == CardSupertype.TRAINER)
-                {
-                    if (!gameState.IsPreGame)
+                    else if (card.Supertype == CardSupertype.TRAINER)
                     {
-                        if (CanUse(gameState, card))
+                        if (!gameState.IsPreGame)
                         {
-                            cardActions[USE_ACTION] = GetUseFunction(card, card.Name);
+                            if (CanUse(gameState, card))
+                            {
+                                cardActions[USE_ACTION] = GetUseFunction(card, card.Name);
+                            }
                         }
                     }
                 }
@@ -90,7 +100,7 @@ namespace PokemonTCG.Models
 
             Type type = Type.GetType($"{namespaceName}.{className}");
             MethodInfo methodInfo = type?.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
-            return (bool)methodInfo.Invoke(null, new object[] { gameState });
+            return (bool)methodInfo.Invoke(null, new object[] { gameState, Array.Empty<object>() });
         }
 
     }

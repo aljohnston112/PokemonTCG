@@ -4,6 +4,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
 using PokemonTCG.Models;
 using System;
+using System.Resources;
 using System.Collections.Immutable;
 
 namespace PokemonTCG.Utilities
@@ -50,6 +51,13 @@ namespace PokemonTCG.Utilities
             Image image = flyout.Content as Image;
             image.Source = (sender as Image).Source;
             FlyoutBase.ShowAttachedFlyout(sender as Image);
+        }
+
+        internal static void SetImageTappedFlyout(ResourceDictionary resources, Image image)
+        {
+            image.Tapped += ImageTapped;
+            Flyout flyout = resources["ImagePreviewFlyout"] as Flyout;
+            FlyoutBase.SetAttachedFlyout(image, flyout);
         }
 
     }

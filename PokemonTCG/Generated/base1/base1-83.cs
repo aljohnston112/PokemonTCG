@@ -8,12 +8,12 @@ namespace PokemonTCG.Generated
     internal class Base1_83
     {
 
-        internal static bool Maintenance_CanUse(GameState gameState)
+        internal static bool Maintenance_CanUse(GameState gameState, object[] parameters)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState Maintenance_Use(GameState gameState)
+        internal static GameState Maintenance_Use(GameState gameState, object[] parameters)
         {
             throw new NotImplementedException();
         }

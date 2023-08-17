@@ -13,12 +13,12 @@ namespace PokemonTCG.Models
     internal class PreGameState
     {
 
-        private readonly int PlayerDraws = 0;
-        private readonly int OpponentDraws = 0;
+        private static int PlayerDraws = 0;
+        private static int OpponentDraws = 0;
 
         internal readonly GameState GameState;
 
-        internal PreGameState(
+        internal static GameState StartGame(
             PokemonDeck playerDeck,
             PokemonDeck opponentDeck
             )
@@ -70,7 +70,8 @@ namespace PokemonTCG.Models
             Debug.Assert(potentialOpponentState != null && potentialPlayerState != null);
             PlayerDraws = playerDraws;
             OpponentDraws = opponentDraws;
-            GameState = new(
+            return new(
+                isPreGame: true,
                 playersTurn: playerGoesFirst,
                 playerState: potentialPlayerState, 
                 opponentState: potentialOpponentState,
@@ -101,18 +102,18 @@ namespace PokemonTCG.Models
                 );
         }
 
-        internal GameState SetUpOpponent()
+        internal static GameState SetUpOpponent(GameState gameState)
         {
             // * 6. Select an active basic Pokemon.
             PokemonCard active;
-            IImmutableList<PokemonCard> basicPokemon = GameState.OpponentState.Hand
+            IImmutableList<PokemonCard> basicPokemon = gameState.OpponentState.Hand
                 .Where(card => CardUtil.IsBasicPokemon(card))
                 .ToImmutableList();
 
             //  * 7. For each time step 2 was repeated after 5,
             //  opponent draws 1 card minus any times they had to repeat step 2 after 5.
-            PlayerState newOpponentState = GameState.OpponentState.AfterDrawingCards(OpponentDraws);
-            PlayerState newPlayerState = GameState.PlayerState.AfterDrawingCards(PlayerDraws);
+            PlayerState newOpponentState = gameState.OpponentState.AfterDrawingCards(OpponentDraws);
+            PlayerState newPlayerState = gameState.PlayerState.AfterDrawingCards(PlayerDraws);
             if (basicPokemon.Count == 1)
             {
                 active = basicPokemon[0];
@@ -122,7 +123,7 @@ namespace PokemonTCG.Models
                 // * 8. Put up to 5 Pokemon on the bench.
                 // TODO maybe max damage and evolution
                 IDictionary<PokemonCard, int> rank = RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(
-                    GameState.OpponentState
+                    gameState.OpponentState
                     );
                 int maxRank = rank.Max(rank => rank.Value);
                 IImmutableList<PokemonCard> potentialPokemon = rank
@@ -141,18 +142,19 @@ namespace PokemonTCG.Models
                     rank
                     .OrderByDescending(rank => rank.Value)
                     .Select(kv => kv.Key)
-                    .Take(5)
+                    .Take(1)
                     .ToImmutableList()
                     );
             }
             newOpponentState = newOpponentState.AfterMovingFromHandToActive(active);
             newOpponentState = newOpponentState.AfterSettingUpPrizes();
-
+            newPlayerState = newPlayerState.AfterSettingUpPrizes();
             return new GameState(
-                playersTurn: GameState.PlayersTurn, 
+                isPreGame: false,
+                playersTurn: gameState.PlayersTurn, 
                 playerState: newPlayerState,
                 opponentState: newOpponentState,
-                stadiumCard: GameState.StadiumCard
+                stadiumCard: gameState.StadiumCard
                 );
         }
 

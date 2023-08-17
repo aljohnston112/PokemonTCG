@@ -8,33 +8,33 @@ namespace PokemonTCG.Models
     internal class GameState
     {
         internal readonly bool IsPreGame;
-        private readonly PreGameState PreGameState;
-
         internal readonly bool PlayersTurn;
         internal readonly PlayerState PlayerState;
         internal readonly PlayerState OpponentState;
         internal readonly PokemonCard StadiumCard;
 
 
-internal GameState(GameArguments gameArguments)
+        internal GameState(GameArguments gameArguments)
         {
             IImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
             PokemonDeck playerDeck = decks[gameArguments.PlayerDeckName];
             PokemonDeck opponentDeck = decks[gameArguments.OpponentDeckName];
-            PreGameState = new PreGameState(playerDeck, opponentDeck);
             IsPreGame = true;
-            PlayerState = PreGameState.GameState.PlayerState;
-            OpponentState = PreGameState.GameState.OpponentState;
+            GameState gameState = PreGameState.StartGame(playerDeck, opponentDeck);
+            PlayersTurn = gameState.PlayersTurn;
+            PlayerState = gameState.PlayerState;
+            OpponentState = gameState.OpponentState;
         }
 
         internal GameState(
+            bool isPreGame,
             bool playersTurn,
             PlayerState playerState,
             PlayerState opponentState,
             PokemonCard stadiumCard
         )
         {
-            IsPreGame = false;
+            IsPreGame = isPreGame;
             PlayersTurn = playersTurn;
             PlayerState = playerState;
             OpponentState = opponentState;
@@ -44,17 +44,17 @@ internal GameState(GameArguments gameArguments)
         internal GameState WithStadiumCard(PokemonCard card)
         {
             // TODO Stadium cards replace any stadium cards in play.You can't play a stadium that is already active. 
-            return new GameState(PlayersTurn, PlayerState, OpponentState, card);
+            return new GameState(IsPreGame, PlayersTurn, PlayerState, OpponentState, card);
         }
 
         internal GameState WithPlayerState(PlayerState playerState)
         {
-            return new GameState(PlayersTurn, playerState, OpponentState, StadiumCard);
+            return new GameState(IsPreGame, PlayersTurn, playerState, OpponentState, StadiumCard);
         }
 
         internal GameState WithOpponentState(PlayerState opponentState)
         {
-            return new GameState(PlayersTurn, PlayerState, opponentState, StadiumCard);
+            return new GameState(IsPreGame, PlayersTurn, PlayerState, opponentState, StadiumCard);
         }
 
         // TODO I need to figure out how to design the cards and their effects.
@@ -68,7 +68,7 @@ internal GameState(GameArguments gameArguments)
 
         internal GameState OnUsersFirstTurnSetUp()
         {
-            return PreGameState.SetUpOpponent();
+            return PreGameState.SetUpOpponent(this);
         }
 
         internal bool CurrentPlayersActiveHasEnoughEnergyForAttack(Attack attack)
@@ -104,7 +104,7 @@ internal GameState(GameArguments gameArguments)
 
         internal GameState WithPlayersTurn(bool playersTurn)
         {
-            return new GameState(playersTurn, PlayerState, OpponentState, StadiumCard);
+            return new GameState(IsPreGame, playersTurn, PlayerState, OpponentState, StadiumCard);
         }
 
         internal bool CurrentPlayersActiveCanUseAttack(Attack attack)

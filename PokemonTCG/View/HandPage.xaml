@@ -14,9 +14,20 @@
         </ResourceDictionary>
     </Page.Resources>
 
-    <Grid x:Name="HandGrid"
-          RowDefinitions="*">
-        
+    <Grid x:Name="RootGrid"
+          RowDefinitions="*, auto">
+
+        <Grid x:Name="HandGrid"
+              RowDefinitions="*">
+
+        </Grid>
+
+        <Button x:Name="StartGameButton"
+                Content="Start Game!"
+                Tapped="OnUsersFirstTurnSetUp"
+                Visibility="Collapsed"
+                Grid.Row="1"/>
+
     </Grid>
 
 </Page>

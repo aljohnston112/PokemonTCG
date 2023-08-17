@@ -8,12 +8,12 @@ namespace PokemonTCG.Generated
     internal class Base1_94
     {
 
-        internal static bool Potion_CanUse(GameState gameState)
+        internal static bool Potion_CanUse(GameState gameState, object[] parameters)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState Potion_Use(GameState gameState)
+        internal static GameState Potion_Use(GameState gameState, object[] parameters)
         {
             throw new NotImplementedException();
         }

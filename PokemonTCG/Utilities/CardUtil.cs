@@ -87,7 +87,7 @@ namespace PokemonTCG.Utilities
             bool enoughEnergyForAttack = true;
 
             // Count energy cards from hand
-            IImmutableDictionary<PokemonType, int> numberOfEveryEnergy = CardUtil.GetNumberOfEveryEnergy(cards);
+            IImmutableDictionary<PokemonType, int> numberOfEveryEnergy = GetNumberOfEveryEnergy(cards);
             int numberOfEnergies = CardUtil.GetNumberOfEnergy(cards);
             int energyLeftForColorless = numberOfEnergies;
 
