@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Immutable;
-using System.Linq;
 using PokemonTCG.Enums;
 using PokemonTCG.Models;
 
@@ -20,7 +19,7 @@ namespace PokemonTCG.Utilities
             int count = 0;
             foreach (PokemonCard pokemonCard in pokemonCards)
             {
-                if(IsBasicPokemon(pokemonCard))
+                if (IsBasicPokemon(pokemonCard))
                 {
                     count++;
                 }

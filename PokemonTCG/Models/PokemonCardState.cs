@@ -1,4 +1,5 @@
-﻿using System.Collections.Immutable;
+﻿using PokemonTCG.Enums;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using PokemonTCG.Enums;
@@ -11,6 +12,8 @@ namespace PokemonTCG.Models
         internal readonly PokemonCard PokemonCard;
         internal readonly IImmutableList<PokemonCard> Energy;
         internal readonly IImmutableList<PokemonCard> EvolvedFrom;
+        internal readonly MutuallyExclusiveStatus MutuallyExclusiveStatus;
+        internal readonly ImmutableList<Status> Statuses;
         internal readonly bool FirstTurnInPlay;
 
         internal PokemonCardState(
@@ -18,11 +21,16 @@ namespace PokemonTCG.Models
             IImmutableList<PokemonCard> energy,
             IImmutableList<PokemonCard> evolvedFrom,
             bool firstTurnInPlay
+            IImmutableList<PokemonCard> evolvedFrom,
+            MutuallyExclusiveStatus mutuallyExclusiveStatus,
+            ImmutableList<Status> statuses
             )
         {
             PokemonCard = pokemonCard;
             Energy = energy;
             EvolvedFrom = evolvedFrom;
+            MutuallyExclusiveStatus = mutuallyExclusiveStatus;
+            Statuses = statuses;
             FirstTurnInPlay = firstTurnInPlay;
         }
 
@@ -33,6 +41,9 @@ namespace PokemonTCG.Models
                 ImmutableList<PokemonCard>.Empty, 
                 ImmutableList<PokemonCard>.Empty,
                 firstTurnInPlay: true
+                ImmutableList<PokemonCard>.Empty,
+                MutuallyExclusiveStatus.NONE,
+                ImmutableList<Status>.Empty
             )
         { }
 
@@ -41,8 +52,7 @@ namespace PokemonTCG.Models
             return new PokemonCardState(
                 pokemonCard: PokemonCard, 
                 energy: Energy.Add(card),
-                evolvedFrom: EvolvedFrom,
-                firstTurnInPlay: FirstTurnInPlay
+                evolvedFrom: EvolvedFrom
                 );
         }
 
@@ -80,6 +90,10 @@ namespace PokemonTCG.Models
                             evolvedFrom: EvolvedFrom,
                             firstTurnInPlay: FirstTurnInPlay
                             );
+                evolvedFrom: EvolvedFrom.Add(PokemonCard),
+                mutuallyExclusiveStatus: MutuallyExclusiveStatus.NONE,
+                statuses: ImmutableList<Status>.Empty
+                );
         }
 
     }

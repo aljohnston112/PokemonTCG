@@ -27,6 +27,7 @@ namespace PokemonTCG.Models
             "Blackout",
             ImmutableArray.Create(
                 "base1-7",
+
                 "base1-27", "base1-27",
                 "base1-42", "base1-42",
                 "base1-63", "base1-63", "base1-63", "base1-63",

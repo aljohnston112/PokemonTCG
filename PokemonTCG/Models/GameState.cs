@@ -1,7 +1,6 @@
 ﻿using PokemonTCG.DataSources;
 using PokemonTCG.Utilities;
 using PokemonTCG.ViewModel;
-using System;
 using System.Collections.Immutable;
 
 namespace PokemonTCG.Models
@@ -16,7 +15,8 @@ namespace PokemonTCG.Models
         internal readonly PlayerState OpponentState;
         internal readonly PokemonCard StadiumCard;
 
-        internal GameState(GameArguments gameArguments)
+
+internal GameState(GameArguments gameArguments)
         {
             IImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
             PokemonDeck playerDeck = decks[gameArguments.PlayerDeckName];

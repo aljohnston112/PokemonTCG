@@ -71,8 +71,10 @@ namespace PokemonTCG.Models
  *         Makes sure energy requirments are met.
  *         Sleep, confusion and paralysis replace one another.
  *         A player can only use one GX attack per game
- *      a. Apply your effects and any trainer cards that alter the attack; Attack effects go away when any active Pokemon goes to the bench.
- *      b. Check if confusion inflicted. Flip a coin to see if you take 30 damage. Card is upside down.
+ *      a. Apply your effects and any trainer cards that alter the attack; 
+ *         Attack effects go away when any active Pokemon goes to the bench.
+ *      b. Check if confusion inflicted. Flip a coin to see if you take 30 damage. 
+ *         Card is upside down.
  *      c. Take weakness into account, except for benched Pokemon.
  *      d. Take resistance into account, except for benched Pokemon.
  *      e. Perform attack choices.

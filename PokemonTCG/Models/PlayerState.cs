@@ -227,6 +227,7 @@ namespace PokemonTCG.Models
             return new PlayerState(
                 deck: Deck,
                 hand: Hand.Remove(card),
+                active: Active.AfterAttachingEnergy(card),
                 active: Active.WithEnergyAttached(card),
                 bench: Bench,
                 prizes: Prizes,

@@ -1,6 +1,12 @@
 
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
+using System.Linq;
+using PokemonTCG.Enums;
 using PokemonTCG.Models;
+using PokemonTCG.Utilities;
 
 namespace PokemonTCG.Generated 
 {
