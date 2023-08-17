@@ -13,7 +13,7 @@ namespace PokemonTCG.Generated
             return true;
         }
 
-        internal static void Gust_of_Wind_Use(GameState gameState)
+        internal static GameState Gust_of_Wind_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

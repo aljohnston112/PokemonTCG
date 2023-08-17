@@ -13,7 +13,7 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static void Full_Heal_Use(GameState gameState)
+        internal static GameState Full_Heal_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

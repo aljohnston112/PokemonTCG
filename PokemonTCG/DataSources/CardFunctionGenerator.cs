@@ -139,7 +139,7 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static void " + trainerName + @"_Use(GameState gameState)
+        internal static GameState " + trainerName + @"_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

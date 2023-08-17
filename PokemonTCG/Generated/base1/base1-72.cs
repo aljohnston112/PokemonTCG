@@ -13,7 +13,7 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static void Devolution_Spray_Use(GameState gameState)
+        internal static GameState Devolution_Spray_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

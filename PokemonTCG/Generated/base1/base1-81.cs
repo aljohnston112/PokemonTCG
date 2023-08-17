@@ -13,7 +13,7 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static void Energy_Retrieval_Use(GameState gameState)
+        internal static GameState Energy_Retrieval_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

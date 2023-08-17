@@ -13,7 +13,7 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static void Lass_Use(GameState gameState)
+        internal static GameState Lass_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

@@ -13,7 +13,7 @@ namespace PokemonTCG.Generated
             return true;
         }
 
-        internal static void Super_Energy_Removal_Use(GameState gameState)
+        internal static GameState Super_Energy_Removal_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

@@ -13,7 +13,7 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static void Item_Finder_Use(GameState gameState)
+        internal static GameState Item_Finder_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

@@ -13,7 +13,7 @@ namespace PokemonTCG.Generated
             return true;
         }
 
-        internal static void Professor_Oak_Use(GameState gameState)
+        internal static GameState Professor_Oak_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

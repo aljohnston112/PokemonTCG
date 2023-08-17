@@ -13,7 +13,7 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static void Clefairy_Doll_Use(GameState gameState)
+        internal static GameState Clefairy_Doll_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

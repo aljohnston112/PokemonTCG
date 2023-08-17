@@ -13,7 +13,7 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static void Pokémon_Trader_Use(GameState gameState)
+        internal static GameState Pokémon_Trader_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

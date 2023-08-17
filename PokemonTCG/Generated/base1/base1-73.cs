@@ -13,7 +13,7 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static void Impostor_Professor_Oak_Use(GameState gameState)
+        internal static GameState Impostor_Professor_Oak_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

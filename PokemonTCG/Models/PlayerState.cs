@@ -228,7 +228,6 @@ namespace PokemonTCG.Models
                 deck: Deck,
                 hand: Hand.Remove(card),
                 active: Active.AfterAttachingEnergy(card),
-                active: Active.WithEnergyAttached(card),
                 bench: Bench,
                 prizes: Prizes,
                 discardPile: DiscardPile,
@@ -252,7 +251,7 @@ namespace PokemonTCG.Models
             PokemonCard energyCard = Hand[iForHand];
 
             List<PokemonCardState> mutableBench = Bench.ToList();
-            mutableBench[iForBenched] = Bench[iForBenched].WithEnergyAttached(energyCard);
+            mutableBench[iForBenched] = Bench[iForBenched].AfterAttachingEnergy(energyCard);
             return new PlayerState(
                 deck: Deck,
                 hand: Hand.Remove(energyCard),

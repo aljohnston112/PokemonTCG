@@ -13,7 +13,7 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static void Revive_Use(GameState gameState)
+        internal static GameState Revive_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

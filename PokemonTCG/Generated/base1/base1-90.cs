@@ -13,7 +13,7 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static void Super_Potion_Use(GameState gameState)
+        internal static GameState Super_Potion_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
