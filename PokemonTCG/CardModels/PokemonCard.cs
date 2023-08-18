@@ -1,11 +1,10 @@
 ﻿using PokemonTCG.Enums;
+using PokemonTCG.Models;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Reflection.Emit;
 using System.Xml.Linq;
-using Windows.System;
 
-namespace PokemonTCG.Models
+namespace PokemonTCG.CardModels
 {
 
     /// <summary>
@@ -27,7 +26,7 @@ namespace PokemonTCG.Models
         internal readonly IImmutableDictionary<PokemonType, Modifier> Resistances;
         internal readonly IImmutableDictionary<PokemonType, int> RetreatCost;
         internal readonly int ConvertedRetreatCost;
-        internal readonly IImmutableDictionary<ImageSize, string> ImagePaths;
+        internal readonly string ImagePath;
         internal readonly string SetId;
         internal readonly string SetName;
         internal readonly string SetSeries;
@@ -52,7 +51,7 @@ namespace PokemonTCG.Models
             IImmutableDictionary<PokemonType, Modifier> resistances,
             IImmutableDictionary<PokemonType, int> retreatCost,
             int convertedRetreatCost,
-            IImmutableDictionary<ImageSize, string> imagePaths,
+            string imagePath,
             string setId,
             string setName,
             string setSeries,
@@ -77,7 +76,7 @@ namespace PokemonTCG.Models
             Resistances = resistances;
             RetreatCost = retreatCost;
             ConvertedRetreatCost = convertedRetreatCost;
-            ImagePaths = imagePaths;
+            ImagePath = imagePath;
             SetId = setId;
             SetName = setName;
             SetSeries = setSeries;
@@ -105,7 +104,7 @@ namespace PokemonTCG.Models
                 resistances: Resistances,
                 retreatCost: RetreatCost,
                 convertedRetreatCost: ConvertedRetreatCost,
-                imagePaths: ImagePaths,
+                imagePath: ImagePath,
                 setId: SetId,
                 setName: SetName,
                 setSeries: SetSeries,

@@ -34,9 +34,9 @@ namespace PokemonTCG
         /// </summary>
         internal static async Task LoadAssets()
         {
-            await SetDataSource.LoadSets();
+            await CardDataSource.LoadSets();
             await DeckDataSource.LoadDecks();
-            await CardFunctionGenerator.GenerateCardFunctions();
+            // await CardFunctionGenerator.GenerateCardFunctions();
         }
 
     }

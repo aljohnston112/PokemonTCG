@@ -24,7 +24,7 @@
 
         <Button x:Name="StartGameButton"
                 Content="Start Game!"
-                Tapped="OnUsersFirstTurnSetUp"
+                Tapped="StartGame"
                 Visibility="Collapsed"
                 Grid.Row="1"/>
 

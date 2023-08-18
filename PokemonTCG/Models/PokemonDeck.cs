@@ -19,6 +19,10 @@ namespace PokemonTCG.Models
         internal PokemonDeck(string name, ImmutableArray<string> ids)
         {
             Debug.Assert(ids.Length == 60);
+            foreach (string id in ids)
+            {
+                Debug.Assert(id != null);
+            }
             CardIds = ids;
             Name = name;
         }
@@ -27,7 +31,6 @@ namespace PokemonTCG.Models
             "Blackout",
             ImmutableArray.Create(
                 "base1-7",
-
                 "base1-27", "base1-27",
                 "base1-42", "base1-42",
                 "base1-63", "base1-63", "base1-63", "base1-63",
@@ -40,16 +43,16 @@ namespace PokemonTCG.Models
                 "base1-79",
                 "base1-84",
                 "base1-88",
-                "base1-93", 
+                "base1-93",
                 "base1-92", "base1-92", "base1-92", "base1-92",
                 // Energy
                 "base1-97", "base1-97", "base1-97", "base1-97",
-                "base1-97", "base1-97", "base1-97", "base1-97", 
-                "base1-97", "base1-97", "base1-97", "base1-97", 
+                "base1-97", "base1-97", "base1-97", "base1-97",
+                "base1-97", "base1-97", "base1-97", "base1-97",
                 "base1-97", "base1-97", "base1-97", "base1-97",
                 "base1-102", "base1-102", "base1-102", "base1-102",
-                "base1-102", "base1-102", "base1-102", "base1-102", 
-                "base1-102", "base1-102","base1-102", "base1-102"
+                "base1-102", "base1-102", "base1-102", "base1-102",
+                "base1-102", "base1-102", "base1-102", "base1-102"
                 )
             );
 

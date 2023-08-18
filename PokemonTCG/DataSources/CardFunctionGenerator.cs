@@ -4,8 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using PokemonTCG.CardModels;
 using PokemonTCG.Enums;
-using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using Windows.Storage;
 
@@ -29,7 +29,7 @@ namespace PokemonTCG.DataSources
             //              TrainerName_Use
             Directory.CreateDirectory(FileUtil.GetFullPath(ROOT_FOLDER));
             StorageFolder rootFolder = await FileUtil.GetFolder(ROOT_FOLDER);
-            IImmutableDictionary<string, IImmutableList<PokemonCard>> sets = await SetDataSource.LoadSets();
+            IImmutableDictionary<string, IImmutableList<PokemonCard>> sets = await CardDataSource.LoadSets();
             foreach ((string setName, IImmutableList<PokemonCard> cards) in sets)
             {
                 StorageFolder setFolder;
@@ -39,7 +39,7 @@ namespace PokemonTCG.DataSources
                     setName + "\\",
                     CreationCollisionOption.FailIfExists
                     );
-                } catch(SystemException e)
+                } catch(SystemException)
                 {
                     setFolder = null;
                 }
@@ -101,14 +101,14 @@ namespace PokemonTCG.Generated
             {
                 string attackName = attack.Name.Replace("-", "_").Replace(" ", "_");
                 template += @"
-        internal static bool " + attackName + @"_CanUse(GameState gameState, object[] attack)
+        internal static bool " + attackName + @"_CanUse(GameState gameState, Attack attack)
         {
-            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
             throw new NotImplementedException();
             return canUse;
         }
 
-        internal static GameState " + attackName + @"_Use(GameState gameState, object[] attack)
+        internal static GameState " + attackName + @"_Use(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }
@@ -119,12 +119,12 @@ namespace PokemonTCG.Generated
             {
                 string newAbilityName = abilityName.Replace("-", "_").Replace(" ", "_");
                 template += @"
-        internal static bool " + newAbilityName + @"_CanUse(GameState gameState, object[] parameters)
+        internal static bool " + newAbilityName + @"_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState " + newAbilityName + @"_Use(GameState gameState, object[] parameters)
+        internal static GameState " + newAbilityName + @"_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }
@@ -134,12 +134,12 @@ namespace PokemonTCG.Generated
             {
                 string trainerName = trainer.Replace("-", "_").Replace(" ", "_");
                 template += @"
-        internal static bool " + trainerName + @"_CanUse(GameState gameState, object[] parameters)
+        internal static bool " + trainerName + @"_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState " + trainerName + @"_Use(GameState gameState, object[] parameters)
+        internal static GameState " + trainerName + @"_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

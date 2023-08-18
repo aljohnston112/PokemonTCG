@@ -1,19 +1,19 @@
 
 using System;
-using PokemonTCG.Models;
+using PokemonTCG.States;
 
-namespace PokemonTCG.Generated 
+namespace PokemonTCG.Generated
 {
-    
+
     internal class Base1_91
     {
 
-        internal static bool Bill_CanUse(GameState gameState, object[] parameters)
+        internal static bool Bill_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState Bill_Use(GameState gameState, object[] parameters)
+        internal static GameState Bill_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

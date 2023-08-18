@@ -1,19 +1,19 @@
 
 using System;
-using PokemonTCG.Models;
+using PokemonTCG.States;
 
-namespace PokemonTCG.Generated 
+namespace PokemonTCG.Generated
 {
-    
+
     internal class Base1_81
     {
 
-        internal static bool Energy_Retrieval_CanUse(GameState gameState, object[] parameters)
+        internal static bool Energy_Retrieval_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState Energy_Retrieval_Use(GameState gameState, object[] parameters)
+        internal static GameState Energy_Retrieval_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

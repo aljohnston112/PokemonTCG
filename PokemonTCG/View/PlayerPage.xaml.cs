@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media.Imaging;
-using PokemonTCG.Enums;
-using PokemonTCG.Models;
+
+using PokemonTCG.States;
 using PokemonTCG.Utilities;
 
 namespace PokemonTCG.View
@@ -27,7 +28,7 @@ namespace PokemonTCG.View
             void onPlayerStateChanged(PlayerState playerState)
             {
                 string path= FileUtil.GetFullPath(
-                    playerState.Active?.PokemonCard?.ImagePaths[ImageSize.LARGE] ??
+                    playerState.Active?.PokemonCard?.ImagePath ??
                     "/Assets/BlankCard2.png"
                     );
                 Uri uri = new(path);
@@ -61,7 +62,7 @@ namespace PokemonTCG.View
 
                 for (int i = 0; i < playerState.Bench.Count; i++)
                 {
-                    benchImages[i].Source = new BitmapImage(new Uri(FileUtil.GetFullPath(playerState.Bench[i].PokemonCard.ImagePaths[ImageSize.LARGE])));
+                    benchImages[i].Source = new BitmapImage(new Uri(FileUtil.GetFullPath(playerState.Bench[i].PokemonCard.ImagePath)));
                 }
                 for (int i = playerState.Bench.Count; i < benchImages.Count; i++)
                 {

@@ -1,9 +1,8 @@
-﻿using PokemonTCG.DataSources;
+﻿using PokemonTCG.CardModels;
+using PokemonTCG.Models;
 using PokemonTCG.Utilities;
-using PokemonTCG.ViewModel;
-using System.Collections.Immutable;
 
-namespace PokemonTCG.Models
+namespace PokemonTCG.States
 {
     internal class GameState
     {
@@ -14,11 +13,8 @@ namespace PokemonTCG.Models
         internal readonly PokemonCard StadiumCard;
 
 
-        internal GameState(GameArguments gameArguments)
+        internal GameState(PokemonDeck playerDeck, PokemonDeck opponentDeck)
         {
-            IImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
-            PokemonDeck playerDeck = decks[gameArguments.PlayerDeckName];
-            PokemonDeck opponentDeck = decks[gameArguments.OpponentDeckName];
             IsPreGame = true;
             GameState gameState = PreGameState.StartGame(playerDeck, opponentDeck);
             PlayersTurn = gameState.PlayersTurn;
@@ -41,30 +37,50 @@ namespace PokemonTCG.Models
             StadiumCard = stadiumCard;
         }
 
-        internal GameState WithStadiumCard(PokemonCard card)
+        internal GameState WithPlayersTurn(bool playersTurn)
         {
-            // TODO Stadium cards replace any stadium cards in play.You can't play a stadium that is already active. 
-            return new GameState(IsPreGame, PlayersTurn, PlayerState, OpponentState, card);
+            return new GameState(
+                isPreGame: IsPreGame,
+                playersTurn: playersTurn,
+                playerState: PlayerState,
+                opponentState: OpponentState,
+                stadiumCard: StadiumCard
+                );
         }
 
         internal GameState WithPlayerState(PlayerState playerState)
         {
-            return new GameState(IsPreGame, PlayersTurn, playerState, OpponentState, StadiumCard);
+            return new GameState(
+                isPreGame: IsPreGame,
+                playersTurn: PlayersTurn,
+                playerState: playerState,
+                opponentState: OpponentState,
+                stadiumCard: StadiumCard
+                );
         }
 
         internal GameState WithOpponentState(PlayerState opponentState)
         {
-            return new GameState(IsPreGame, PlayersTurn, PlayerState, opponentState, StadiumCard);
+            return new GameState(
+                isPreGame: IsPreGame,
+                playersTurn: PlayersTurn,
+                playerState: PlayerState,
+                opponentState: opponentState,
+                stadiumCard: StadiumCard
+                );
         }
 
-        // TODO I need to figure out how to design the cards and their effects.
-        /*
-        internal GameState PlayTrainerCard(PokemonCard pokemonCard)
+        internal GameState WithStadiumCard(PokemonCard card)
         {
-            // TODO Supporters cannot be played on the first player's first turn.
-            
+            // TODO Stadium cards replace any stadium cards in play.You can't play a stadium that is already active. 
+            return new GameState(
+                isPreGame: IsPreGame,
+                playersTurn: PlayersTurn,
+                playerState: PlayerState,
+                opponentState: OpponentState,
+                stadiumCard: card
+                );
         }
-        */
 
         internal GameState OnUsersFirstTurnSetUp()
         {
@@ -76,35 +92,16 @@ namespace PokemonTCG.Models
             bool canUse = true;
             if (PlayersTurn)
             {
-                if (!CardUtil.IsEnoughEnergyForAttack(PlayerState.Active.Energy, attack))
+                if (!AttackUtil.IsEnoughEnergyForAttack(PlayerState.Active.Energy, attack))
                 {
                     canUse = false;
                 }
-                else if (!CardUtil.IsEnoughEnergyForAttack(OpponentState.Active.Energy, attack))
+                else if (!AttackUtil.IsEnoughEnergyForAttack(OpponentState.Active.Energy, attack))
                 {
                     canUse = false;
                 }
             }
             return canUse;
-        }
-
-        internal static GameState AfterMovingFromPlayersHandToActive(GameState gamestate, object[] newActive)
-        {
-            return gamestate.WithPlayerState(
-                gamestate.PlayerState.AfterMovingFromHandToActive(newActive[0] as PokemonCard)
-                );
-        }
-
-        internal static GameState AfterMovingFromPlayersHandToBench(GameState gameState, object[] benchable)
-        {
-            return gameState.WithPlayerState(
-                gameState.PlayerState.AfterMovingFromHandToBench(benchable[0] as PokemonCard)
-                );
-        }
-
-        internal GameState WithPlayersTurn(bool playersTurn)
-        {
-            return new GameState(IsPreGame, playersTurn, PlayerState, OpponentState, StadiumCard);
         }
 
         internal bool CurrentPlayersActiveCanUseAttack(Attack attack)

@@ -1,15 +1,15 @@
 ﻿using System.Collections.Immutable;
-using static PokemonTCG.Models.HandCardActionState;
+using Microsoft.UI.Xaml.Input;
 
 namespace PokemonTCG.Models
 {
-    internal class CardActionState
+    internal class CardActionState<T>
     {
 
-        internal readonly PokemonCard Card;
-        internal readonly IImmutableDictionary<string, CardFunction> Actions;
+        internal readonly T Card;
+        internal readonly IImmutableDictionary<string, TappedEventHandler> Actions;
 
-        internal CardActionState(PokemonCard card, IImmutableDictionary<string, CardFunction> actions)
+        internal CardActionState(T card, IImmutableDictionary<string, TappedEventHandler> actions)
         {
             Card = card;
             Actions = actions;

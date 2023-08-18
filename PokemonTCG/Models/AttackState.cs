@@ -1,13 +1,25 @@
-﻿using System;
-
-namespace PokemonTCG.Models
+﻿namespace PokemonTCG.Models
 {
 
     internal class AttackState
     {
 
-        internal readonly Func<int> DamageModifier;
-        internal readonly Func<int> AfterWeaknessAndResistanceDamageModifier;
+        internal readonly Modifier DamageModifier;
+        internal readonly Modifier AfterWeaknessAndResistanceDamageModifier;
+
+        internal AttackState(
+            Modifier damageModifier,
+            Modifier afterWeaknessAndResistanceDamageModifier
+            )
+        {
+            DamageModifier = damageModifier;
+            AfterWeaknessAndResistanceDamageModifier = afterWeaknessAndResistanceDamageModifier;
+        }
+
+        internal static int AlterAttackDamage(int damage)
+        {
+            return damage;
+        }
 
     }
 

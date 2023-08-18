@@ -1,5 +1,8 @@
-﻿using PokemonTCG.Models;
+﻿using PokemonTCG.DataSources;
+using System.Collections.Immutable;
+using PokemonTCG.Models;
 using PokemonTCG.Utilities;
+using PokemonTCG.States;
 
 namespace PokemonTCG.ViewModel
 {
@@ -29,7 +32,10 @@ namespace PokemonTCG.ViewModel
 
         internal void StartGame(GameArguments gameArguments)
         {
-            UpdateGameState(new GameState(gameArguments));
+            IImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
+            PokemonDeck playerDeck = decks[gameArguments.PlayerDeckName];
+            PokemonDeck opponentDeck = decks[gameArguments.OpponentDeckName];
+            UpdateGameState(new GameState(playerDeck, opponentDeck));
         }
 
         internal void OnUsersFirstTurnSetUp()

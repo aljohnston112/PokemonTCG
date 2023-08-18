@@ -1,5 +1,6 @@
 ﻿using PokemonTCG.Models;
 using PokemonTCG.Utilities;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -7,6 +8,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+
 using Windows.Data.Json;
 using Windows.Storage;
 

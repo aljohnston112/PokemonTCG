@@ -1,19 +1,19 @@
 
 using System;
-using PokemonTCG.Models;
+using PokemonTCG.States;
 
-namespace PokemonTCG.Generated 
+namespace PokemonTCG.Generated
 {
-    
+
     internal class Base1_74
     {
 
-        internal static bool Item_Finder_CanUse(GameState gameState, object[] parameters)
+        internal static bool Item_Finder_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState Item_Finder_Use(GameState gameState, object[] parameters)
+        internal static GameState Item_Finder_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

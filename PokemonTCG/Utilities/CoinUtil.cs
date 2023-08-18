@@ -7,8 +7,9 @@ namespace PokemonTCG.Utilities
 
         internal static bool FlipCoin()
         {
-            return new Random().Next(2) == 0;
+            return true; // new Random().Next(2) == 0;
         }
 
     }
+
 }

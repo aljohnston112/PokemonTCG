@@ -1,6 +1,6 @@
 ﻿using PokemonTCG.Enums;
 
-namespace PokemonTCG.Models
+namespace PokemonTCG.CardModels
 {
     internal class Ability
     {

@@ -1,19 +1,19 @@
 
 using System;
-using PokemonTCG.Models;
+using PokemonTCG.States;
 
-namespace PokemonTCG.Generated 
+namespace PokemonTCG.Generated
 {
-    
+
     internal class Base1_79
     {
 
-        internal static bool Super_Energy_Removal_CanUse(GameState gameState, object[] parameters)
+        internal static bool Super_Energy_Removal_CanUse(GameState gameState)
         {
             return true;
         }
 
-        internal static GameState Super_Energy_Removal_Use(GameState gameState, object[] parameters)
+        internal static GameState Super_Energy_Removal_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

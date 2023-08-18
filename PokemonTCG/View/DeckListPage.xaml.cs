@@ -1,6 +1,8 @@
 ﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
+
 using PokemonTCG.ViewModel;
+
 using System;
 
 namespace PokemonTCG.View
@@ -27,7 +29,7 @@ namespace PokemonTCG.View
 
         private void EditDeck(object sender, ItemClickEventArgs e)
         {
-            String deckName = e.ClickedItem.ToString();
+            string deckName = e.ClickedItem.ToString();
             Frame.Navigate(typeof(DeckEditorPage), deckName);
         }
 

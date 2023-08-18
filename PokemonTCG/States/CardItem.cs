@@ -1,5 +1,4 @@
-﻿
-namespace PokemonTCG.Models
+﻿namespace PokemonTCG.States
 {
 
     /// <summary>

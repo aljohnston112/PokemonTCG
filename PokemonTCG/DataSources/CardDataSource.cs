@@ -1,24 +1,63 @@
-﻿using PokemonTCG.Enums;
+﻿using PokemonTCG.CardModels;
+using PokemonTCG.Enums;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 using System.Threading.Tasks;
+
 using Windows.Data.Json;
 using Windows.Storage;
+using Windows.Storage.Search;
 
 namespace PokemonTCG.DataSources
 {
 
     internal class CardDataSource
     {
-
+        private static readonly Dictionary<string, IImmutableList<PokemonCard>> SetsToCards = new();
         private static readonly IDictionary<string, PokemonCard> idsToCards = new Dictionary<string, PokemonCard>();
+
+        internal static readonly string setFolder = "\\Assets\\sets\\";
+
+        /// <summary>
+        /// Loads all <c>Card</c> instances.
+        /// </summary>
+        internal static async Task<IImmutableDictionary<string, IImmutableList<PokemonCard>>> LoadSets()
+        {
+            StorageFolder storageFolder = await StorageFolder.GetFolderFromPathAsync(FileUtil.GetFullPath(setFolder));
+            List<string> fileTypeFilter = new() { ".json" };
+            QueryOptions queryOptions = new(CommonFileQuery.OrderByName, fileTypeFilter);
+            StorageFileQueryResult query = storageFolder.CreateFileQueryWithOptions(queryOptions);
+            IReadOnlyList<StorageFile> fileList = await query.GetFilesAsync();
+
+            foreach (StorageFile file in fileList.Where(name => name.Name != "sets.json"))
+            {
+                string setName = file.Name[..file.Name.IndexOf(".")];
+                if (!SetsToCards.ContainsKey(setName))
+                {
+                    IImmutableList<PokemonCard> cards = await CardDataSource.LoadCardsFromSet(file);
+                    SetsToCards.Add(setName, cards);
+                }
+            }
+            return SetsToCards.ToImmutableDictionary();
+        }
+
+        internal static async Task<IImmutableList<PokemonCard>> LoadSet(string setName)
+        {
+            if (!SetsToCards.ContainsKey(setName))
+            {
+                await LoadSets();
+            }
+            return SetsToCards[setName];
+        }
 
         /// <summary>
         /// Gets all cards associated with a set. 
-        /// This method takes a File because the <c>SetDataSource</c> iterates through a folder of set files.
+        /// This method takes a File because the <c>CardDataSource</c> iterates through a folder of set files.
         /// </summary>
         /// <param name="file">The json file containing the card information for the set.</param>
         /// <returns>A <c>Task<ICollection<Card>>/c> that returns the collection of cards in the set.</returns>
@@ -219,11 +258,8 @@ namespace PokemonTCG.DataSources
                         convertedRetreatCost = (int)(jsonCardObject.GetNamedNumber("convertedRetreatCost"));
                     }
 
-                    // Image paths
-                    Dictionary<ImageSize, String> imagePaths = new() {
-                        { ImageSize.SMALL,  baseImagePath + id + "-small.png" },
-                        { ImageSize.LARGE,  baseImagePath + id + "-large.png" }
-                    };
+                    // Image path
+                    string imagePath = baseImagePath + id + "-large.png";
 
                     JsonObject jsonSetObject = jsonCardObject.GetNamedObject("set");
                     string setId = jsonSetObject.GetNamedString("id");
@@ -265,7 +301,7 @@ namespace PokemonTCG.DataSources
                         resistances: resistances.ToImmutableDictionary(),
                         retreatCost: retreatCost.ToImmutableDictionary(),
                         convertedRetreatCost: convertedRetreatCost,
-                        imagePaths: imagePaths.ToImmutableDictionary(),
+                        imagePath: imagePath,
                         setId: setId,
                         setName: setName,
                         setSeries: setSeries,
@@ -282,13 +318,16 @@ namespace PokemonTCG.DataSources
         }
 
         /// <summary>
-        /// This method will throw an exception if cards are not loaded beforehand or the id is invalid.
-        /// You can prevent this by calling <see cref="SetDataSource.LoadSets"/> to load the <c>Card</c> instances beforehand.
+        /// This method will load cards if it cannot find the specified card.
         /// </summary>
         /// <param name="id">The id of the card.</param>
         /// <returns>The <c>Card</c> instance that havs the given id.</returns>
-        internal static PokemonCard GetCardById(string id)
+        internal static async Task<PokemonCard> GetCardById(string id)
         {
+            if(!idsToCards.ContainsKey(id))
+            {
+                _ = await LoadSets();
+            }
             return idsToCards[id];
         }
 

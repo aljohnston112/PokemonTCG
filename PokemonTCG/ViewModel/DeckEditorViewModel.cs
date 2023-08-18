@@ -1,7 +1,10 @@
-﻿using PokemonTCG.DataSources;
+﻿using PokemonTCG.CardModels;
+using PokemonTCG.DataSources;
 using PokemonTCG.Enums;
 using PokemonTCG.Models;
+using PokemonTCG.States;
 using PokemonTCG.Utilities;
+
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
@@ -37,7 +40,7 @@ namespace PokemonTCG.ViewModel
 
         internal async Task OnNavigatedTo(object deckName, CardItemAdapter cardItemAdapter)
         {
-            ISet<string> deckSets = GetSetsForDeck(deckName);
+            ISet<string> deckSets = await GetSetsForDeck(deckName);
 
             foreach (string deckSet in deckSets)
             {
@@ -51,7 +54,7 @@ namespace PokemonTCG.ViewModel
 
         }
 
-        private static ISet<string> GetSetsForDeck(object deckName)
+        private static async Task<ISet<string>> GetSetsForDeck(object deckName)
         {
             ISet<string> sets = new HashSet<string>();
             if (deckName != null)
@@ -59,7 +62,7 @@ namespace PokemonTCG.ViewModel
                 IImmutableDictionary<string, PokemonDeck> decks = DeckDataSource.GetDecks();
                 foreach (string id in decks[deckName as string].CardIds)
                 {
-                    PokemonCard card = CardDataSource.GetCardById(id);
+                    PokemonCard card = await CardDataSource.GetCardById(id);
                     sets.Add(card.SetId);
                 }
             }
@@ -72,7 +75,8 @@ namespace PokemonTCG.ViewModel
 
         private static async Task LoadCardsItemsForSet(string setName, CardItemAdapter cardItemAdapter)
         {
-            await foreach (CardItem item in CardItemDataSource.GetCardItemsForSet(setName))
+            IImmutableList<CardItem> cardItems = await CardItemDataSource.GetCardItemsForSet(setName);
+            foreach (CardItem item in cardItems)
             {
                 cardItemAdapter.AddCardItem(item);
             }
@@ -89,7 +93,7 @@ namespace PokemonTCG.ViewModel
             }
         }
 
-        internal void ChangeCardItemCount(
+        internal async Task ChangeCardItemCount(
             CardItemAdapter cardItemAdapter,
             string cardId,
             int newValue
@@ -113,13 +117,14 @@ namespace PokemonTCG.ViewModel
             }
             
             NumberOfCardsInDeck += difference;
-            cardItemAdapter.SetCardCountForCardWithId(cardId, value);
+            await cardItemAdapter.SetCardCountForCardWithId(cardId, value);
             Debug.Assert(NumberOfCardsInDeck <= PokemonDeck.NUMBER_OF_CARDS_PER_DECK && NumberOfCardsInDeck >= 0);
         }
 
-        internal string CheckUserInput(string name, CardItemAdapter cardItemAdapter)
+        internal async Task<string> CheckUserInput(string name, CardItemAdapter cardItemAdapter)
         {
             string errorMessage = null;
+            bool hasBasicPokemon = await HasBasicPokemon(cardItemAdapter);
             // TODO Warn that duplicate name overwrites
             if (name.Length == 0)
             {
@@ -129,7 +134,7 @@ namespace PokemonTCG.ViewModel
             {
                 errorMessage = $"{PokemonDeck.NUMBER_OF_CARDS_PER_DECK} cards are needed to make a deck.";
             }
-            else if (!HasBasicPokemon(cardItemAdapter))
+            else if (!hasBasicPokemon)
             {
                 errorMessage = "At least one basic Pokemon is needed to make a deck.";
             }
@@ -139,7 +144,7 @@ namespace PokemonTCG.ViewModel
             return errorMessage;
         }
 
-        private static bool HasBasicPokemon(CardItemAdapter cardItemAdapter)
+        private static async Task<bool> HasBasicPokemon(CardItemAdapter cardItemAdapter)
         {
             // TODO Fossils count as basic Pokemon
             ImmutableArray<CardItem> cardItems = cardItemAdapter.GetAllCardItems().ToImmutableArray();
@@ -147,7 +152,7 @@ namespace PokemonTCG.ViewModel
             int i = 0;
             while (i < cardItems.Length && !hasBasicPokemon)
             {
-                PokemonCard card = CardDataSource.GetCardById(cardItems[i].Id);
+                PokemonCard card = await CardDataSource.GetCardById(cardItems[i].Id);
                 if (card.Supertype == CardSupertype.POKéMON && card.Subtypes.Contains(CardSubtype.BASIC))
                 {
                     hasBasicPokemon = true;

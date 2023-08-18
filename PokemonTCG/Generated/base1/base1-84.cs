@@ -1,19 +1,19 @@
 
 using System;
-using PokemonTCG.Models;
+using PokemonTCG.States;
 
-namespace PokemonTCG.Generated 
+namespace PokemonTCG.Generated
 {
-    
+
     internal class Base1_84
     {
 
-        internal static bool PlusPower_CanUse(GameState gameState, object[] parameters)
+        internal static bool PlusPower_CanUse(GameState gameState)
         {
             return true;
         }
 
-        internal static GameState PlusPower_Use(GameState gameState, object[] parameters)
+        internal static GameState PlusPower_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

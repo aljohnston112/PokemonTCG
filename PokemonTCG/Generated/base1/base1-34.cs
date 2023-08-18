@@ -1,31 +1,32 @@
 
 using System;
-using PokemonTCG.Models;
+using PokemonTCG.CardModels;
+using PokemonTCG.States;
 
-namespace PokemonTCG.Generated 
+namespace PokemonTCG.Generated
 {
-    
+
     internal class Base1_34
     {
 
-        internal static bool Karate_Chop_CanUse(GameState gameState, object[] attack)
+        internal static bool Karate_Chop_CanUse(GameState gameState, Attack attack)
         {
-            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
             return canUse;
         }
 
-        internal static GameState Karate_Chop_Use(GameState gameState, object[] attack)
+        internal static GameState Karate_Chop_Use(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }
 
-        internal static bool Submission_CanUse(GameState gameState, object[] attack)
+        internal static bool Submission_CanUse(GameState gameState, Attack attack)
         {
-            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
             return canUse;
         }
 
-        internal static GameState Submission_Use(GameState gameState, object[] attack)
+        internal static GameState Submission_Use(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }

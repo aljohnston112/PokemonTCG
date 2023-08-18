@@ -1,23 +1,23 @@
 ﻿using PokemonTCG.Enums;
 using System.Collections.Generic;
 
-namespace PokemonTCG.Models
+namespace PokemonTCG.CardModels
 {
 
     internal class Attack
     {
 
         internal readonly string Name;
-        internal readonly Dictionary<PokemonType, int> EnergyCost;
+        internal readonly IDictionary<PokemonType, int> EnergyCost;
         internal readonly int ConvertedEnergyCost;
         internal readonly int Damage;
         internal readonly string Text;
 
         internal Attack(
-            string name, 
-            Dictionary<PokemonType, int> energyCost, 
+            string name,
+            IDictionary<PokemonType, int> energyCost,
             int convertedEnergyCost,
-            int damage, 
+            int damage,
             string text
             )
         {

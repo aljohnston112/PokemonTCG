@@ -1,17 +1,13 @@
-﻿using System;
-using System.ComponentModel;
-using Microsoft.UI;
-using Microsoft.UI.Windowing;
-using Microsoft.UI.Xaml;
+﻿using System.ComponentModel;
+
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
-using PokemonTCG.Models;
+using PokemonTCG.States;
+using PokemonTCG.Utilities;
 using PokemonTCG.ViewModel;
+
 using Windows.Foundation;
-using Windows.Graphics;
-using Windows.UI.ViewManagement;
-using WinRT.Interop;
 
 namespace PokemonTCG.View
 {
@@ -24,6 +20,7 @@ namespace PokemonTCG.View
         private readonly GamePageViewModel GamePageViewModel = new();
 
         private readonly HandPage handPage = new();
+        private readonly HandPageViewModel HandViewModel = new();
 
         private readonly PlayerPage PlayerPage;
         private readonly PlayerPageViewModel PlayerPageViewModel = new();
@@ -37,8 +34,8 @@ namespace PokemonTCG.View
 
             GamePageViewModel.PropertyChanged += OnGameStateChange;
 
-            handPage.SetViewModels(GamePageViewModel);
-            ShowHand();
+            handPage.SetViewModel(GamePageViewModel, HandViewModel);
+            WindowUtil.OpenPageInNewWindow(handPage);
 
             PlayerPage = PagePlayer;
             PlayerPage.SetViewModels(PlayerPageViewModel);
@@ -53,8 +50,10 @@ namespace PokemonTCG.View
             if (e.PropertyName == "GameState")
             {
                 GameState gameState = GamePageViewModel.GameState;
+                HandViewModel.GameStateChanged(GamePageViewModel);
                 PlayerPageViewModel.OnStateChange(gameState.PlayerState);
                 OpponentPageViewModel.OnStateChange(gameState.OpponentState);
+                
             }
         }
 
@@ -63,24 +62,6 @@ namespace PokemonTCG.View
             base.OnNavigatedTo(e);
             GameArguments gameArguments = e.Parameter as GameArguments;
             GamePageViewModel.StartGame(gameArguments);
-        }
-
-        private void ShowHand()
-        {
-            int width = 960;
-            int height = 540;
-            ApplicationView.PreferredLaunchViewSize = new Size(width, height);
-            ApplicationView.PreferredLaunchWindowingMode = ApplicationViewWindowingMode.PreferredLaunchViewSize;
-
-            Window window = new()
-            {
-                Content = handPage
-            };
-            IntPtr handWindowHandle = WindowNative.GetWindowHandle(window);
-            WindowId handWindowId = Win32Interop.GetWindowIdFromWindow(handWindowHandle);
-            AppWindow handWindow = AppWindow.GetFromWindowId(handWindowId);
-            handWindow?.Resize(new SizeInt32(width, height));
-            window.Activate();
         }
 
         private void RotateOpponentPage()

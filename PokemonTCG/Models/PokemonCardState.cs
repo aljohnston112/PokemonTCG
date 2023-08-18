@@ -1,8 +1,11 @@
-﻿using PokemonTCG.Enums;
+﻿using PokemonTCG.CardModels;
+using PokemonTCG.Enums;
+using PokemonTCG.Utilities;
+
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using PokemonTCG.Utilities;
+
 
 namespace PokemonTCG.Models
 {
@@ -84,12 +87,12 @@ namespace PokemonTCG.Models
 
         internal PokemonCardState AfterRemovingEnergy(PokemonType type)
         {
-            IImmutableList<PokemonCard> energy = Energy.Remove(
-                Energy.First(card => CardUtil.GetEnergyType(card) == type)
-                );
+            PokemonCard energyCard =  Energy.First(card => CardUtil.GetEnergyType(card) == type);
+            Debug.Assert(energyCard != null);
+            IImmutableList<PokemonCard> newEnergy = Energy.Remove(energyCard);
             return new PokemonCardState(
                 pokemonCard: PokemonCard,
-                energy: energy,
+                energy: newEnergy,
                 evolvedFrom: EvolvedFrom,
                 mutuallyExclusiveStatus: MutuallyExclusiveStatus,
                 statuses: Statuses,

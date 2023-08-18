@@ -1,19 +1,19 @@
 
 using System;
-using PokemonTCG.Models;
+using PokemonTCG.States;
 
-namespace PokemonTCG.Generated 
+namespace PokemonTCG.Generated
 {
-    
+
     internal class Base1_89
     {
 
-        internal static bool Revive_CanUse(GameState gameState, object[] parameters)
+        internal static bool Revive_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState Revive_Use(GameState gameState, object[] parameters)
+        internal static GameState Revive_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

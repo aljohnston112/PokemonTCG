@@ -5,6 +5,8 @@ VisualStudioVersion = 17.3.32901.215
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PokemonTCG", "PokemonTCG\PokemonTCG.csproj", "{D2203D66-82C7-4D1A-B470-D294AE592F0B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestPokemonTCG", "TestPokemonTCG\TestPokemonTCG.csproj", "{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|arm64 = Debug|arm64
@@ -33,6 +35,24 @@ Global
 		{D2203D66-82C7-4D1A-B470-D294AE592F0B}.Release|x86.ActiveCfg = Release|x86
 		{D2203D66-82C7-4D1A-B470-D294AE592F0B}.Release|x86.Build.0 = Release|x86
 		{D2203D66-82C7-4D1A-B470-D294AE592F0B}.Release|x86.Deploy.0 = Release|x86
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Debug|arm64.ActiveCfg = Debug|ARM64
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Debug|arm64.Build.0 = Debug|ARM64
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Debug|arm64.Deploy.0 = Debug|ARM64
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Debug|x64.ActiveCfg = Debug|x64
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Debug|x64.Build.0 = Debug|x64
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Debug|x64.Deploy.0 = Debug|x64
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Debug|x86.ActiveCfg = Debug|x86
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Debug|x86.Build.0 = Debug|x86
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Debug|x86.Deploy.0 = Debug|x86
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Release|arm64.ActiveCfg = Release|ARM64
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Release|arm64.Build.0 = Release|ARM64
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Release|arm64.Deploy.0 = Release|ARM64
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Release|x64.ActiveCfg = Release|x64
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Release|x64.Build.0 = Release|x64
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Release|x64.Deploy.0 = Release|x64
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Release|x86.ActiveCfg = Release|x86
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Release|x86.Build.0 = Release|x86
+		{D7E27EA0-7190-43A2-881B-9DBB4883D5FC}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

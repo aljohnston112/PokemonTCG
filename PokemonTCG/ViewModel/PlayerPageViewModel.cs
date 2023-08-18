@@ -1,5 +1,5 @@
 ﻿using System;
-using PokemonTCG.Models;
+using PokemonTCG.States;
 
 namespace PokemonTCG.View
 {

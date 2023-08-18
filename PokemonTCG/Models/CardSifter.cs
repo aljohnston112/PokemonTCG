@@ -1,10 +1,14 @@
-﻿using PokemonTCG.DataSources;
+﻿using PokemonTCG.CardModels;
+using PokemonTCG.DataSources;
 using PokemonTCG.Enums;
+using PokemonTCG.States;
 using PokemonTCG.Utilities;
+
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace PokemonTCG.Models
 {
@@ -60,15 +64,15 @@ namespace PokemonTCG.Models
         /// </summary>
         /// <param name="cardItems">The CardItems to sift.</param>
         /// <returns>A Collection of CardItems that match the criteria of this CardSifter.</returns>
-        internal ICollection<CardItem> Sift(ICollection<CardItem> cardItems)
+        internal async Task<ICollection<CardItem>> Sift(ICollection<CardItem> cardItems)
         {
             Collection<CardItem> matchingCardItems = new();
             foreach (CardItem card in cardItems)
             {
-                bool hasMatchingType = IsCardTypeInIncludedPokemonTypes(card);
+                bool hasMatchingType = await IsCardTypeInIncludedPokemonTypes(card);
                 bool containsText = CardContainsText(card);
                 bool isInDeck = IsCardInDeck(card);
-                bool hasMatchingSupertype = IsCardSuperTypeInIncludedSupertypes(card);
+                bool hasMatchingSupertype = await IsCardSuperTypeInIncludedSupertypes(card);
                 if (hasMatchingType && containsText && isInDeck && hasMatchingSupertype)
                 {
                     matchingCardItems.Add(card);
@@ -77,7 +81,7 @@ namespace PokemonTCG.Models
             return matchingCardItems;
         }
 
-        private bool IsCardTypeInIncludedPokemonTypes(CardItem cardItem)
+        private async Task<bool> IsCardTypeInIncludedPokemonTypes(CardItem cardItem)
         {
             bool typeMatches = false;
             if (TypesToInclude.Count == 0)
@@ -86,7 +90,7 @@ namespace PokemonTCG.Models
             }
             else
             {
-                PokemonCard card = CardDataSource.GetCardById(cardItem.Id);
+                PokemonCard card = await CardDataSource.GetCardById(cardItem.Id);
 
                 // Get types
                 IImmutableList<PokemonType> types;
@@ -128,9 +132,9 @@ namespace PokemonTCG.Models
             return !IncludeOnlyThoseInDeck || card.Count > 0;
         }
 
-        private bool IsCardSuperTypeInIncludedSupertypes(CardItem cardItem)
+        private async Task<bool> IsCardSuperTypeInIncludedSupertypes(CardItem cardItem)
         {
-            PokemonCard card = CardDataSource.GetCardById(cardItem.Id);
+            PokemonCard card = await CardDataSource.GetCardById(cardItem.Id);
             CardSupertype supertype = card.Supertype;
             bool isPokemon = (supertype == CardSupertype.POKéMON);
             bool isTrainer = (supertype == CardSupertype.TRAINER);

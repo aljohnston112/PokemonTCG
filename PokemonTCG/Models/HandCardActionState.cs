@@ -1,5 +1,13 @@
-﻿using PokemonTCG.Enums;
+﻿using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Input;
+
+using PokemonTCG.CardModels;
+using PokemonTCG.Enums;
+using PokemonTCG.States;
 using PokemonTCG.Utilities;
+using PokemonTCG.View;
+using PokemonTCG.ViewModel;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -17,70 +25,182 @@ namespace PokemonTCG.Models
         internal const string MAKE_ACTIVE_ACTION = "Make active";
         internal const string PUT_ON_BENCH_ACTION = "Put on bench";
         internal const string USE_ACTION = "Use";
+        internal const string ATTACH_TO_POKEMON_ACTION = "Attach to Pokemon";
 
-        internal delegate GameState CardFunction(GameState gameState, params object[] arguments);
+        internal readonly ImmutableList<CardActionState<PokemonCard>> HandActions;
 
-        internal readonly ImmutableList<CardActionState> HandActions;
-
-        internal HandCardActionState(GameState gameState)
+        internal HandCardActionState(GamePageViewModel gamePageViewModel)
         {
-            HandActions = GetHandActions(gameState, gameState.PlayerState.Hand);
+            HandActions = GetHandActions(gamePageViewModel);
         }
 
-        private static ImmutableList<CardActionState> GetHandActions(
-            GameState gameState,
-            IImmutableList<PokemonCard> hand
+        private static ImmutableList<CardActionState<PokemonCard>> GetHandActions(
+            GamePageViewModel gamePageViewModel
             )
         {
-            List<CardActionState> handActions = new();
-            foreach (PokemonCard card in hand)
+            GameState gameState = gamePageViewModel.GameState;
+            IImmutableList<PokemonCard> hand = gameState.PlayerState.Hand;
+            List<CardActionState<PokemonCard>> handActions = new();
+            if (gameState.IsPreGame || gameState.PlayersTurn)
             {
-                Dictionary<string, CardFunction> cardActions = new();
-                if (gameState.IsPreGame || gameState.PlayersTurn)
+                foreach (PokemonCard handCard in hand)
                 {
-                    if (card.Supertype == CardSupertype.POKéMON)
-                    {
-                        if (CardUtil.IsBasicPokemon(card))
-                        {
-                            if (gameState.IsPreGame)
-                            {
-                                if (gameState.PlayerState.Active == null)
-                                {
-                                    cardActions[MAKE_ACTIVE_ACTION] = new(GameState.AfterMovingFromPlayersHandToActive);
-                                }
-                                if (CardUtil.NumberOfBasicPokemon(hand) > 1 ||
-                                    (CardUtil.NumberOfBasicPokemon(hand) > 0) && gameState.PlayerState.Active != null)
-                                {
-                                    cardActions[PUT_ON_BENCH_ACTION] = new(GameState.AfterMovingFromPlayersHandToBench);
-                                }
-                            }
-                            else
-                            {
-                                if (gameState.PlayerState.Bench.Count < 5)
-                                {
-                                    cardActions[PUT_ON_BENCH_ACTION] = new(GameState.AfterMovingFromPlayersHandToBench);
-                                }
-                            }
-
-                        }
-                    }
-                    else if (card.Supertype == CardSupertype.TRAINER)
-                    {
-                        if (!gameState.IsPreGame)
-                        {
-                            if (CanUse(gameState, card))
-                            {
-                                cardActions[USE_ACTION] = GetUseFunction(card, card.Name);
-                            }
-                        }
-                    }
+                    handActions.Add(GetCardActionsForHandCard(gamePageViewModel, handCard));
                 }
-                handActions.Add(new CardActionState(card, cardActions.ToImmutableDictionary()));
             }
             return handActions.ToImmutableList();
         }
 
-        private static CardFunction GetUseFunction(PokemonCard card, string toUse)
+        private static CardActionState<PokemonCard> GetCardActionsForHandCard(
+            GamePageViewModel gamePageViewModel,
+            PokemonCard handCard
+            )
+        {
+            GameState gameState = gamePageViewModel.GameState;
+            IImmutableList<PokemonCard> hand = gameState.PlayerState.Hand;
+            Dictionary<string, TappedEventHandler> cardActions = new();
+
+            if (handCard.Supertype == CardSupertype.POKéMON)
+            {
+                if (CardUtil.IsBasicPokemon(handCard))
+                {
+                    if (gameState.IsPreGame)
+                    {
+                        if (gameState.PlayerState.Active == null)
+                        {
+                            cardActions[MAKE_ACTIVE_ACTION] = GetMakeActiveAction(gamePageViewModel, handCard);
+                        }
+                        if (CardUtil.NumberOfBasicPokemon(hand) > 1 ||
+                            (CardUtil.NumberOfBasicPokemon(hand) > 0) && gameState.PlayerState.Active != null)
+                        {
+                            cardActions[PUT_ON_BENCH_ACTION] = GetPutOnBenchAction(gamePageViewModel, handCard);
+                        }
+                    }
+                    else
+                    {
+                        if (gameState.PlayerState.Bench.Count < 5)
+                        {
+                            cardActions[PUT_ON_BENCH_ACTION] = GetPutOnBenchAction(gamePageViewModel, handCard);
+                        }
+                    }
+                }
+            }
+            else if (handCard.Supertype == CardSupertype.TRAINER)
+            {
+                if (!gameState.IsPreGame)
+                {
+                    if (CanUse(gameState, handCard))
+                    {
+                        cardActions[USE_ACTION] = GetUseAction(gamePageViewModel, handCard);
+                    }
+                }
+            }
+            else if (handCard.Supertype == CardSupertype.ENERGY)
+            {
+                if (!gameState.IsPreGame && !gameState.PlayerState.HasAttachedEnergyThisTurn)
+                {
+                    cardActions[ATTACH_TO_POKEMON_ACTION] = GetAttachEnergyToPokemonAction(gamePageViewModel, handCard);
+                }
+            }
+            return new CardActionState<PokemonCard>(handCard, cardActions.ToImmutableDictionary());
+        }
+
+        private static TappedEventHandler GetMakeActiveAction(
+            GamePageViewModel gamePageViewModel,
+            PokemonCard handCard
+            )
+        {
+            GameState gameState = gamePageViewModel.GameState;
+            return new TappedEventHandler(
+                (object sender, TappedRoutedEventArgs e) =>
+                {
+                    gamePageViewModel.UpdateGameState(
+                        gameState.WithPlayerState(
+                            gameState.PlayerState.AfterMovingFromHandToActive(handCard)
+                            )
+                        );
+                }
+                );
+        }
+
+        private static TappedEventHandler GetPutOnBenchAction(
+            GamePageViewModel gamePageViewModel,
+            PokemonCard handCard
+            )
+        {
+            GameState gameState = gamePageViewModel.GameState;
+            return new TappedEventHandler(
+                (object sender, TappedRoutedEventArgs e) =>
+                {
+                    gamePageViewModel.UpdateGameState(
+                        gameState.WithPlayerState(
+                            gameState.PlayerState.AfterMovingFromHandToBench(handCard)
+                            )
+                        );
+                }
+                );
+        }
+
+        private static TappedEventHandler GetUseAction(
+            GamePageViewModel gamePageViewModel,
+            PokemonCard handCard
+            )
+        {
+            GameState gameState = gamePageViewModel.GameState;
+            return new TappedEventHandler(
+                (object sender, TappedRoutedEventArgs e) =>
+                {
+                    MethodInfo method = GetUseFunction(handCard, handCard.Name);
+                    gamePageViewModel.UpdateGameState(
+                        (GameState)method.Invoke(null, new object[] { gameState })
+                    );
+                }
+                );
+        }
+
+        private static TappedEventHandler GetAttachEnergyToPokemonAction(
+            GamePageViewModel gamePageViewModel,
+            PokemonCard handCard
+            )
+        {
+            GameState gameState = gamePageViewModel.GameState;
+            return new TappedEventHandler(
+                (object sender, TappedRoutedEventArgs e) =>
+                {
+                    CardStatePickerPage cardPickerPage = new();
+                    Window window = null;
+                    void onCardSelected(PokemonCardState cardState)
+                    {
+                        window.Close();
+                        PlayerState newPlayerState;
+                        if (gameState.PlayerState.Active == cardState)
+                        {
+                            newPlayerState = gameState.PlayerState.AfterAttachingEnergyToActiveFromHand(handCard.Id);
+                        }
+                        else
+                        {
+                            newPlayerState = gameState.PlayerState.AfterAttachingEnergyToBenchedFromHand(
+                                cardState,
+                                handCard.Id
+                                );
+                        }
+                        gamePageViewModel.UpdateGameState(
+                        gameState.WithPlayerState(newPlayerState)
+                        );
+                    }
+
+                    CardStatePickerPageArgs args = new(
+                        gameState.PlayerState.Bench.Add(gameState.PlayerState.Active),
+                        onCardSelected
+                        );
+
+                    cardPickerPage.SetArgs(args);
+                    window = WindowUtil.OpenPageInNewWindow(cardPickerPage);
+                }
+                );
+        }
+
+        private static MethodInfo GetUseFunction(PokemonCard card, string toUse)
         {
 
             string namespaceName = "PokemonTCG.Generated";
@@ -89,7 +209,7 @@ namespace PokemonTCG.Models
 
             Type type = Type.GetType($"{namespaceName}.{className}");
             MethodInfo methodInfo = type?.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
-            return (CardFunction)Delegate.CreateDelegate(typeof(CardFunction), methodInfo);
+            return methodInfo;
         }
 
         private static bool CanUse(GameState gameState, PokemonCard card)
@@ -100,7 +220,7 @@ namespace PokemonTCG.Models
 
             Type type = Type.GetType($"{namespaceName}.{className}");
             MethodInfo methodInfo = type?.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
-            return (bool)methodInfo.Invoke(null, new object[] { gameState, Array.Empty<object>() });
+            return (bool)methodInfo.Invoke(null, new object[] { gameState });
         }
 
     }

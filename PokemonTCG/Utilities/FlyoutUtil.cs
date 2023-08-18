@@ -26,7 +26,7 @@ namespace PokemonTCG.Utilities
         }
 
         internal static CommandBarFlyout CreateCommandBarFlyout(
-            ImmutableDictionary<string, TappedEventHandler> commands
+            IImmutableDictionary<string, TappedEventHandler> commands
             )
         {
             CommandBarFlyout flyout = new()

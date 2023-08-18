@@ -1,21 +1,22 @@
 
 using System;
-using PokemonTCG.Models;
+using PokemonTCG.CardModels;
+using PokemonTCG.States;
 
-namespace PokemonTCG.Generated 
+namespace PokemonTCG.Generated
 {
-    
+
     internal class Base1_2
     {
 
-        internal static bool Hydro_Pump_CanUse(GameState gameState, object[] attack)
+        internal static bool Hydro_Pump_CanUse(GameState gameState, Attack attack)
         {
-            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack[0] as Attack);
+            bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
             throw new NotImplementedException();
             return canUse;
         }
 
-        internal static GameState Hydro_Pump_Use(GameState gameState, object[] attack)
+        internal static GameState Hydro_Pump_Use(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }

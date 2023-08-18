@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+
 using Windows.Storage;
 
 namespace PokemonTCG.Utilities
@@ -12,7 +13,6 @@ namespace PokemonTCG.Utilities
     {
 
         private static readonly string BASE_PATH = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
-
 
         /// <summary>
         /// Loads a file from the file system.

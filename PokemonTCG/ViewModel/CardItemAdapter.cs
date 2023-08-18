@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Threading.Tasks;
 using PokemonTCG.Enums;
 using PokemonTCG.Models;
+using PokemonTCG.States;
 using PokemonTCG.Utilities;
 
 namespace PokemonTCG.ViewModel
@@ -24,14 +26,14 @@ namespace PokemonTCG.ViewModel
             CardItems.Add(cardItem);
         }
 
-        internal void IncrementCardCountForCardWithId(string id)
+        internal async void IncrementCardCountForCardWithId(string id)
         {
             CardItem cardItem = _cardItems[id];
             int count = cardItem.Count + 1;
-            SetCardCountForCardWithId(cardItem.Id, count);
+            await SetCardCountForCardWithId(cardItem.Id, count);
         }
 
-        internal void SetCardCountForCardWithId(string id, int count)
+        internal async Task SetCardCountForCardWithId(string id, int count)
         {
             CardItem cardItem = _cardItems[id];
             AssertCount(
@@ -39,7 +41,7 @@ namespace PokemonTCG.ViewModel
                 limit: cardItem.Limit
                 );
             _cardItems[id] = cardItem.WithCount(count);
-            SiftCards();
+            await SiftCards();
         }
 
         private static void AssertCount(int count, int limit)
@@ -50,9 +52,9 @@ namespace PokemonTCG.ViewModel
             }
         }
 
-        private void SiftCards()
+        private async Task SiftCards()
         {
-            ICollection<CardItem> cards = CardSifter.Sift(_cardItems.Values);
+            ICollection<CardItem> cards = await CardSifter.Sift(_cardItems.Values);
             CardItems.Clear();
             foreach (CardItem card in cards)
             {
@@ -60,59 +62,59 @@ namespace PokemonTCG.ViewModel
             }
         }
 
-        internal void UpdateSearchString(string text)
+        internal async Task UpdateSearchString(string text)
         {
             CardSifter = CardSifter.WithNewSearchString(text);
-            SiftCards();
+            await SiftCards();
         }
 
-        internal void InludeType(string type, bool inludeType)
+        internal async Task InludeType(string type, bool inludeType)
         {
             PokemonType pokemonType = EnumUtil.Parse<PokemonType>(type);
             CardSifter = CardSifter.WithTypeIncluded(pokemonType, inludeType);
-            SiftCards();
+            await SiftCards();
         }
 
-        internal void IncludeOnlyCardsInDeck(bool deckCardsOnly)
+        internal async Task IncludeOnlyCardsInDeck(bool deckCardsOnly)
         {
             CardSifter = CardSifter.IncludeOnlyCardsFromDeck(deckCardsOnly);
-            SiftCards();
+            await SiftCards();
         }
 
-        internal void IncludeSupertype(string text, bool value)
+        internal async Task IncludeSupertype(string text, bool value)
         {
             CardSupertype supertype = EnumUtil.Parse<CardSupertype>(text);
             if (supertype == CardSupertype.POKéMON)
             {
-                IncludePokemon(value);
+                await IncludePokemon(value);
             }
             else if (supertype == CardSupertype.TRAINER)
             {
-                IncludeTrainer(value);
+                await IncludeTrainer(value);
             }
             else if (supertype == CardSupertype.ENERGY)
             {
-                IncludeEnergy(value);
+                await IncludeEnergy(value);
             }
         }
 
-        private void IncludePokemon(bool includePokemon)
+        private async Task IncludePokemon(bool includePokemon)
         {
             CardSifter = CardSifter.WithPokemonIncluded(includePokemon);
-            SiftCards();
+            await SiftCards();
         }
 
 
-        private void IncludeTrainer(bool includeTrainer)
+        private async Task IncludeTrainer(bool includeTrainer)
         {
             CardSifter = CardSifter.WithTrainersIncluded(includeTrainer);
-            SiftCards();
+            await SiftCards();
         }
 
-        private void IncludeEnergy(bool includeEnergy)
+        private async Task IncludeEnergy(bool includeEnergy)
         {
             CardSifter = CardSifter.WithEnergiesIncluded(includeEnergy);
-            SiftCards();
+            await SiftCards();
         }
 
     }

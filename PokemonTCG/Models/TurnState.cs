@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using PokemonTCG.States;
 
 namespace PokemonTCG.Models
 {

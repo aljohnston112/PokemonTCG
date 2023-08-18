@@ -17,12 +17,12 @@ namespace PokemonTCG.View
             InitializeComponent();
         }
 
-        private async void NavigateToDeckListPage(object sender, RoutedEventArgs e)
+        private void NavigateToDeckListPage(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(DeckListPage));
         }
 
-        private async void NavigateToGameSettingsPage(object sender, RoutedEventArgs e)
+        private void NavigateToGameSettingsPage(object sender, RoutedEventArgs e)
         {
             Frame.Navigate(typeof(GameSettingsPage));
         }

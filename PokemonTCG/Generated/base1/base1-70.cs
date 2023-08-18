@@ -1,19 +1,19 @@
 
 using System;
-using PokemonTCG.Models;
+using PokemonTCG.States;
 
-namespace PokemonTCG.Generated 
+namespace PokemonTCG.Generated
 {
-    
+
     internal class Base1_70
     {
 
-        internal static bool Clefairy_Doll_CanUse(GameState gameState, object[] parameters)
+        internal static bool Clefairy_Doll_CanUse(GameState gameState)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState Clefairy_Doll_Use(GameState gameState, object[] parameters)
+        internal static GameState Clefairy_Doll_Use(GameState gameState)
         {
             throw new NotImplementedException();
         }

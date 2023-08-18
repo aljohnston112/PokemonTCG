@@ -13,4 +13,5 @@
         POISONED,
         BURNED,
     }
+
 }

@@ -1,7 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Immutable;
 using System.Linq;
+
+using PokemonTCG.CardModels;
 using PokemonTCG.Enums;
 using PokemonTCG.Models;
 
@@ -35,11 +36,11 @@ namespace PokemonTCG.Utilities
             return EnumUtil.Parse<PokemonType>(energyType);
         }
 
-        internal static int IndexOfCard(IImmutableList<PokemonCardState> cardStates, string benchedCardId)
+        internal static int IndexOfCardWithId(IImmutableList<PokemonCardState> cardStates, string benchedCardId)
         {
             bool found = false;
             int i = -1;
-            while (i < cardStates.Count && !found)
+            while (i < cardStates.Count - 1 && !found)
             {
                 i++;
                 PokemonCard card = cardStates[i].PokemonCard;
@@ -51,11 +52,11 @@ namespace PokemonTCG.Utilities
             return i;
         }
 
-        internal static int IndexOfCard(IImmutableList<PokemonCard> cards, string benchedCardId)
+        internal static int IndexOfCardWithId(IImmutableList<PokemonCard> cards, string benchedCardId)
         {
             bool found = false;
             int i = -1;
-            while (i < cards.Count && !found)
+            while (i < cards.Count - 1 && !found)
             {
                 i++;
                 PokemonCard card = cards[i];
@@ -67,11 +68,11 @@ namespace PokemonTCG.Utilities
             return i;
         }
 
-        internal static IImmutableDictionary<PokemonType, int> GetNumberOfEveryEnergy(IImmutableList<PokemonCard> cards)
+        internal static IImmutableDictionary<PokemonType, int> GetNumberOfEachEnergy(IImmutableList<PokemonCard> cards)
         {
             return cards
                 .Where(card => card.Supertype == CardSupertype.ENERGY)
-                .GroupBy(card => CardUtil.GetEnergyType(card))
+                .GroupBy(card => GetEnergyType(card))
                 .ToImmutableDictionary(group => group.Key, group => group.Count());
         }
 
@@ -82,25 +83,23 @@ namespace PokemonTCG.Utilities
                 .Count();
         }
 
-        internal static bool IsEnoughEnergyForAttack(IImmutableList<PokemonCard> cards, Attack attack)
+        internal static void AssertCardEvolvesFrom(PokemonCardState active, PokemonCard evolutionCard)
         {
-            bool enoughEnergyForAttack = true;
-
-            // Count energy cards from hand
-            IImmutableDictionary<PokemonType, int> numberOfEveryEnergy = GetNumberOfEveryEnergy(cards);
-            int numberOfEnergies = CardUtil.GetNumberOfEnergy(cards);
-            int energyLeftForColorless = numberOfEnergies;
-
-            foreach ((PokemonType type, int count) in attack.EnergyCost)
+            if (CardEvolvesFrom(active, evolutionCard))
             {
-                if ((!numberOfEveryEnergy.ContainsKey(type) || (numberOfEveryEnergy[type] < count)) ||
-                    (type == PokemonType.Colorless && energyLeftForColorless < count))
-                {
-                    enoughEnergyForAttack = false;
-                }
-                energyLeftForColorless -= count;
+                throw new ArgumentException($"Card with id: {evolutionCard.Id} does not evolve from {active.PokemonCard.Name}");
             }
-            return enoughEnergyForAttack;
+        }
+
+        internal static bool CardEvolvesFrom(PokemonCardState active, PokemonCard evolutionCard)
+        {
+            bool evolvesFrom = true;
+            string lowerStageName = active.PokemonCard.Name;
+            if (lowerStageName != evolutionCard.EvolvesFrom)
+            {
+                evolvesFrom = false;
+            }
+            return evolvesFrom;
         }
 
     }

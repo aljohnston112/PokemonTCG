@@ -1,12 +1,12 @@
-﻿using Microsoft.UI.Xaml;
+﻿using System.Threading.Tasks;
+
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Microsoft.UI.Xaml.Input;
-using PokemonTCG.ViewModel;
+using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Navigation;
+using PokemonTCG.States;
 using PokemonTCG.Utilities;
-using PokemonTCG.Models;
-using System;
-using System.Threading.Tasks;
+using PokemonTCG.ViewModel;
 
 namespace PokemonTCG.View
 {
@@ -44,13 +44,13 @@ namespace PokemonTCG.View
                 if (checkBox.IsChecked.HasValue)
                 {
                     string text = checkBox.Content.ToString();
-                    CardItemAdapter.IncludeSupertype(text, checkBox.IsChecked.Value);
+                    _ = CardItemAdapter.IncludeSupertype(text, checkBox.IsChecked.Value);
                 }
             }
 
-            CheckBoxPokemon.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, superTypesCallback);
-            CheckBoxTrainer.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, superTypesCallback);
-            CheckBoxEnergy.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, superTypesCallback);
+            CheckBoxPokemon.RegisterPropertyChangedCallback(ToggleButton.IsCheckedProperty, superTypesCallback);
+            CheckBoxTrainer.RegisterPropertyChangedCallback(ToggleButton.IsCheckedProperty, superTypesCallback);
+            CheckBoxEnergy.RegisterPropertyChangedCallback(ToggleButton.IsCheckedProperty, superTypesCallback);
 
             // For the type checkboxes
             void pokemonTypesCallback(DependencyObject sender, DependencyProperty property)
@@ -59,13 +59,13 @@ namespace PokemonTCG.View
                 if (checkBox.IsChecked.HasValue)
                 {
                     string text = checkBox.Content.ToString();
-                    CardItemAdapter.InludeType(text, checkBox.IsChecked.Value);
+                    _ = CardItemAdapter.InludeType(text, checkBox.IsChecked.Value);
                 }
             }
 
             foreach (UIElement checkBox in StackPanelTypes.Children)
             {
-                checkBox.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, pokemonTypesCallback);
+                checkBox.RegisterPropertyChangedCallback(ToggleButton.IsCheckedProperty, pokemonTypesCallback);
             }
 
             // For the in deck checkbox
@@ -74,15 +74,15 @@ namespace PokemonTCG.View
                 CheckBox checkBox = sender as CheckBox;
                 if (checkBox.IsChecked.HasValue)
                 {
-                    CardItemAdapter.IncludeOnlyCardsInDeck(checkBox.IsChecked.Value);
+                    _ = CardItemAdapter.IncludeOnlyCardsInDeck(checkBox.IsChecked.Value);
                 }
             }
-            CheckBoxInDeck.RegisterPropertyChangedCallback(CheckBox.IsCheckedProperty, inDeckCallback);
+            CheckBoxInDeck.RegisterPropertyChangedCallback(ToggleButton.IsCheckedProperty, inDeckCallback);
         }
 
-        private void SearchTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        private async void SearchTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            CardItemAdapter.UpdateSearchString(sender.Text);
+            await CardItemAdapter.UpdateSearchString(sender.Text);
         }
 
         /// <summary>
@@ -129,13 +129,13 @@ namespace PokemonTCG.View
             }
         }
 
-        private void NumberBoxHandler(NumberBox box, NumberBoxValueChangedEventArgs args)
+        private async void NumberBoxHandler(NumberBox box, NumberBoxValueChangedEventArgs args)
         {
             if (box.Tag is CardItem cardItem && args.OldValue != args.NewValue)
             {
                 if (!double.IsNaN(args.NewValue))
                 {
-                    ViewModel.ChangeCardItemCount(
+                    await ViewModel.ChangeCardItemCount(
                         cardItemAdapter: CardItemAdapter,
                         cardId: cardItem.Id,
                         newValue: (int)args.NewValue
@@ -143,7 +143,7 @@ namespace PokemonTCG.View
                 }
                 else
                 {
-                    ViewModel.ChangeCardItemCount(
+                    await ViewModel.ChangeCardItemCount(
                        cardItemAdapter: CardItemAdapter,
                        cardId: cardItem.Id,
                        newValue: 0
@@ -157,7 +157,7 @@ namespace PokemonTCG.View
         private async void SubmitDeck(object sender, RoutedEventArgs args)
         {
             string deckName = TextBlockDeckName.Text;
-            string errorText = ViewModel.CheckUserInput(deckName, CardItemAdapter);
+            string errorText = await ViewModel.CheckUserInput(deckName, CardItemAdapter);
             if(errorText != null)
             {
                 FlyoutUtil.ShowTextFlyout(errorText, SubmitDeckButton);
