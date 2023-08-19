@@ -21,7 +21,7 @@ namespace PokemonTCG.ViewModel
             set { SetProperty(ref _showStartGameButton, value); }
         }
 
-        internal void GameStateChanged(GamePageViewModel gamePageViewModel)
+        internal void OnStateChange(GamePageViewModel gamePageViewModel)
         {
             HandCardActionState = new HandCardActionState(gamePageViewModel);
             if(gamePageViewModel.GameState.IsPreGame && gamePageViewModel.GameState.PlayerState.Active != null)

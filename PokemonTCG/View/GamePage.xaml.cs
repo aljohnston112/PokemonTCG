@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Navigation;
@@ -19,7 +19,8 @@ namespace PokemonTCG.View
     {
         private readonly GamePageViewModel GamePageViewModel = new();
 
-        private readonly HandPage handPage = new();
+        private readonly Window HandWindow;
+        private readonly HandPage HandPage = new();
         private readonly HandPageViewModel HandViewModel = new();
 
         private readonly PlayerPage PlayerPage;
@@ -34,8 +35,8 @@ namespace PokemonTCG.View
 
             GamePageViewModel.PropertyChanged += OnGameStateChange;
 
-            handPage.SetViewModel(GamePageViewModel, HandViewModel);
-            WindowUtil.OpenPageInNewWindow(handPage);
+            HandPage.SetViewModel(GamePageViewModel, HandViewModel);
+            HandWindow = WindowUtil.OpenPageInNewWindow(HandPage);
 
             PlayerPage = PagePlayer;
             PlayerPage.SetViewModels(PlayerPageViewModel);
@@ -45,15 +46,20 @@ namespace PokemonTCG.View
             RotateOpponentPage();
         }
 
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            // TODO does not work like this
+            base.OnNavigatedFrom(e);
+            HandWindow.Close();
+        }
+
         private void OnGameStateChange(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == "GameState")
             {
-                GameState gameState = GamePageViewModel.GameState;
-                HandViewModel.GameStateChanged(GamePageViewModel);
-                PlayerPageViewModel.OnStateChange(gameState.PlayerState);
-                OpponentPageViewModel.OnStateChange(gameState.OpponentState);
-                
+                HandViewModel.OnStateChange(GamePageViewModel);
+                PlayerPageViewModel.OnStateChange(GamePageViewModel, isPlayerState: true);
+                OpponentPageViewModel.OnStateChange(GamePageViewModel, isPlayerState: false);
             }
         }
 

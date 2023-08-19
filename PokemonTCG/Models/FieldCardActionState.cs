@@ -6,7 +6,7 @@ using PokemonTCG.States;
 using PokemonTCG.Utilities;
 using PokemonTCG.View;
 using PokemonTCG.ViewModel;
-using System;
+
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
@@ -17,8 +17,30 @@ namespace PokemonTCG.Models
 
         internal const string EVOLVE_ACTION = "Evolve";
 
+        internal readonly ImmutableList<CardActionState<PokemonCardState>> BenchCardActions;
+        internal readonly ImmutableList<CardActionState<PokemonCardState>> ActiveCardActions;
 
-        private static ImmutableList<CardActionState<PokemonCardState>> GetFieldActions(
+        internal FieldCardActionState(GamePageViewModel gamePageViewModel)
+        {
+            if (gamePageViewModel.GameState.PlayersTurn)
+            {
+                BenchCardActions = GetBenchCardActions(gamePageViewModel);
+                ActiveCardActions = GetActiveCardActions(gamePageViewModel);
+            }
+        }
+
+        private static ImmutableList<CardActionState<PokemonCardState>> GetActiveCardActions(
+            GamePageViewModel gamePageViewModel
+            )
+        {
+            List<CardActionState<PokemonCardState>> fieldActions = new()
+            {
+                GetFieldActionsForActive(gamePageViewModel)
+            };
+            return fieldActions.ToImmutableList();
+        }
+
+        private static ImmutableList<CardActionState<PokemonCardState>> GetBenchCardActions(
             GamePageViewModel gamePageViewModel
             )
         {
@@ -28,28 +50,30 @@ namespace PokemonTCG.Models
             {
                 fieldActions.Add(GetFieldActionsForBenched(gamePageViewModel, benchCard));
             }
-            fieldActions.Add(GetFieldActionsForActive(gamePageViewModel));
             return fieldActions.ToImmutableList();
         }
 
         private static CardActionState<PokemonCardState> GetFieldActionsForBenched(
-            GamePageViewModel gamePageViewModel, 
+            GamePageViewModel gamePageViewModel,
             PokemonCardState benchCard
             )
         {
             GameState gameState = gamePageViewModel.GameState;
             Dictionary<string, TappedEventHandler> cardActions = new();
 
-            IImmutableList<PokemonCard> evolutionCards = gameState.PlayerState.GetEvolutionCardsForCard(benchCard);
-            if (evolutionCards.Count > 0)
+            if (!benchCard.FirstTurnInPlay)
             {
-                cardActions[EVOLVE_ACTION] = GetEvolveAction(
-                    gamePageViewModel,
-                    gameState,
-                    benchCard,
-                    evolutionCards,
-                    isBench: true
-                    );
+                IImmutableList<PokemonCard> evolutionCards = gameState.PlayerState.GetEvolutionCardsForCard(benchCard);
+                if (evolutionCards.Count > 0)
+                {
+                    cardActions[EVOLVE_ACTION] = GetEvolveAction(
+                        gamePageViewModel,
+                        gameState,
+                        benchCard,
+                        evolutionCards,
+                        isBench: true
+                        );
+                }
             }
             return new CardActionState<PokemonCardState>(benchCard, cardActions.ToImmutableDictionary());
         }
@@ -61,17 +85,22 @@ namespace PokemonTCG.Models
             GameState gameState = gamePageViewModel.GameState;
             Dictionary<string, TappedEventHandler> cardActionsForActive = new();
             PokemonCardState activeCard = gameState.PlayerState.Active;
-            IImmutableList<PokemonCard> evolutionCardsForActive = gameState.PlayerState.GetEvolutionCardsForCard(activeCard);
-            if (evolutionCardsForActive.Count > 0)
+
+            if (activeCard != null && !activeCard.FirstTurnInPlay)
             {
-                cardActionsForActive[EVOLVE_ACTION] = GetEvolveAction(
-                    gamePageViewModel,
-                    gameState,
-                    activeCard,
-                    evolutionCardsForActive,
-                    isBench: false
-                    );
+                IImmutableList<PokemonCard> evolutionCardsForActive = gameState.PlayerState.GetEvolutionCardsForCard(activeCard);
+                if (evolutionCardsForActive.Count > 0)
+                {
+                    cardActionsForActive[EVOLVE_ACTION] = GetEvolveAction(
+                        gamePageViewModel,
+                        gameState,
+                        activeCard,
+                        evolutionCardsForActive,
+                        isBench: false
+                        );
+                }
             }
+
             return new CardActionState<PokemonCardState>(activeCard, cardActionsForActive.ToImmutableDictionary());
         }
 
@@ -91,10 +120,11 @@ namespace PokemonTCG.Models
                     void onCardSelected(PokemonCard pickedCard)
                     {
                         PlayerState newPlayerState;
-                        if(isBench)
+                        if (isBench)
                         {
                             newPlayerState = gameState.PlayerState.AfterEvolvingBenchedPokemon(benchCard, pickedCard);
-                        } else
+                        }
+                        else
                         {
                             newPlayerState = gameState.PlayerState.AfterEvolvingActivePokemon(pickedCard);
                         }

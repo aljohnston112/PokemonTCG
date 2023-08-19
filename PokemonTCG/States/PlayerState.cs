@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using PokemonTCG.CardModels;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
-using PokemonTCG.View;
-using PokemonTCG.ViewModel;
 
 namespace PokemonTCG.States
 {
@@ -197,7 +194,7 @@ namespace PokemonTCG.States
         internal PlayerState AfterEvolvingBenchedPokemon(PokemonCardState benchedCard, PokemonCard evolutionCard)
         {
             // TODO Remove attack effects and status condition.
-            CardUtil.AssertCardEvolvesFrom(Active, evolutionCard);
+            CardUtil.AssertCardEvolvesFrom(benchedCard, evolutionCard);
             Debug.Assert(Bench.Contains(benchedCard));
             Debug.Assert(Hand.Contains(evolutionCard));
             int iForBench = Bench.IndexOf(benchedCard);

@@ -85,7 +85,7 @@ namespace PokemonTCG.Utilities
 
         internal static void AssertCardEvolvesFrom(PokemonCardState active, PokemonCard evolutionCard)
         {
-            if (CardEvolvesFrom(active, evolutionCard))
+            if (!CardEvolvesFrom(active, evolutionCard))
             {
                 throw new ArgumentException($"Card with id: {evolutionCard.Id} does not evolve from {active.PokemonCard.Name}");
             }

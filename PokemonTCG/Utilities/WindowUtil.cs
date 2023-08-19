@@ -34,7 +34,7 @@ namespace PokemonTCG.Utilities
             handWindow.IsShownInSwitchers = false;
 
             OverlappedPresenter presenter = handWindow.Presenter as OverlappedPresenter;
-            presenter.SetBorderAndTitleBar(true, false);
+            presenter.SetBorderAndTitleBar(true, true);
 
             window.Activate();
             return window;

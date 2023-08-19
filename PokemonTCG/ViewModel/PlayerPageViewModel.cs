@@ -1,22 +1,39 @@
-﻿using System;
+﻿using PokemonTCG.Models;
 using PokemonTCG.States;
+using PokemonTCG.Utilities;
+using PokemonTCG.ViewModel;
 
 namespace PokemonTCG.View
 {
 
-    internal class PlayerPageViewModel
+    internal class PlayerPageViewModel: BindableBase
     {
 
-        Action<PlayerState> OnPlayerStateChanged;
-
-        internal void SetOnPlayerStateChanged(Action<PlayerState> onPlayerStateChanged)
+        private PlayerState _playerState = null;
+        internal PlayerState PlayerState
         {
-            OnPlayerStateChanged = onPlayerStateChanged;
+            get { return _playerState; }
+            set { SetProperty(ref _playerState, value); }
         }
 
-        internal void OnStateChange(PlayerState playerState)
+        private FieldCardActionState _fieldCardActionState;
+        internal FieldCardActionState FieldCardActionState
         {
-            OnPlayerStateChanged(playerState);
+            get { return _fieldCardActionState; }
+            set { SetProperty(ref _fieldCardActionState, value); }
+        }
+
+        internal void OnStateChange(GamePageViewModel gamePageViewModel, bool isPlayerState)
+        {
+            if (isPlayerState)
+            {
+                FieldCardActionState = new FieldCardActionState(gamePageViewModel);
+                PlayerState = gamePageViewModel.GameState.PlayerState;
+            }
+            else
+            {
+                PlayerState = gamePageViewModel.GameState.OpponentState;
+            }
         }
 
     }

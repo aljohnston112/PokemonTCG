@@ -1,5 +1,6 @@
 ﻿using Microsoft.UI.Xaml;
 using PokemonTCG.View;
+using PokemonTCG.ViewModel;
 
 namespace PokemonTCG
 {
@@ -14,7 +15,8 @@ namespace PokemonTCG
         internal MainWindow()
         {
             InitializeComponent();
-            MainFrame.Navigate(typeof(TitlePage));
+            // MainFrame.Navigate(typeof(TitlePage));
+            MainFrame.Navigate(typeof(GamePage), new GameArguments("Blackout", "Blackout"));
         }
 
         /// <summary>
