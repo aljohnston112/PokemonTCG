@@ -12,7 +12,6 @@ namespace PokemonTCG.States
         internal readonly PlayerState OpponentState;
         internal readonly PokemonCard StadiumCard;
 
-
         internal GameState(PokemonDeck playerDeck, PokemonDeck opponentDeck)
         {
             IsPreGame = true;

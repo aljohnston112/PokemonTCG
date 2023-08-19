@@ -100,7 +100,12 @@ namespace PokemonTCG.Models
                 prizes: ImmutableList<PokemonCard>.Empty,
                 discardPile: ImmutableList<PokemonCard>.Empty,
                 lostZone: ImmutableList<PokemonCard>.Empty,
-                hasAttachedEnergyThisTurn: false
+                new OncePerTurnActionsState(
+                    hasAttachedEnergy: false,
+                    hasUsedSupporter: false,
+                    hasUsedStadium: false,
+                    hasRetreated: false
+                    )
                 );
         }
 

@@ -16,6 +16,7 @@ namespace PokemonTCG.Models
     {
 
         internal const string EVOLVE_ACTION = "Evolve";
+        internal const string RETREAT_ACTION = "Retreat";
 
         internal readonly ImmutableList<CardActionState<PokemonCardState>> BenchCardActions;
         internal readonly ImmutableList<CardActionState<PokemonCardState>> ActiveCardActions;
@@ -86,22 +87,83 @@ namespace PokemonTCG.Models
             Dictionary<string, TappedEventHandler> cardActionsForActive = new();
             PokemonCardState activeCard = gameState.PlayerState.Active;
 
-            if (activeCard != null && !activeCard.FirstTurnInPlay)
+            if (activeCard != null)
             {
-                IImmutableList<PokemonCard> evolutionCardsForActive = gameState.PlayerState.GetEvolutionCardsForCard(activeCard);
-                if (evolutionCardsForActive.Count > 0)
+                if (!activeCard.FirstTurnInPlay)
                 {
-                    cardActionsForActive[EVOLVE_ACTION] = GetEvolveAction(
+                    IImmutableList<PokemonCard> evolutionCardsForActive = gameState.PlayerState.GetEvolutionCardsForCard(activeCard);
+                    if (evolutionCardsForActive.Count > 0)
+                    {
+                        cardActionsForActive[EVOLVE_ACTION] = GetEvolveAction(
+                            gamePageViewModel,
+                            gameState,
+                            activeCard,
+                            evolutionCardsForActive,
+                            isBench: false
+                            );
+                    }
+                }
+                if (activeCard.CanRetreat() && gameState.PlayerState.Bench.Count > 0)
+                {
+                    cardActionsForActive[RETREAT_ACTION] = GetRetreatAction(
                         gamePageViewModel,
                         gameState,
-                        activeCard,
-                        evolutionCardsForActive,
-                        isBench: false
+                        activeCard
                         );
                 }
             }
 
             return new CardActionState<PokemonCardState>(activeCard, cardActionsForActive.ToImmutableDictionary());
+        }
+
+        private static TappedEventHandler GetRetreatAction(
+            GamePageViewModel gamePageViewModel, 
+            GameState gameState, 
+            PokemonCardState activeCard
+            )
+        {
+            return new TappedEventHandler(
+                (object sender, TappedRoutedEventArgs e) =>
+                {
+                    CardPickerPage energyCardPickerPage = new();
+                    Window energyPickerWindow = null;
+                    void OnEnergySelected(IImmutableList<PokemonCard> pickedEnergy)
+                    {
+
+                        energyPickerWindow.Close();
+
+                        CardPickerPage benchCardPickerPage = new();
+                        Window benchPickerWindow = null;
+                        void onCardSelected(IImmutableList<PokemonCardState> pickedBenchCards)
+                        {
+                            PlayerState newPlayerState;
+                            newPlayerState = gameState.PlayerState.AfterRetreatingActivePokemon(
+                                pickedBenchCards[0], 
+                                pickedEnergy
+                                );
+                            benchPickerWindow.Close();
+                            gamePageViewModel.UpdateGameState(gameState.WithPlayerState(newPlayerState));
+                        }
+
+                        CardPickerPageArgs<PokemonCardState> args = new(
+                            gameState.PlayerState.Bench,
+                            onCardSelected,
+                            1
+                            );
+
+                        benchCardPickerPage.SetArgs(args);
+                        benchPickerWindow = WindowUtil.OpenPageInNewWindow(benchCardPickerPage);
+                    }
+                    CardPickerPageArgs<PokemonCard> energyArgs = new(
+                            activeCard.Energy,
+                            OnEnergySelected,
+                            activeCard.PokemonCard.ConvertedRetreatCost
+                            );
+
+                    energyCardPickerPage.SetArgs(energyArgs);
+                    energyPickerWindow = WindowUtil.OpenPageInNewWindow(energyCardPickerPage);
+                }
+                );
         }
 
         private static TappedEventHandler GetEvolveAction(
@@ -117,9 +179,10 @@ namespace PokemonTCG.Models
                 {
                     CardPickerPage cardPickerPage = new();
                     Window window = null;
-                    void onCardSelected(PokemonCard pickedCard)
+                    void OnCardSelected(IImmutableList<PokemonCard> pickedCards)
                     {
                         PlayerState newPlayerState;
+                        PokemonCard pickedCard = pickedCards[0];
                         if (isBench)
                         {
                             newPlayerState = gameState.PlayerState.AfterEvolvingBenchedPokemon(benchCard, pickedCard);
@@ -133,9 +196,10 @@ namespace PokemonTCG.Models
                         gamePageViewModel.UpdateGameState(gameState.WithPlayerState(newPlayerState));
                     }
 
-                    CardPickerPageArgs args = new(
+                    CardPickerPageArgs<PokemonCard> args = new(
                         evolutionCards,
-                        onCardSelected
+                        OnCardSelected,
+                        1
                         );
 
                     cardPickerPage.SetArgs(args);

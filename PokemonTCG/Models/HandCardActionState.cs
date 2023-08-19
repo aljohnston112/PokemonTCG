@@ -89,6 +89,9 @@ namespace PokemonTCG.Models
             {
                 if (!gameState.IsPreGame)
                 {
+                    // TODO only one Supporter and one Stadium per turn. 
+                    // TODO Supporters cannot be played on the first player's first turn.
+                    // TODO You can't play a stadium that is already active.
                     if (CanUse(gameState, handCard))
                     {
                         cardActions[USE_ACTION] = GetUseAction(gamePageViewModel, handCard);
@@ -97,7 +100,7 @@ namespace PokemonTCG.Models
             }
             else if (handCard.Supertype == CardSupertype.ENERGY)
             {
-                if (!gameState.IsPreGame && !gameState.PlayerState.HasAttachedEnergyThisTurn)
+                if (!gameState.IsPreGame && !gameState.PlayerState.OncePerTurnActionsState.HasAttachedEnergy)
                 {
                     cardActions[ATTACH_TO_POKEMON_ACTION] = GetAttachEnergyToPokemonAction(gamePageViewModel, handCard);
                 }
@@ -167,12 +170,13 @@ namespace PokemonTCG.Models
             return new TappedEventHandler(
                 (object sender, TappedRoutedEventArgs e) =>
                 {
-                    CardStatePickerPage cardPickerPage = new();
+                    CardPickerPage cardPickerPage = new();
                     Window window = null;
-                    void onCardSelected(PokemonCardState cardState)
+                    void OnCardSelected(IImmutableList<PokemonCardState> cardStates)
                     {
                         window.Close();
                         PlayerState newPlayerState;
+                        PokemonCardState cardState = cardStates[0];
                         if (gameState.PlayerState.Active == cardState)
                         {
                             newPlayerState = gameState.PlayerState.AfterAttachingEnergyToActiveFromHand(handCard.Id);
@@ -189,9 +193,10 @@ namespace PokemonTCG.Models
                         );
                     }
 
-                    CardStatePickerPageArgs args = new(
+                    CardPickerPageArgs<PokemonCardState> args = new(
                         gameState.PlayerState.Bench.Add(gameState.PlayerState.Active),
-                        onCardSelected
+                        OnCardSelected,
+                        1
                         );
 
                     cardPickerPage.SetArgs(args);

@@ -53,7 +53,7 @@ namespace PokemonTCG.Models
  *              i. Remove attack effects and status condition.
  *              ii. Evolve
  *      c. Attach one energy to any of your in play Pokemon.
- *      d. Play any number of trainers, but only one Supporter and one Stadium. 
+ *      d. Play any number of trainers, but only one Supporter and one Stadium per turn. 
  *              Supporters cannot be played on the first player's first turn.
  *              Stadium cards replace any stadium cards in play. You can't play a stadium that is already active.
  *      e. Retreat the active Pokemon once. Remove energy for retreat cost. Asleep or paralyzed Pokemon cannot retreat.

@@ -35,7 +35,6 @@
     <None Remove="ResourceDictionary1.xaml" />
     <None Remove="TitlePage.xaml" />
     <None Remove="View\CardPickerPage.xaml" />
-    <None Remove="View\CardStatePickerPage.xaml" />
   </ItemGroup>
   
   <ItemGroup>
@@ -124,11 +123,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Update="View\CardPickerPage.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="View\CardStatePickerPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
+
 using PokemonTCG.CardModels;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
@@ -24,8 +25,7 @@ namespace PokemonTCG.States
         internal readonly IImmutableList<PokemonCard> Prizes;
         internal readonly IImmutableList<PokemonCard> DiscardPile;
         internal readonly IImmutableList<PokemonCard> LostZone;
-
-        internal readonly bool HasAttachedEnergyThisTurn;
+        internal readonly OncePerTurnActionsState OncePerTurnActionsState;
 
         internal PlayerState(
             IImmutableList<PokemonCard> deck,
@@ -35,7 +35,7 @@ namespace PokemonTCG.States
             IImmutableList<PokemonCard> prizes,
             IImmutableList<PokemonCard> discardPile,
             IImmutableList<PokemonCard> lostZone,
-             bool hasAttachedEnergyThisTurn
+            OncePerTurnActionsState oncePerTurnActionsState
         )
         {
             Deck = deck;
@@ -45,7 +45,7 @@ namespace PokemonTCG.States
             Prizes = prizes;
             DiscardPile = discardPile;
             LostZone = lostZone;
-            HasAttachedEnergyThisTurn = hasAttachedEnergyThisTurn;
+            OncePerTurnActionsState = oncePerTurnActionsState;
         }
 
         internal PlayerState(
@@ -56,7 +56,7 @@ namespace PokemonTCG.States
             ImmutableList<PokemonCard> prizes,
             ImmutableList<PokemonCard> discardPile,
             ImmutableList<PokemonCard> lostZone,
-             bool hasAttachedEnergyThisTurn
+            OncePerTurnActionsState oncePerTurnActionsState
         ) : this(
             deck: deck,
             hand: hand,
@@ -65,7 +65,7 @@ namespace PokemonTCG.States
             prizes: prizes,
             discardPile: discardPile,
             lostZone: lostZone,
-            hasAttachedEnergyThisTurn: hasAttachedEnergyThisTurn
+            oncePerTurnActionsState: oncePerTurnActionsState
             )
         { }
 
@@ -98,7 +98,7 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                hasAttachedEnergyThisTurn: HasAttachedEnergyThisTurn
+                oncePerTurnActionsState: OncePerTurnActionsState
                 );
         }
 
@@ -113,7 +113,7 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                hasAttachedEnergyThisTurn: HasAttachedEnergyThisTurn
+                oncePerTurnActionsState: OncePerTurnActionsState
                 );
         }
 
@@ -147,7 +147,7 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                hasAttachedEnergyThisTurn: HasAttachedEnergyThisTurn
+                oncePerTurnActionsState: OncePerTurnActionsState
                 );
         }
 
@@ -170,13 +170,15 @@ namespace PokemonTCG.States
                 prizes: prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                hasAttachedEnergyThisTurn: HasAttachedEnergyThisTurn
+                oncePerTurnActionsState: OncePerTurnActionsState
                 );
         }
 
         internal PlayerState AfterEvolvingActivePokemon(PokemonCard evolutionCard)
         {
             // TODO Remove attack effects and status condition.
+            // TODO Turn ends if the evolution is a mega evolution or a primal reversion Pokemon.
+
             CardUtil.AssertCardEvolvesFrom(Active, evolutionCard);
             Debug.Assert(Hand.Contains(evolutionCard));
             return new PlayerState(
@@ -187,7 +189,7 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                hasAttachedEnergyThisTurn: HasAttachedEnergyThisTurn
+                oncePerTurnActionsState: OncePerTurnActionsState
                 );
         }
 
@@ -208,7 +210,7 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                hasAttachedEnergyThisTurn: HasAttachedEnergyThisTurn
+                oncePerTurnActionsState: OncePerTurnActionsState
                 );
         }
 
@@ -229,7 +231,7 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                hasAttachedEnergyThisTurn: true
+                oncePerTurnActionsState: OncePerTurnActionsState.AfterAttachingEnergy()
                 );
         }
 
@@ -258,7 +260,7 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                hasAttachedEnergyThisTurn: true
+                oncePerTurnActionsState: OncePerTurnActionsState.AfterAttachingEnergy()
                 );
         }
 
@@ -272,7 +274,7 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile.AddRange(Hand),
                 lostZone: LostZone,
-                hasAttachedEnergyThisTurn: HasAttachedEnergyThisTurn
+                oncePerTurnActionsState: OncePerTurnActionsState
                 );
         }
 
@@ -287,7 +289,23 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                hasAttachedEnergyThisTurn: HasAttachedEnergyThisTurn
+                oncePerTurnActionsState: OncePerTurnActionsState
+                );
+        }
+
+        internal PlayerState AfterRetreatingActivePokemon(PokemonCardState benched, IImmutableList<PokemonCard> energy)
+        {
+            Debug.Assert(Bench.Contains(benched));
+            Debug.Assert(energy.Count == Active.PokemonCard.ConvertedRetreatCost);
+            return new PlayerState(
+                deck: Deck,
+                hand: Hand,
+                active: benched,
+                bench: Bench.Remove(benched).Add(Active.AfterRemovingEnergy(energy)),
+                prizes: Prizes,
+                discardPile: DiscardPile,
+                lostZone: LostZone,
+                oncePerTurnActionsState: OncePerTurnActionsState
                 );
         }
 
@@ -303,6 +321,7 @@ namespace PokemonTCG.States
             }
             return pokemonCards.ToImmutableList();
         }
+
     }
 
 }

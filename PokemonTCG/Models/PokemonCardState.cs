@@ -1,7 +1,7 @@
 ﻿using PokemonTCG.CardModels;
 using PokemonTCG.Enums;
 using PokemonTCG.Utilities;
-
+using System;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
@@ -98,6 +98,29 @@ namespace PokemonTCG.Models
                 statuses: Statuses,
                 firstTurnInPlay: FirstTurnInPlay
                 );
+        }
+
+        internal PokemonCardState AfterRemovingEnergy(IImmutableList<PokemonCard> energy)
+        {
+            IImmutableList<PokemonCard> newEnergy = Energy.RemoveRange(energy);
+            return new PokemonCardState(
+                pokemonCard: PokemonCard,
+                energy: newEnergy,
+                evolvedFrom: EvolvedFrom,
+                mutuallyExclusiveStatus: MutuallyExclusiveStatus,
+                statuses: Statuses,
+                firstTurnInPlay: FirstTurnInPlay
+                );
+        }
+
+        internal bool CanRetreat()
+        {
+            bool canRetreat = true;
+            if(Energy.Count < PokemonCard.ConvertedRetreatCost)
+            {
+                canRetreat = false;
+            }
+            return canRetreat;
         }
 
     }
