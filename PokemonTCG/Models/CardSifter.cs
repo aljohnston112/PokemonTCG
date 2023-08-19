@@ -29,7 +29,8 @@ namespace PokemonTCG.Models
         /// Creates a Sifter with default values.
         /// No cards will be sifted.
         /// </summary>
-        internal CardSifter() {
+        internal CardSifter()
+        {
             TypesToInclude = ImmutableList.Create<PokemonType>();
         }
 
@@ -173,8 +174,8 @@ namespace PokemonTCG.Models
                 typesToInclude: TypesToInclude,
                 searchString: text,
                 includeOnlyThoseInDeck: IncludeOnlyThoseInDeck,
-                includePokemonCards: IncludePokemonCards, 
-                includeTrainerCards: IncludeTrainerCards, 
+                includePokemonCards: IncludePokemonCards,
+                includeTrainerCards: IncludeTrainerCards,
                 includeEnergyCards: IncludeEnergyCards
                 );
         }

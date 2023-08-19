@@ -3,7 +3,7 @@ using Microsoft.UI.Xaml.Input;
 
 using PokemonTCG.CardModels;
 using PokemonTCG.Enums;
-using PokemonTCG.States;
+using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using PokemonTCG.View;
 using PokemonTCG.ViewModel;
@@ -14,7 +14,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Reflection;
 
-namespace PokemonTCG.Models
+namespace PokemonTCG.States
 {
 
     /// <summary>
@@ -71,7 +71,7 @@ namespace PokemonTCG.Models
                             cardActions[MAKE_ACTIVE_ACTION] = GetMakeActiveAction(gamePageViewModel, handCard);
                         }
                         if (CardUtil.NumberOfBasicPokemon(hand) > 1 ||
-                            (CardUtil.NumberOfBasicPokemon(hand) > 0) && gameState.PlayerState.Active != null)
+                            CardUtil.NumberOfBasicPokemon(hand) > 0 && gameState.PlayerState.Active != null)
                         {
                             cardActions[PUT_ON_BENCH_ACTION] = GetPutOnBenchAction(gamePageViewModel, handCard);
                         }
@@ -92,7 +92,7 @@ namespace PokemonTCG.Models
                     // TODO only one Supporter and one Stadium per turn. 
                     // TODO Supporters cannot be played on the first player's first turn.
                     // TODO You can't play a stadium that is already active.
-                    if (CanUse(gameState, handCard))
+                    if (CanUseCard(gameState, handCard))
                     {
                         cardActions[USE_ACTION] = GetUseAction(gamePageViewModel, handCard);
                     }
@@ -115,7 +115,7 @@ namespace PokemonTCG.Models
         {
             GameState gameState = gamePageViewModel.GameState;
             return new TappedEventHandler(
-                (object sender, TappedRoutedEventArgs e) =>
+                (sender, e) =>
                 {
                     gamePageViewModel.UpdateGameState(
                         gameState.WithPlayerState(
@@ -133,7 +133,7 @@ namespace PokemonTCG.Models
         {
             GameState gameState = gamePageViewModel.GameState;
             return new TappedEventHandler(
-                (object sender, TappedRoutedEventArgs e) =>
+                (sender, e) =>
                 {
                     gamePageViewModel.UpdateGameState(
                         gameState.WithPlayerState(
@@ -151,7 +151,7 @@ namespace PokemonTCG.Models
         {
             GameState gameState = gamePageViewModel.GameState;
             return new TappedEventHandler(
-                (object sender, TappedRoutedEventArgs e) =>
+                (sender, e) =>
                 {
                     MethodInfo method = GetUseFunction(handCard, handCard.Name);
                     gamePageViewModel.UpdateGameState(
@@ -168,7 +168,7 @@ namespace PokemonTCG.Models
         {
             GameState gameState = gamePageViewModel.GameState;
             return new TappedEventHandler(
-                (object sender, TappedRoutedEventArgs e) =>
+                (sender, e) =>
                 {
                     CardPickerPage cardPickerPage = new();
                     Window window = null;
@@ -207,7 +207,6 @@ namespace PokemonTCG.Models
 
         private static MethodInfo GetUseFunction(PokemonCard card, string toUse)
         {
-
             string namespaceName = "PokemonTCG.Generated";
             string className = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id).Replace(" ", "_").Replace("-", "_");
             string methodName = toUse.Replace(" ", "_").Replace("-", "_") + "_Use";
@@ -217,7 +216,7 @@ namespace PokemonTCG.Models
             return methodInfo;
         }
 
-        private static bool CanUse(GameState gameState, PokemonCard card)
+        private static bool CanUseCard(GameState gameState, PokemonCard card)
         {
             string namespaceName = "PokemonTCG.Generated";
             string className = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id.Replace(" ", "_").Replace("-", "_"));

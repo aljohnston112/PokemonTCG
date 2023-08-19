@@ -1,11 +1,12 @@
 
 using System;
 using PokemonTCG.CardModels;
+using PokemonTCG.Models;
 using PokemonTCG.States;
 
-namespace PokemonTCG.Generated
+namespace PokemonTCG.Generated 
 {
-
+    
     internal class Base1_2
     {
 
@@ -21,12 +22,12 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static bool Rain_Dance_CanUse(GameState gameState)
+        internal static bool Rain_Dance_CanUse(GameState gameState, PokemonCardState userCardState)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState Rain_Dance_Use(GameState gameState)
+        internal static GameState Rain_Dance_Use(GameState gameState, PokemonCardState userCardState)
         {
             throw new NotImplementedException();
         }

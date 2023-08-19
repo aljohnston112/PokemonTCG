@@ -105,7 +105,8 @@ namespace PokemonTCG.Models
                     hasUsedSupporter: false,
                     hasUsedStadium: false,
                     hasRetreated: false
-                    )
+                    ),
+                hasUsedVStarAbility: false
                 );
         }
 

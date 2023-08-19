@@ -1,16 +1,17 @@
 
 using System;
+using PokemonTCG.CardModels;
 using PokemonTCG.States;
 
-namespace PokemonTCG.Generated
+namespace PokemonTCG.Generated 
 {
-
+    
     internal class Base1_92
     {
 
         internal static bool Energy_Removal_CanUse(GameState gameState)
         {
-            return true;
+            return gameState.CurrentOpponentState().NumberOfEnergyOnAllPokemon() > 0;
         }
 
         internal static GameState Energy_Removal_Use(GameState gameState)

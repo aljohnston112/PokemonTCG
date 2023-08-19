@@ -3,9 +3,9 @@ using System;
 using PokemonTCG.CardModels;
 using PokemonTCG.States;
 
-namespace PokemonTCG.Generated
+namespace PokemonTCG.Generated 
 {
-
+    
     internal class Base1_56
     {
 
@@ -23,7 +23,6 @@ namespace PokemonTCG.Generated
         internal static bool Harden_CanUse(GameState gameState, Attack attack)
         {
             bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
-            throw new NotImplementedException();
             return canUse;
         }
 

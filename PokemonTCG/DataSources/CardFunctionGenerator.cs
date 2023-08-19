@@ -88,7 +88,9 @@ namespace PokemonTCG.DataSources
         {
             string template = @"
 using System;
+using PokemonTCG.CardModels;
 using PokemonTCG.Models;
+using PokemonTCG.States;
 
 namespace PokemonTCG.Generated 
 {
@@ -119,12 +121,12 @@ namespace PokemonTCG.Generated
             {
                 string newAbilityName = abilityName.Replace("-", "_").Replace(" ", "_");
                 template += @"
-        internal static bool " + newAbilityName + @"_CanUse(GameState gameState)
+        internal static bool " + newAbilityName + @"_CanUse(GameState gameState, PokemonCardState userCardState)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState " + newAbilityName + @"_Use(GameState gameState)
+        internal static GameState " + newAbilityName + @"_Use(GameState gameState, PokemonCardState userCardState)
         {
             throw new NotImplementedException();
         }

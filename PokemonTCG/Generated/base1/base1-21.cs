@@ -1,11 +1,12 @@
 
 using System;
 using PokemonTCG.CardModels;
+using PokemonTCG.Models;
 using PokemonTCG.States;
 
-namespace PokemonTCG.Generated
+namespace PokemonTCG.Generated 
 {
-
+    
     internal class Base1_21
     {
 
@@ -21,12 +22,12 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static bool Buzzap_CanUse(GameState gameState)
+        internal static bool Buzzap_CanUse(GameState gameState, PokemonCardState userCardState)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState Buzzap_Use(GameState gameState)
+        internal static GameState Buzzap_Use(GameState gameState, PokemonCardState userCardState)
         {
             throw new NotImplementedException();
         }

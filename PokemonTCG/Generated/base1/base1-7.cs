@@ -1,17 +1,11 @@
 
 using System;
-using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
-using System.Linq;
 using PokemonTCG.CardModels;
-using PokemonTCG.Enums;
 using PokemonTCG.States;
-using PokemonTCG.Utilities;
 
-namespace PokemonTCG.Generated
+namespace PokemonTCG.Generated 
 {
-
+    
     internal class Base1_7
     {
 

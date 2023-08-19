@@ -26,6 +26,7 @@ namespace PokemonTCG.States
         internal readonly IImmutableList<PokemonCard> DiscardPile;
         internal readonly IImmutableList<PokemonCard> LostZone;
         internal readonly OncePerTurnActionsState OncePerTurnActionsState;
+        internal readonly bool HasUsedVStarAbility;
 
         internal PlayerState(
             IImmutableList<PokemonCard> deck,
@@ -35,7 +36,8 @@ namespace PokemonTCG.States
             IImmutableList<PokemonCard> prizes,
             IImmutableList<PokemonCard> discardPile,
             IImmutableList<PokemonCard> lostZone,
-            OncePerTurnActionsState oncePerTurnActionsState
+            OncePerTurnActionsState oncePerTurnActionsState,
+            bool hasUsedVStarAbility
         )
         {
             Deck = deck;
@@ -46,6 +48,7 @@ namespace PokemonTCG.States
             DiscardPile = discardPile;
             LostZone = lostZone;
             OncePerTurnActionsState = oncePerTurnActionsState;
+            HasUsedVStarAbility = hasUsedVStarAbility;
         }
 
         internal PlayerState(
@@ -56,7 +59,8 @@ namespace PokemonTCG.States
             ImmutableList<PokemonCard> prizes,
             ImmutableList<PokemonCard> discardPile,
             ImmutableList<PokemonCard> lostZone,
-            OncePerTurnActionsState oncePerTurnActionsState
+            OncePerTurnActionsState oncePerTurnActionsState,
+            bool hasUsedVStarAbility
         ) : this(
             deck: deck,
             hand: hand,
@@ -65,7 +69,8 @@ namespace PokemonTCG.States
             prizes: prizes,
             discardPile: discardPile,
             lostZone: lostZone,
-            oncePerTurnActionsState: oncePerTurnActionsState
+            oncePerTurnActionsState: oncePerTurnActionsState,
+            hasUsedVStarAbility: hasUsedVStarAbility
             )
         { }
 
@@ -98,7 +103,8 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                oncePerTurnActionsState: OncePerTurnActionsState
+                oncePerTurnActionsState: OncePerTurnActionsState,
+                hasUsedVStarAbility: HasUsedVStarAbility
                 );
         }
 
@@ -113,7 +119,8 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                oncePerTurnActionsState: OncePerTurnActionsState
+                oncePerTurnActionsState: OncePerTurnActionsState,
+                hasUsedVStarAbility: HasUsedVStarAbility
                 );
         }
 
@@ -147,7 +154,8 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                oncePerTurnActionsState: OncePerTurnActionsState
+                oncePerTurnActionsState: OncePerTurnActionsState,
+                hasUsedVStarAbility: HasUsedVStarAbility
                 );
         }
 
@@ -170,7 +178,8 @@ namespace PokemonTCG.States
                 prizes: prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                oncePerTurnActionsState: OncePerTurnActionsState
+                oncePerTurnActionsState: OncePerTurnActionsState,
+                hasUsedVStarAbility: HasUsedVStarAbility
                 );
         }
 
@@ -189,7 +198,8 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                oncePerTurnActionsState: OncePerTurnActionsState
+                oncePerTurnActionsState: OncePerTurnActionsState,
+                hasUsedVStarAbility: HasUsedVStarAbility
                 );
         }
 
@@ -210,7 +220,8 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                oncePerTurnActionsState: OncePerTurnActionsState
+                oncePerTurnActionsState: OncePerTurnActionsState,
+                hasUsedVStarAbility: HasUsedVStarAbility
                 );
         }
 
@@ -231,7 +242,8 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                oncePerTurnActionsState: OncePerTurnActionsState.AfterAttachingEnergy()
+                oncePerTurnActionsState: OncePerTurnActionsState.AfterAttachingEnergy(),
+                hasUsedVStarAbility: HasUsedVStarAbility
                 );
         }
 
@@ -260,7 +272,8 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                oncePerTurnActionsState: OncePerTurnActionsState.AfterAttachingEnergy()
+                oncePerTurnActionsState: OncePerTurnActionsState.AfterAttachingEnergy(),
+                hasUsedVStarAbility: HasUsedVStarAbility
                 );
         }
 
@@ -274,7 +287,8 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile.AddRange(Hand),
                 lostZone: LostZone,
-                oncePerTurnActionsState: OncePerTurnActionsState
+                oncePerTurnActionsState: OncePerTurnActionsState,
+                hasUsedVStarAbility: HasUsedVStarAbility
                 );
         }
 
@@ -289,7 +303,8 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                oncePerTurnActionsState: OncePerTurnActionsState
+                oncePerTurnActionsState: OncePerTurnActionsState,
+                hasUsedVStarAbility: HasUsedVStarAbility
                 );
         }
 
@@ -305,7 +320,8 @@ namespace PokemonTCG.States
                 prizes: Prizes,
                 discardPile: DiscardPile,
                 lostZone: LostZone,
-                oncePerTurnActionsState: OncePerTurnActionsState
+                oncePerTurnActionsState: OncePerTurnActionsState,
+                hasUsedVStarAbility: HasUsedVStarAbility
                 );
         }
 
@@ -322,6 +338,16 @@ namespace PokemonTCG.States
             return pokemonCards.ToImmutableList();
         }
 
+        internal int NumberOfEnergyOnAllPokemon()
+        {
+            int numberOfEnergy = 0;
+            numberOfEnergy += Active.Energy.Count;
+            foreach(PokemonCardState benched in Bench)
+            {
+                numberOfEnergy += benched.Energy.Count;
+            }
+            return numberOfEnergy;
+        }
     }
 
 }

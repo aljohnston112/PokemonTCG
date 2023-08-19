@@ -1,11 +1,12 @@
 
 using System;
 using PokemonTCG.CardModels;
+using PokemonTCG.Models;
 using PokemonTCG.States;
 
-namespace PokemonTCG.Generated
+namespace PokemonTCG.Generated 
 {
-
+    
     internal class Base1_1
     {
 
@@ -21,12 +22,12 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static bool Damage_Swap_CanUse(GameState gameState)
+        internal static bool Damage_Swap_CanUse(GameState gameState, PokemonCardState userCardState)
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState Damage_Swap_Use(GameState gameState)
+        internal static GameState Damage_Swap_Use(GameState gameState, PokemonCardState userCardState)
         {
             throw new NotImplementedException();
         }

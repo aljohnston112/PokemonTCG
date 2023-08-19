@@ -3,16 +3,15 @@ using System;
 using PokemonTCG.CardModels;
 using PokemonTCG.States;
 
-namespace PokemonTCG.Generated
+namespace PokemonTCG.Generated 
 {
-
+    
     internal class Base1_27
     {
 
         internal static bool Leek_Slap_CanUse(GameState gameState, Attack attack)
         {
             bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
-            throw new NotImplementedException();
             return canUse;
         }
 

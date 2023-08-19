@@ -112,6 +112,6 @@ namespace PokemonTCG.Models
  *      V-UNION cards are not basic, stage 1, stage 2, or evolution Pokemon
  *      Individual V-UNION cards do not any attributes other than types, catergory, and name.
  *      V-UNION cards count as Pokemon V.
- *      Prism cards go to the loast zone instead of the dicard pile.
+ *      Prism cards go to the lost zone instead of the dicard pile.
  *      Restored Pokemon are not basic Pokemon, but are considered unevolved.
  */

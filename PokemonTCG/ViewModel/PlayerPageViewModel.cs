@@ -1,5 +1,4 @@
-﻿using PokemonTCG.Models;
-using PokemonTCG.States;
+﻿using PokemonTCG.States;
 using PokemonTCG.Utilities;
 using PokemonTCG.ViewModel;
 

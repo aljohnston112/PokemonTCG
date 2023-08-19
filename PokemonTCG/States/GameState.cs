@@ -1,6 +1,7 @@
 ﻿using PokemonTCG.CardModels;
 using PokemonTCG.Models;
 using PokemonTCG.Utilities;
+using System;
 
 namespace PokemonTCG.States
 {
@@ -86,29 +87,45 @@ namespace PokemonTCG.States
             return PreGameState.SetUpOpponent(this);
         }
 
-        internal bool CurrentPlayersActiveHasEnoughEnergyForAttack(Attack attack)
-        {
-            bool canUse = true;
-            if (PlayersTurn)
-            {
-                if (!AttackUtil.IsEnoughEnergyForAttack(PlayerState.Active.Energy, attack))
-                {
-                    canUse = false;
-                }
-                else if (!AttackUtil.IsEnoughEnergyForAttack(OpponentState.Active.Energy, attack))
-                {
-                    canUse = false;
-                }
-            }
-            return canUse;
-        }
-
         internal bool CurrentPlayersActiveCanUseAttack(Attack attack)
         {
-            bool canUse = CurrentPlayersActiveHasEnoughEnergyForAttack(attack);
+            bool canUse = AttackUtil.IsEnoughEnergyForAttack(CurrentPlayerState().Active.Energy, attack);
             return canUse;
         }
 
+        internal int NumberOfEnergyOnAllPokemonOfCurrentPlayer()
+        {
+            int numberOfEnergy = CurrentPlayerState().NumberOfEnergyOnAllPokemon();
+            return numberOfEnergy;
+        }
+
+        internal PlayerState CurrentPlayerState()
+        {
+            PlayerState playerState;
+            if (PlayersTurn)
+            {
+                playerState = PlayerState;
+            }
+            else
+            {
+                playerState = OpponentState;
+            }
+            return playerState;
+        }
+
+        internal PlayerState CurrentOpponentState()
+        {
+            PlayerState playerState;
+            if (PlayersTurn)
+            {
+                playerState = OpponentState;
+            }
+            else
+            {
+                playerState = PlayerState;
+            }
+            return playerState;
+        }
     }
 
 }

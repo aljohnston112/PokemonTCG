@@ -6,29 +6,29 @@ using PokemonTCG.States;
 namespace PokemonTCG.Generated 
 {
     
-    internal class Base1_47
+    internal class Base1_9
     {
 
-        internal static bool Dig_CanUse(GameState gameState, Attack attack)
+        internal static bool Thunder_Wave_CanUse(GameState gameState, Attack attack)
         {
             bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
             throw new NotImplementedException();
             return canUse;
         }
 
-        internal static GameState Dig_Use(GameState gameState, Attack attack)
+        internal static GameState Thunder_Wave_Use(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }
 
-        internal static bool Mud_Slap_CanUse(GameState gameState, Attack attack)
+        internal static bool Selfdestruct_CanUse(GameState gameState, Attack attack)
         {
             bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
             throw new NotImplementedException();
             return canUse;
         }
 
-        internal static GameState Mud_Slap_Use(GameState gameState, Attack attack)
+        internal static GameState Selfdestruct_Use(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }

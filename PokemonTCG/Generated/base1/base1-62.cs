@@ -3,9 +3,9 @@ using System;
 using PokemonTCG.CardModels;
 using PokemonTCG.States;
 
-namespace PokemonTCG.Generated
+namespace PokemonTCG.Generated 
 {
-
+    
     internal class Base1_62
     {
 

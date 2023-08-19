@@ -2,21 +2,24 @@
 using Microsoft.UI.Xaml.Input;
 
 using PokemonTCG.CardModels;
-using PokemonTCG.States;
+using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using PokemonTCG.View;
 using PokemonTCG.ViewModel;
-
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Globalization;
+using System.Reflection;
 
-namespace PokemonTCG.Models
+namespace PokemonTCG.States
 {
     internal class FieldCardActionState
     {
 
         internal const string EVOLVE_ACTION = "Evolve";
         internal const string RETREAT_ACTION = "Retreat";
+        internal const string USE_ACTION = "Use ";
 
         internal readonly ImmutableList<CardActionState<PokemonCardState>> BenchCardActions;
         internal readonly ImmutableList<CardActionState<PokemonCardState>> ActiveCardActions;
@@ -76,6 +79,20 @@ namespace PokemonTCG.Models
                         );
                 }
             }
+
+            foreach (Ability ability in benchCard.PokemonCard.Abilities)
+            {
+                if (CanUseAbility(gameState, benchCard, ability.Name))
+                {
+                    cardActions[$"{USE_ACTION}{ability.Name}"] = GetAbilityAction(
+                        gamePageViewModel,
+                        gameState,
+                        benchCard,
+                        ability
+                        );
+                }
+            }
+
             return new CardActionState<PokemonCardState>(benchCard, cardActions.ToImmutableDictionary());
         }
 
@@ -103,27 +120,95 @@ namespace PokemonTCG.Models
                             );
                     }
                 }
-                if (activeCard.CanRetreat() && gameState.PlayerState.Bench.Count > 0)
+                if (!gameState.IsPreGame )
                 {
-                    cardActionsForActive[RETREAT_ACTION] = GetRetreatAction(
-                        gamePageViewModel,
-                        gameState,
-                        activeCard
-                        );
+                    if (activeCard.CanRetreat() && gameState.PlayerState.Bench.Count > 0)
+                    {
+                        cardActionsForActive[RETREAT_ACTION] = GetRetreatAction(
+                            gamePageViewModel,
+                            gameState,
+                            activeCard
+                            );
+                    }
+                    foreach(Ability ability in activeCard.PokemonCard.Abilities)
+                    {
+                        if (CanUseAbility(gameState, activeCard, ability.Name))
+                        {
+                            cardActionsForActive[$"{USE_ACTION}{ability.Name}"] = GetAbilityAction(
+                                gamePageViewModel,
+                                gameState,
+                                activeCard,
+                                ability
+                                );
+                        }
+                    }
+                    if (!activeCard.FirstTurnInPlay)
+                    {
+                        foreach (Attack attack in activeCard.PokemonCard.Attacks)
+                        {
+                            if (CanUseAttack(gameState, activeCard, attack))
+                            {
+                                cardActionsForActive[$"{USE_ACTION}{attack.Name}"] = GetAttackAction(
+                                    gamePageViewModel,
+                                    gameState,
+                                    activeCard,
+                                    attack
+                                    );
+                            }
+                        }
+                    }
                 }
+                
+
             }
 
             return new CardActionState<PokemonCardState>(activeCard, cardActionsForActive.ToImmutableDictionary());
         }
 
-        private static TappedEventHandler GetRetreatAction(
+        private static TappedEventHandler GetAttackAction(
             GamePageViewModel gamePageViewModel, 
             GameState gameState, 
+            PokemonCardState activeCard, 
+            Attack attack
+            )
+        {
+            return new TappedEventHandler(
+                (sender, e) =>
+                {
+                    MethodInfo method = GetUseFunction(activeCard.PokemonCard, attack.Name);
+                    gamePageViewModel.UpdateGameState(
+                        (GameState)method.Invoke(null, new object[] { gameState, attack })
+                    );
+                }
+                );
+        }
+
+        private static TappedEventHandler GetAbilityAction(
+            GamePageViewModel gamePageViewModel,
+            GameState gameState,
+            PokemonCardState activeCard,
+            Ability ability
+            )
+        {
+            return new TappedEventHandler(
+                (sender, e) =>
+                {
+                    MethodInfo method = GetUseFunction(activeCard.PokemonCard, ability.Name);
+                    gamePageViewModel.UpdateGameState(
+                        (GameState)method.Invoke(null, new object[] { gameState, activeCard })
+                    );
+                }
+                );
+        }
+
+        private static TappedEventHandler GetRetreatAction(
+            GamePageViewModel gamePageViewModel,
+            GameState gameState,
             PokemonCardState activeCard
             )
         {
             return new TappedEventHandler(
-                (object sender, TappedRoutedEventArgs e) =>
+                (sender, e) =>
                 {
                     CardPickerPage energyCardPickerPage = new();
                     Window energyPickerWindow = null;
@@ -138,7 +223,7 @@ namespace PokemonTCG.Models
                         {
                             PlayerState newPlayerState;
                             newPlayerState = gameState.PlayerState.AfterRetreatingActivePokemon(
-                                pickedBenchCards[0], 
+                                pickedBenchCards[0],
                                 pickedEnergy
                                 );
                             benchPickerWindow.Close();
@@ -175,7 +260,7 @@ namespace PokemonTCG.Models
             )
         {
             return new TappedEventHandler(
-                (object sender, TappedRoutedEventArgs e) =>
+                (sender, e) =>
                 {
                     CardPickerPage cardPickerPage = new();
                     Window window = null;
@@ -206,6 +291,48 @@ namespace PokemonTCG.Models
                     window = WindowUtil.OpenPageInNewWindow(cardPickerPage);
                 }
                 );
+        }
+
+        private static MethodInfo GetUseFunction(PokemonCard card, string toUse)
+        {
+            string namespaceName = "PokemonTCG.Generated";
+            string className = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id).Replace(" ", "_").Replace("-", "_");
+            string methodName = toUse.Replace(" ", "_").Replace("-", "_") + "_Use";
+
+            Type type = Type.GetType($"{namespaceName}.{className}");
+            MethodInfo methodInfo = type?.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
+            return methodInfo;
+        }
+
+        private static bool CanUseAbility(
+            GameState gameState, 
+            PokemonCardState card, 
+            string abilityName
+            )
+        {
+            string namespaceName = "PokemonTCG.Generated";
+            string className = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.PokemonCard.Id.Replace(" ", "_").Replace("-", "_"));
+            string methodName = abilityName.Replace(" ", "_").Replace("-", "_") + "_CanUse";
+
+            Type type = Type.GetType($"{namespaceName}.{className}");
+            MethodInfo methodInfo = type?.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
+            return (bool)methodInfo.Invoke(null, new object[] { gameState, card });
+        }
+
+
+        private static bool CanUseAttack(
+            GameState gameState,
+            PokemonCardState card,
+            Attack attack
+            )
+        {
+            string namespaceName = "PokemonTCG.Generated";
+            string className = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.PokemonCard.Id.Replace(" ", "_").Replace("-", "_"));
+            string methodName = attack.Name.Replace(" ", "_").Replace("-", "_") + "_CanUse";
+
+            Type type = Type.GetType($"{namespaceName}.{className}");
+            MethodInfo methodInfo = type?.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
+            return (bool)methodInfo.Invoke(null, new object[] { gameState, attack });
         }
 
     }
