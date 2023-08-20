@@ -1,6 +1,7 @@
 
 using System;
 using PokemonTCG.CardModels;
+using PokemonTCG.Models;
 using PokemonTCG.States;
 
 namespace PokemonTCG.Generated 
@@ -16,7 +17,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState Whirlwind_Use(GameState gameState, Attack attack)
+        internal static bool Whirlwind_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState Whirlwind_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Whirlwind_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }
@@ -28,7 +41,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState Mirror_Move_Use(GameState gameState, Attack attack)
+        internal static bool Mirror_Move_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState Mirror_Move_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Mirror_Move_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }

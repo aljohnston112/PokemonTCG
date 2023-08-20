@@ -1,6 +1,7 @@
 
 using System;
 using PokemonTCG.CardModels;
+using PokemonTCG.Models;
 using PokemonTCG.States;
 
 namespace PokemonTCG.Generated 
@@ -14,7 +15,17 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static GameState Clefairy_Doll_Use(GameState gameState)
+        internal static bool Clefairy_Doll_ShouldUse(GameState gameState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Clefairy_Doll_PlayerUse(GameState gameState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Clefairy_Doll_OpponentUse(GameState gameState)
         {
             throw new NotImplementedException();
         }

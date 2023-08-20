@@ -1,6 +1,7 @@
 
 using System;
 using PokemonTCG.CardModels;
+using PokemonTCG.Models;
 using PokemonTCG.States;
 
 namespace PokemonTCG.Generated 
@@ -15,7 +16,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState Jab_Use(GameState gameState, Attack attack)
+        internal static bool Jab_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState Jab_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Jab_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }
@@ -26,7 +39,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState Special_Punch_Use(GameState gameState, Attack attack)
+        internal static bool Special_Punch_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState Special_Punch_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Special_Punch_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }

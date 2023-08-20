@@ -1,6 +1,7 @@
 
 using System;
 using PokemonTCG.CardModels;
+using PokemonTCG.Models;
 using PokemonTCG.States;
 
 namespace PokemonTCG.Generated 
@@ -15,7 +16,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState Karate_Chop_Use(GameState gameState, Attack attack)
+        internal static bool Karate_Chop_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState Karate_Chop_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Karate_Chop_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }
@@ -26,7 +39,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState Submission_Use(GameState gameState, Attack attack)
+        internal static bool Submission_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState Submission_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Submission_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }

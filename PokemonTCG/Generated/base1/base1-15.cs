@@ -17,7 +17,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState Solarbeam_Use(GameState gameState, Attack attack)
+        internal static bool Solarbeam_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState Solarbeam_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Solarbeam_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }
@@ -27,7 +39,17 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static GameState Energy_Trans_Use(GameState gameState, PokemonCardState userCardState)
+        internal static bool Energy_Trans_ShouldUse(GameState gameState, PokemonCardState userCardState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Energy_Trans_PlayerUse(GameState gameState, PokemonCardState userCardState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Energy_Trans_OpponentUse(GameState gameState, PokemonCardState userCardState)
         {
             throw new NotImplementedException();
         }

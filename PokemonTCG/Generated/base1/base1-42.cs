@@ -1,6 +1,7 @@
 
 using System;
 using PokemonTCG.CardModels;
+using PokemonTCG.Models;
 using PokemonTCG.States;
 
 namespace PokemonTCG.Generated 
@@ -15,7 +16,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState Withdraw_Use(GameState gameState, Attack attack)
+        internal static bool Withdraw_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState Withdraw_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Withdraw_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }
@@ -26,7 +39,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState Bite_Use(GameState gameState, Attack attack)
+        internal static bool Bite_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState Bite_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Bite_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }

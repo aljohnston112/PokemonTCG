@@ -17,7 +17,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState Hydro_Pump_Use(GameState gameState, Attack attack)
+        internal static bool Hydro_Pump_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState Hydro_Pump_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Hydro_Pump_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }
@@ -27,7 +39,17 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static GameState Rain_Dance_Use(GameState gameState, PokemonCardState userCardState)
+        internal static bool Rain_Dance_ShouldUse(GameState gameState, PokemonCardState userCardState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Rain_Dance_PlayerUse(GameState gameState, PokemonCardState userCardState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Rain_Dance_OpponentUse(GameState gameState, PokemonCardState userCardState)
         {
             throw new NotImplementedException();
         }

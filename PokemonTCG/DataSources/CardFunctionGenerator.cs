@@ -110,7 +110,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState " + attackName + @"_Use(GameState gameState, Attack attack)
+        internal static bool " + attackName + @"_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState " + attackName + @"_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState " + attackName + @"_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }
@@ -126,7 +138,17 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static GameState " + newAbilityName + @"_Use(GameState gameState, PokemonCardState userCardState)
+        internal static bool " + newAbilityName + @"_ShouldUse(GameState gameState, PokemonCardState userCardState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState " + newAbilityName + @"_PlayerUse(GameState gameState, PokemonCardState userCardState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState " + newAbilityName + @"_OpponentUse(GameState gameState, PokemonCardState userCardState)
         {
             throw new NotImplementedException();
         }
@@ -141,7 +163,17 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static GameState " + trainerName + @"_Use(GameState gameState)
+        internal static bool " + trainerName + @"_ShouldUse(GameState gameState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState " + trainerName + @"_PlayerUse(GameState gameState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState " + trainerName + @"_OpponentUse(GameState gameState)
         {
             throw new NotImplementedException();
         }

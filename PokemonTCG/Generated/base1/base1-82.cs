@@ -1,6 +1,7 @@
 
 using System;
 using PokemonTCG.CardModels;
+using PokemonTCG.Models;
 using PokemonTCG.States;
 
 namespace PokemonTCG.Generated 
@@ -14,7 +15,17 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static GameState Full_Heal_Use(GameState gameState)
+        internal static bool Full_Heal_ShouldUse(GameState gameState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Full_Heal_PlayerUse(GameState gameState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Full_Heal_OpponentUse(GameState gameState)
         {
             throw new NotImplementedException();
         }

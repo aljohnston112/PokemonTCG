@@ -1,4 +1,5 @@
 ﻿using PokemonTCG.States;
+using System;
 
 namespace PokemonTCG.Models
 {
@@ -22,7 +23,16 @@ namespace PokemonTCG.Models
         {
             PlayerState opponentState = gameState.OpponentState;
             opponentState = opponentState.AfterDrawingCards(1);
+            if(opponentState.Bench.Count < 1)
+            {
+                opponentState = MoveBestCardToBench(opponentState);
+            }
             return gameState.WithOpponentState(opponentState);
+        }
+
+        private static PlayerState MoveBestCardToBench(PlayerState opponentState)
+        {
+            throw new NotImplementedException();
         }
 
         private static GameState PlayersNextTurn(GameState gameState)

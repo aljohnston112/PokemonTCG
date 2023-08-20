@@ -1,6 +1,7 @@
 
 using System;
 using PokemonTCG.CardModels;
+using PokemonTCG.Models;
 using PokemonTCG.States;
 
 namespace PokemonTCG.Generated 
@@ -14,7 +15,17 @@ namespace PokemonTCG.Generated
             return gameState.CurrentOpponentState().Bench.Count > 0;
         }
 
-        internal static GameState Gust_of_Wind_Use(GameState gameState)
+        internal static bool Gust_of_Wind_ShouldUse(GameState gameState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Gust_of_Wind_PlayerUse(GameState gameState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Gust_of_Wind_OpponentUse(GameState gameState)
         {
             throw new NotImplementedException();
         }

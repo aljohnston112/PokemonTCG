@@ -17,7 +17,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState Confuse_Ray_Use(GameState gameState, Attack attack)
+        internal static bool Confuse_Ray_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState Confuse_Ray_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Confuse_Ray_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }
@@ -27,7 +39,17 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static GameState Damage_Swap_Use(GameState gameState, PokemonCardState userCardState)
+        internal static bool Damage_Swap_ShouldUse(GameState gameState, PokemonCardState userCardState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Damage_Swap_PlayerUse(GameState gameState, PokemonCardState userCardState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Damage_Swap_OpponentUse(GameState gameState, PokemonCardState userCardState)
         {
             throw new NotImplementedException();
         }

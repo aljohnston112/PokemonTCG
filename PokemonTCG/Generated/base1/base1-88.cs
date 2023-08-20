@@ -1,6 +1,7 @@
 
 using System;
 using PokemonTCG.CardModels;
+using PokemonTCG.Models;
 using PokemonTCG.States;
 
 namespace PokemonTCG.Generated 
@@ -14,7 +15,17 @@ namespace PokemonTCG.Generated
             return true;
         }
 
-        internal static GameState Professor_Oak_Use(GameState gameState)
+        internal static bool Professor_Oak_ShouldUse(GameState gameState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Professor_Oak_PlayerUse(GameState gameState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Professor_Oak_OpponentUse(GameState gameState)
         {
             throw new NotImplementedException();
         }

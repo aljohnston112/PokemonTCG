@@ -17,7 +17,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState Fire_Spin_Use(GameState gameState, Attack attack)
+        internal static bool Fire_Spin_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState Fire_Spin_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Fire_Spin_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }
@@ -27,7 +39,17 @@ namespace PokemonTCG.Generated
             throw new NotImplementedException();
         }
 
-        internal static GameState Energy_Burn_Use(GameState gameState, PokemonCardState userCardState)
+        internal static bool Energy_Burn_ShouldUse(GameState gameState, PokemonCardState userCardState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Energy_Burn_PlayerUse(GameState gameState, PokemonCardState userCardState)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Energy_Burn_OpponentUse(GameState gameState, PokemonCardState userCardState)
         {
             throw new NotImplementedException();
         }

@@ -1,6 +1,7 @@
 
 using System;
 using PokemonTCG.CardModels;
+using PokemonTCG.Models;
 using PokemonTCG.States;
 
 namespace PokemonTCG.Generated 
@@ -15,7 +16,19 @@ namespace PokemonTCG.Generated
             return canUse;
         }
 
-        internal static GameState Slap_Use(GameState gameState, Attack attack)
+        internal static bool Slap_ShouldUse(GameState gameState, Attack attack)
+        {
+            bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
+            throw new NotImplementedException();
+            return shouldUse;
+        }
+
+        internal static GameState Slap_PlayerUse(GameState gameState, Attack attack)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal static GameState Slap_OpponentUse(GameState gameState, Attack attack)
         {
             throw new NotImplementedException();
         }
