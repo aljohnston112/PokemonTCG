@@ -13,8 +13,8 @@ namespace PokemonTCG.Generated
         internal static bool Super_Energy_Removal_CanUse(GameState gameState)
         {
             bool canUse = false;
-            if (gameState.NumberOfEnergyOnAllPokemonOfCurrentPlayer() > 0 && 
-                gameState.CurrentOpponentState().NumberOfEnergyOnAllPokemon() > 0)
+            if (gameState.CurrentPlayerState().NumberOfEnergyOnAllPokemon() > 0 && 
+                gameState.CurrentNonPlayerState().NumberOfEnergyOnAllPokemon() > 0)
             {
                 canUse = true;
             }

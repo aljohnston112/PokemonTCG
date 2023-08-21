@@ -1,5 +1,13 @@
-﻿using PokemonTCG.States;
+﻿using PokemonTCG.CardModels;
+using PokemonTCG.Enums;
+using PokemonTCG.States;
+using PokemonTCG.Utilities;
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
+using Windows.ApplicationModel.Store.Preview.InstallControl;
 
 namespace PokemonTCG.Models
 {
@@ -9,9 +17,11 @@ namespace PokemonTCG.Models
         internal static GameState NextTurn(GameState gameState)
         {
             GameState newGameState;
-            if (gameState.PlayersTurn) {
+            if (gameState.PlayersTurn)
+            {
                 newGameState = PlayersNextTurn(gameState);
-            } else
+            }
+            else
             {
                 newGameState = OpponentsNextTurn(gameState);
             }
@@ -23,11 +33,79 @@ namespace PokemonTCG.Models
         {
             PlayerState opponentState = gameState.OpponentState;
             opponentState = opponentState.AfterDrawingCards(1);
-            if(opponentState.Bench.Count < 1)
+            opponentState = AfterPotentialMoveBenchAction(gameState);
+            return gameState.WithOpponentState(opponentState);
+        }
+
+        private static PlayerState AfterPotentialMoveBenchAction(GameState gameState)
+        {
+            PlayerState opponentState = gameState.OpponentState;
+            PokemonCard bestCardToAddToBench = BestCardIfShouldAddToBench(gameState);
+            if (bestCardToAddToBench != null)
             {
                 opponentState = MoveBestCardToBench(opponentState);
             }
-            return gameState.WithOpponentState(opponentState);
+            return opponentState;
+        }
+
+        private static PokemonCard BestCardIfShouldAddToBench(GameState gameState)
+        {
+            PokemonCard bestHandCard = null;
+            if (gameState.OpponentState.HandHasBasicPokemon())
+            {
+                IList<PokemonCardState> playerCards = gameState.PlayerState.Bench.ToList();
+                playerCards.Add(gameState.PlayerState.Active);
+
+
+                // Check how much many turns it will take for each bench Pokemon to KO
+                //     all player cards on field
+                int bestNumberOfKOs = -1;
+                foreach (PokemonCardState benchCard in gameState.OpponentState.Bench)
+                {
+                    int numberOfKOs = GetNumberOfCardsPokemonCanKO(
+                        benchCard, 
+                        CardUtil.GetNumberOfEachEnergy(gameState.OpponentState.Hand), 
+                        playerCards
+                        );
+                    bestNumberOfKOs = Math.Max(bestNumberOfKOs, numberOfKOs);
+                }
+
+                // If a hand card can KO more cards than those in the bench, add to bench
+                foreach (PokemonCard handCard in gameState.OpponentState.Hand)
+                {
+                    int numberOfKOs = GetNumberOfCardsPokemonCanKO(
+                        handCard,
+                        CardUtil.GetNumberOfEachEnergy(gameState.OpponentState.Hand),
+                        playerCards
+                        );
+                    if (numberOfKOs > bestNumberOfKOs)
+                    {
+                        bestNumberOfKOs = numberOfKOs;
+                        bestHandCard = handCard;
+                    }
+                }
+
+            }
+            throw new NotImplementedException();
+            return bestHandCard;
+        }
+
+        private static int GetNumberOfCardsPokemonCanKO(
+            PokemonCard handCard, 
+            IImmutableDictionary<PokemonType, int> energy, 
+            IList<PokemonCardState> playerCards
+            )
+        {
+            throw new NotImplementedException();
+        }
+
+        private static int GetNumberOfCardsPokemonCanKO(
+            PokemonCardState benchCard,
+            IImmutableDictionary<PokemonType, int> energy,
+            IList<PokemonCardState> playerCards
+            )
+        {
+            throw new NotImplementedException();
         }
 
         private static PlayerState MoveBestCardToBench(PlayerState opponentState)

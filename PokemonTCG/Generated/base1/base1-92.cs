@@ -12,7 +12,7 @@ namespace PokemonTCG.Generated
 
         internal static bool Energy_Removal_CanUse(GameState gameState)
         {
-            return gameState.CurrentOpponentState().NumberOfEnergyOnAllPokemon() > 0;
+            return gameState.CurrentNonPlayerState().NumberOfEnergyOnAllPokemon() > 0;
         }
 
         internal static bool Energy_Removal_ShouldUse(GameState gameState)

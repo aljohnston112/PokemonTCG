@@ -93,12 +93,6 @@ namespace PokemonTCG.States
             return canUse;
         }
 
-        internal int NumberOfEnergyOnAllPokemonOfCurrentPlayer()
-        {
-            int numberOfEnergy = CurrentPlayerState().NumberOfEnergyOnAllPokemon();
-            return numberOfEnergy;
-        }
-
         internal PlayerState CurrentPlayerState()
         {
             PlayerState playerState;
@@ -113,7 +107,7 @@ namespace PokemonTCG.States
             return playerState;
         }
 
-        internal PlayerState CurrentOpponentState()
+        internal PlayerState CurrentNonPlayerState()
         {
             PlayerState playerState;
             if (PlayersTurn)

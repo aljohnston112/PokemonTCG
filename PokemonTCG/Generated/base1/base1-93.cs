@@ -12,7 +12,7 @@ namespace PokemonTCG.Generated
 
         internal static bool Gust_of_Wind_CanUse(GameState gameState)
         {
-            return gameState.CurrentOpponentState().Bench.Count > 0;
+            return gameState.CurrentNonPlayerState().Bench.Count > 0;
         }
 
         internal static bool Gust_of_Wind_ShouldUse(GameState gameState)
