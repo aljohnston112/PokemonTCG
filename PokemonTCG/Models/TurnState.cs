@@ -31,80 +31,9 @@ namespace PokemonTCG.Models
         {
             PlayerState opponentState = gameState.OpponentState;
             opponentState = opponentState.AfterDrawingCards(1);
-            opponentState = AfterPotentialMoveBenchAction(gameState);
+            opponentState = opponentState.AfterPotentialMoveBenchAction(gameState);
             return gameState.WithOpponentState(opponentState);
         }
-
-        private static PlayerState AfterPotentialMoveBenchAction(GameState gameState)
-        {
-            PlayerState opponentState = gameState.OpponentState;
-            PokemonCard bestCardToAddToBench = BestCardIfShouldAddToBench(gameState);
-            if (bestCardToAddToBench != null)
-            {
-                opponentState = opponentState.AfterMovingFromHandToBench(bestCardToAddToBench);
-            }
-            return opponentState;
-        }
-
-        private static PokemonCard BestCardIfShouldAddToBench(GameState gameState)
-        {
-            List<PokemonCard> bestHandCards = new();
-            PokemonCard bestHandCard = null;
-            if (gameState.OpponentState.HandHasBasicPokemon())
-            {
-                IList<PokemonCardState> playerCards = gameState.PlayerState.Bench.ToList();
-                playerCards.Add(gameState.PlayerState.Active);
-
-
-                // Check how much many turns it will take for each bench Pokemon to KO
-                //     all player cards on field
-                int bestNumberOfKOs = -1;
-                foreach (PokemonCardState benchCard in gameState.OpponentState.Bench)
-                {
-                    int numberOfKOs = OpponentUtil.GetNumberOfCardsPokemonCanKO(
-                        pokemonCard: benchCard.PokemonCard,
-                        damageTaken: benchCard.DamageTaken,
-                        hand: gameState.OpponentState.Hand,
-                        pokemonToBeat: playerCards
-                        );
-                    bestNumberOfKOs = Math.Max(bestNumberOfKOs, numberOfKOs);
-                }
-
-                // Get hand cards that can KO more cards than those in the bench
-                foreach (PokemonCard handCard in gameState.OpponentState.Hand.Where(card => CardUtil.IsBasicPokemon(card)))
-                {
-                    int numberOfKOs = OpponentUtil.GetNumberOfCardsPokemonCanKO(
-                        pokemonCard: handCard,
-                        damageTaken: 0,
-                        hand: gameState.OpponentState.Hand,
-                        pokemonToBeat: playerCards
-                        );
-                    if (numberOfKOs >= bestNumberOfKOs)
-                    {
-                        bestNumberOfKOs = numberOfKOs;
-                        bestHandCards.Add(handCard);
-                    }
-                }
-
-                // Rank by energy and damage
-                IDictionary<PokemonCard, int> rank = OpponentUtil.RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(
-                    bestHandCards.ToImmutableList(),
-                    gameState.OpponentState.Hand
-                    );
-                int maxRank = rank.Max(rank => rank.Value);
-                IImmutableList<PokemonCard> potentialPokemon = rank
-                    .Where(rank => rank.Value == maxRank)
-                    .Select(rank => rank.Key)
-                    .ToImmutableList();
-                IDictionary<PokemonCard, int> efficientAttackers = OpponentUtil.GetFastestEfficientAttackers(potentialPokemon);
-                maxRank = efficientAttackers.Max(rank => rank.Value);
-                bestHandCard = efficientAttackers
-                    .Where(rank => rank.Value == maxRank)
-                    .First().Key;
-            }
-            return bestHandCard;
-        }
-
         private static GameState PlayersNextTurn(GameState gameState)
         {
             PlayerState playerState = gameState.PlayerState;

@@ -348,6 +348,17 @@ namespace PokemonTCG.States
             }
             return numberOfEnergy;
         }
+
+        internal PlayerState AfterPotentialMoveBenchAction(GameState gameState)
+        {
+            PlayerState opponentState = this;
+            PokemonCard bestCardToAddToBench = OpponentUtil.BestCardIfShouldAddToBench(gameState);
+            if (bestCardToAddToBench != null)
+            {
+                opponentState = opponentState.AfterMovingFromHandToBench(bestCardToAddToBench);
+            }
+            return opponentState;
+        }
     }
 
 }
