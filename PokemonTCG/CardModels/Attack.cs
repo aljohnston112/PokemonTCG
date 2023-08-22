@@ -1,5 +1,6 @@
 ﻿using PokemonTCG.Enums;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace PokemonTCG.CardModels
 {
@@ -8,14 +9,14 @@ namespace PokemonTCG.CardModels
     {
 
         internal readonly string Name;
-        internal readonly IDictionary<PokemonType, int> EnergyCost;
+        internal readonly IImmutableDictionary<PokemonType, int> EnergyCost;
         internal readonly int ConvertedEnergyCost;
         internal readonly int Damage;
         internal readonly string Text;
 
         internal Attack(
             string name,
-            IDictionary<PokemonType, int> energyCost,
+            IImmutableDictionary<PokemonType, int> energyCost,
             int convertedEnergyCost,
             int damage,
             string text

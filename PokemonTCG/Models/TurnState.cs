@@ -1,13 +1,11 @@
 ﻿using PokemonTCG.CardModels;
-using PokemonTCG.Enums;
 using PokemonTCG.States;
 using PokemonTCG.Utilities;
+
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using Windows.ApplicationModel.Store.Preview.InstallControl;
 
 namespace PokemonTCG.Models
 {
@@ -43,13 +41,14 @@ namespace PokemonTCG.Models
             PokemonCard bestCardToAddToBench = BestCardIfShouldAddToBench(gameState);
             if (bestCardToAddToBench != null)
             {
-                opponentState = MoveBestCardToBench(opponentState);
+                opponentState = opponentState.AfterMovingFromHandToBench(bestCardToAddToBench);
             }
             return opponentState;
         }
 
         private static PokemonCard BestCardIfShouldAddToBench(GameState gameState)
         {
+            List<PokemonCard> bestHandCards = new();
             PokemonCard bestHandCard = null;
             if (gameState.OpponentState.HandHasBasicPokemon())
             {
@@ -62,55 +61,48 @@ namespace PokemonTCG.Models
                 int bestNumberOfKOs = -1;
                 foreach (PokemonCardState benchCard in gameState.OpponentState.Bench)
                 {
-                    int numberOfKOs = GetNumberOfCardsPokemonCanKO(
-                        benchCard, 
-                        CardUtil.GetNumberOfEachEnergy(gameState.OpponentState.Hand), 
-                        playerCards
+                    int numberOfKOs = OpponentUtil.GetNumberOfCardsPokemonCanKO(
+                        pokemonCard: benchCard.PokemonCard,
+                        damageTaken: benchCard.DamageTaken,
+                        hand: gameState.OpponentState.Hand,
+                        pokemonToBeat: playerCards
                         );
                     bestNumberOfKOs = Math.Max(bestNumberOfKOs, numberOfKOs);
                 }
 
-                // If a hand card can KO more cards than those in the bench, add to bench
-                foreach (PokemonCard handCard in gameState.OpponentState.Hand)
+                // Get hand cards that can KO more cards than those in the bench
+                foreach (PokemonCard handCard in gameState.OpponentState.Hand.Where(card => CardUtil.IsBasicPokemon(card)))
                 {
-                    int numberOfKOs = GetNumberOfCardsPokemonCanKO(
-                        handCard,
-                        CardUtil.GetNumberOfEachEnergy(gameState.OpponentState.Hand),
-                        playerCards
+                    int numberOfKOs = OpponentUtil.GetNumberOfCardsPokemonCanKO(
+                        pokemonCard: handCard,
+                        damageTaken: 0,
+                        hand: gameState.OpponentState.Hand,
+                        pokemonToBeat: playerCards
                         );
-                    if (numberOfKOs > bestNumberOfKOs)
+                    if (numberOfKOs >= bestNumberOfKOs)
                     {
                         bestNumberOfKOs = numberOfKOs;
-                        bestHandCard = handCard;
+                        bestHandCards.Add(handCard);
                     }
                 }
 
+                // Rank by energy and damage
+                IDictionary<PokemonCard, int> rank = OpponentUtil.RankBasicPokemonByHowManyAttacksAreCoveredByEnergy(
+                    bestHandCards.ToImmutableList(),
+                    gameState.OpponentState.Hand
+                    );
+                int maxRank = rank.Max(rank => rank.Value);
+                IImmutableList<PokemonCard> potentialPokemon = rank
+                    .Where(rank => rank.Value == maxRank)
+                    .Select(rank => rank.Key)
+                    .ToImmutableList();
+                IDictionary<PokemonCard, int> efficientAttackers = OpponentUtil.GetFastestEfficientAttackers(potentialPokemon);
+                maxRank = efficientAttackers.Max(rank => rank.Value);
+                bestHandCard = efficientAttackers
+                    .Where(rank => rank.Value == maxRank)
+                    .First().Key;
             }
-            throw new NotImplementedException();
             return bestHandCard;
-        }
-
-        private static int GetNumberOfCardsPokemonCanKO(
-            PokemonCard handCard, 
-            IImmutableDictionary<PokemonType, int> energy, 
-            IList<PokemonCardState> playerCards
-            )
-        {
-            throw new NotImplementedException();
-        }
-
-        private static int GetNumberOfCardsPokemonCanKO(
-            PokemonCardState benchCard,
-            IImmutableDictionary<PokemonType, int> energy,
-            IList<PokemonCardState> playerCards
-            )
-        {
-            throw new NotImplementedException();
-        }
-
-        private static PlayerState MoveBestCardToBench(PlayerState opponentState)
-        {
-            throw new NotImplementedException();
         }
 
         private static GameState PlayersNextTurn(GameState gameState)

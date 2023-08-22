@@ -14,6 +14,7 @@ namespace PokemonTCG.Models
         internal readonly PokemonCard PokemonCard;
         internal readonly IImmutableList<PokemonCard> Energy;
         internal readonly IImmutableList<PokemonCard> EvolvedFrom;
+        internal readonly int DamageTaken;
         internal readonly MutuallyExclusiveStatus MutuallyExclusiveStatus;
         internal readonly IImmutableList<Status> Statuses;
         internal readonly bool FirstTurnInPlay;
@@ -22,6 +23,7 @@ namespace PokemonTCG.Models
             PokemonCard pokemonCard,
             IImmutableList<PokemonCard> energy,
             IImmutableList<PokemonCard> evolvedFrom,
+            int damageTaken,
             MutuallyExclusiveStatus mutuallyExclusiveStatus,
             IImmutableList<Status> statuses,
             bool firstTurnInPlay
@@ -30,6 +32,7 @@ namespace PokemonTCG.Models
             PokemonCard = pokemonCard;
             Energy = energy;
             EvolvedFrom = evolvedFrom;
+            DamageTaken = damageTaken;
             MutuallyExclusiveStatus = mutuallyExclusiveStatus;
             Statuses = statuses;
             FirstTurnInPlay = firstTurnInPlay;
@@ -41,6 +44,7 @@ namespace PokemonTCG.Models
                 pokemonCard: pokemonCard,
                 energy: ImmutableList<PokemonCard>.Empty,
                 evolvedFrom: ImmutableList<PokemonCard>.Empty,
+                damageTaken: 0,
                 mutuallyExclusiveStatus: MutuallyExclusiveStatus.NONE,
                 statuses: ImmutableList<Status>.Empty,
                 firstTurnInPlay: true
@@ -53,6 +57,7 @@ namespace PokemonTCG.Models
                 pokemonCard: PokemonCard,
                 energy: Energy.Add(card),
                 evolvedFrom: EvolvedFrom,
+                damageTaken: DamageTaken,
                 mutuallyExclusiveStatus: MutuallyExclusiveStatus,
                 statuses: Statuses,
                 firstTurnInPlay: FirstTurnInPlay
@@ -68,6 +73,7 @@ namespace PokemonTCG.Models
                 pokemonCard: evolvedCard,
                 energy: Energy,
                 evolvedFrom: EvolvedFrom.Add(PokemonCard),
+                damageTaken: DamageTaken,
                 mutuallyExclusiveStatus: MutuallyExclusiveStatus,
                 statuses: Statuses,
                 firstTurnInPlay: FirstTurnInPlay
@@ -80,6 +86,7 @@ namespace PokemonTCG.Models
                 pokemonCard: PokemonCard.WithoutAttack(attack),
                 energy: Energy,
                 evolvedFrom: EvolvedFrom,
+                damageTaken: DamageTaken,
                 mutuallyExclusiveStatus: MutuallyExclusiveStatus,
                 statuses: Statuses,
                 firstTurnInPlay: FirstTurnInPlay);
@@ -94,6 +101,7 @@ namespace PokemonTCG.Models
                 pokemonCard: PokemonCard,
                 energy: newEnergy,
                 evolvedFrom: EvolvedFrom,
+                damageTaken: DamageTaken,
                 mutuallyExclusiveStatus: MutuallyExclusiveStatus,
                 statuses: Statuses,
                 firstTurnInPlay: FirstTurnInPlay
@@ -107,6 +115,7 @@ namespace PokemonTCG.Models
                 pokemonCard: PokemonCard,
                 energy: newEnergy,
                 evolvedFrom: EvolvedFrom,
+                damageTaken: DamageTaken,
                 mutuallyExclusiveStatus: MutuallyExclusiveStatus,
                 statuses: Statuses,
                 firstTurnInPlay: FirstTurnInPlay
@@ -121,6 +130,11 @@ namespace PokemonTCG.Models
                 canRetreat = false;
             }
             return canRetreat;
+        }
+
+        internal int HealthLeft()
+        {
+            return PokemonCard.Hp - DamageTaken;
         }
 
     }

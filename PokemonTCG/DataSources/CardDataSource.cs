@@ -181,7 +181,7 @@ namespace PokemonTCG.DataSources
                             attacks.Add(
                                 new Attack(
                                     name: attackName, 
-                                    energyCost : attackCost, 
+                                    energyCost : attackCost.ToImmutableDictionary(), 
                                     convertedEnergyCost: convertedEnergyCostForAttack, 
                                     damage: attackDamage,
                                     text: attackText
