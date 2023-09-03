@@ -2,9 +2,8 @@
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Input;
-using PokemonTCG.Models;
+
 using System;
-using System.Resources;
 using System.Collections.Immutable;
 
 namespace PokemonTCG.Utilities
@@ -26,20 +25,20 @@ namespace PokemonTCG.Utilities
         }
 
         internal static CommandBarFlyout CreateCommandBarFlyout(
-            IImmutableDictionary<string, TappedEventHandler> commands
+            IImmutableDictionary<string, Action> commands
             )
         {
             CommandBarFlyout flyout = new()
             {
                 AlwaysExpanded = true
             };
-            foreach ((string command, TappedEventHandler tappedEventHandler) in commands)
+            foreach ((string command, Action onTapped) in commands)
             {
                 AppBarButton button = new()
                 {
                     Label = command,
                 };
-                button.Tapped += tappedEventHandler;
+                button.Tapped += (sender, e) => onTapped();
                 flyout.SecondaryCommands.Add(button);
             }
             return flyout;

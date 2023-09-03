@@ -1,7 +1,8 @@
 ﻿using PokemonTCG.CardModels;
-using PokemonTCG.Models;
 using PokemonTCG.Utilities;
-using System;
+
+using System.Diagnostics;
+using System.Linq;
 
 namespace PokemonTCG.States
 {
@@ -16,7 +17,7 @@ namespace PokemonTCG.States
         internal GameState(PokemonDeck playerDeck, PokemonDeck opponentDeck)
         {
             IsPreGame = true;
-            GameState gameState = PreGameState.StartGame(playerDeck, opponentDeck);
+            GameState gameState = PreGameBuilder.StartGame(playerDeck, opponentDeck);
             PlayersTurn = gameState.PlayersTurn;
             PlayerState = gameState.PlayerState;
             OpponentState = gameState.OpponentState;
@@ -35,6 +36,11 @@ namespace PokemonTCG.States
             PlayerState = playerState;
             OpponentState = opponentState;
             StadiumCard = stadiumCard;
+        }
+
+        internal GameState OnUsersFirstTurnSetUp()
+        {
+            return PreGameBuilder.SetUpOpponent(this);
         }
 
         internal GameState WithPlayersTurn(bool playersTurn)
@@ -70,7 +76,7 @@ namespace PokemonTCG.States
                 );
         }
 
-        internal GameState WithStadiumCard(PokemonCard card)
+        internal GameState WithStadiumCard(PokemonCard stadiumCard)
         {
             // TODO Stadium cards replace any stadium cards in play.You can't play a stadium that is already active. 
             return new GameState(
@@ -78,47 +84,43 @@ namespace PokemonTCG.States
                 playersTurn: PlayersTurn,
                 playerState: PlayerState,
                 opponentState: OpponentState,
-                stadiumCard: card
+                stadiumCard: stadiumCard
                 );
-        }
-
-        internal GameState OnUsersFirstTurnSetUp()
-        {
-            return PreGameState.SetUpOpponent(this);
         }
 
         internal bool CurrentPlayersActiveCanUseAttack(Attack attack)
         {
+            Debug.Assert(CurrentPlayerState().Active.PokemonCard.Attacks.Contains(attack));
             bool canUse = AttackUtil.IsEnoughEnergyForAttack(CurrentPlayerState().Active.Energy, attack);
             return canUse;
         }
 
         internal PlayerState CurrentPlayerState()
         {
-            PlayerState playerState;
+            PlayerState currentPlayerState;
             if (PlayersTurn)
             {
-                playerState = PlayerState;
+                currentPlayerState = PlayerState;
             }
             else
             {
-                playerState = OpponentState;
+                currentPlayerState = OpponentState;
             }
-            return playerState;
+            return currentPlayerState;
         }
 
         internal PlayerState CurrentNonPlayerState()
         {
-            PlayerState playerState;
+            PlayerState CurrentNonPlayerState;
             if (PlayersTurn)
             {
-                playerState = OpponentState;
+                CurrentNonPlayerState = OpponentState;
             }
             else
             {
-                playerState = PlayerState;
+                CurrentNonPlayerState = PlayerState;
             }
-            return playerState;
+            return CurrentNonPlayerState;
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using PokemonTCG.States;
 using PokemonTCG.Utilities;
-using PokemonTCG.ViewModel;
+
+using System;
 
 namespace PokemonTCG.View
 {
@@ -22,16 +23,19 @@ namespace PokemonTCG.View
             set { SetProperty(ref _fieldCardActionState, value); }
         }
 
-        internal void OnStateChange(GamePageViewModel gamePageViewModel, bool isPlayerState)
+        internal void OnStateChange(GameState gameState, Action<GameState> onGameStateChanged, bool isPlayerState)
         {
             if (isPlayerState)
             {
-                FieldCardActionState = new FieldCardActionState(gamePageViewModel);
-                PlayerState = gamePageViewModel.GameState.PlayerState;
+                FieldCardActionState = new FieldCardActionState(
+                    gameState, 
+                    onGameStateChanged
+                    );
+                PlayerState = gameState.PlayerState;
             }
             else
             {
-                PlayerState = gamePageViewModel.GameState.OpponentState;
+                PlayerState = gameState.OpponentState;
             }
         }
 

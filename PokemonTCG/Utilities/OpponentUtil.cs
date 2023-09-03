@@ -1,7 +1,7 @@
 ﻿using PokemonTCG.CardModels;
 using PokemonTCG.Enums;
-using PokemonTCG.Models;
 using PokemonTCG.States;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -27,7 +27,7 @@ namespace PokemonTCG.Utilities
                 Dictionary<Attack, int> energyTillEachAttackForPlayer = new();
                 foreach (Attack attack in playerCard.PokemonCard.Attacks)
                 {
-                    int energyNeededToAttack = AttackUtil.GetNumEnergyNeededToAttack(
+                    int energyNeededToAttack = AttackUtil.GetEnergyNeededToAttack(
                     attack,
                     playerCard
                     );
@@ -203,6 +203,33 @@ namespace PokemonTCG.Utilities
                     .First().Key;
             }
             return bestHandCard;
+        }
+
+        internal static PokemonCard PotentialEvolveOf(
+            PokemonCardState active,
+            IImmutableList<PokemonCard> hand
+            )
+        {
+            PokemonCard evolution = null;
+            foreach (PokemonCard handCard in hand)
+            {
+                if (CardUtil.CardEvolvesFrom(active, handCard))
+                {
+                    bool canAttack = false;
+                    foreach (Attack attack in handCard.Attacks)
+                    {
+                        if (active.Energy.Count + 1 >= attack.ConvertedEnergyCost)
+                        {
+                            canAttack = true;
+                        }
+                    }
+                    if (canAttack)
+                    {
+                        evolution = handCard;
+                    }
+                }
+            }
+            return evolution;
         }
 
     }

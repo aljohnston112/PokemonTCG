@@ -4,7 +4,7 @@ using System.Linq;
 
 using PokemonTCG.CardModels;
 using PokemonTCG.Enums;
-using PokemonTCG.Models;
+using PokemonTCG.States;
 
 namespace PokemonTCG.Utilities
 {
@@ -31,7 +31,12 @@ namespace PokemonTCG.Utilities
 
         internal static PokemonType GetEnergyType(PokemonCard card)
         {
-            string[] energyTypes = card.Name.Split();
+            return GetEnergyType(card.Name);
+        }
+
+        internal static PokemonType GetEnergyType(string name)
+        {
+            string[] energyTypes = name.Split();
             string energyType = energyTypes[^2];
             return EnumUtil.Parse<PokemonType>(energyType);
         }
@@ -52,7 +57,7 @@ namespace PokemonTCG.Utilities
             return i;
         }
 
-        internal static int IndexOfCardWithId(IImmutableList<PokemonCard> cards, string benchedCardId)
+        internal static int IndexOfEnergyCardWithType(IImmutableList<PokemonCard> cards, PokemonType energyType)
         {
             bool found = false;
             int i = -1;
@@ -60,7 +65,7 @@ namespace PokemonTCG.Utilities
             {
                 i++;
                 PokemonCard card = cards[i];
-                if (card.Id == benchedCardId)
+                if (GetEnergyType(card) == energyType)
                 {
                     found = true;
                 }

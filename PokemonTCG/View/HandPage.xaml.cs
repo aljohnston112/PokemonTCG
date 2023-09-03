@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Immutable;
-using System.ComponentModel;
-
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
+
 using PokemonTCG.CardModels;
-using PokemonTCG.Models;
+using PokemonTCG.States;
 using PokemonTCG.Utilities;
 using PokemonTCG.ViewModel;
+
+using System;
+using System.Collections.Immutable;
+using System.ComponentModel;
+
 
 namespace PokemonTCG.View
 {
@@ -53,7 +55,7 @@ namespace PokemonTCG.View
                     };
                     FlyoutUtil.SetImageTappedFlyout(Resources, image);
 
-                    IImmutableDictionary<string, TappedEventHandler> cardActions = actionState.Actions;
+                    IImmutableDictionary<string, Action> cardActions = actionState.Actions;
                     if (cardActions.Count > 0)
                     {
                         image.ContextFlyout = FlyoutUtil.CreateCommandBarFlyout(cardActions);

@@ -1,14 +1,22 @@
 ﻿using PokemonTCG.CardModels;
 using PokemonTCG.Enums;
-using PokemonTCG.Models;
+using PokemonTCG.States;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace PokemonTCG.Utilities
 {
+
     internal class AttackUtil
     {
+
+        /// <summary>
+        /// Gets the amount of energy needed to attack after removing the given energy from the attack cost.
+        /// </summary>
+        /// <param name="attack">The attack to get the energy needed for.</param>
+        /// <param name="energy">The energy to remove from the attack cost.</param>
+        /// <returns>A dictionary of pokemon types to numbers representing the number of each energy needed for the attack cost.</returns>
         internal static IImmutableDictionary<PokemonType, int> GetEnergyNeededToAttack(
             Attack attack, 
             IImmutableList<PokemonCard> energy
@@ -41,7 +49,7 @@ namespace PokemonTCG.Utilities
             return attackEnergyCostLeft.ToImmutableDictionary();
         }
 
-        internal static int GetNumEnergyNeededToAttack(Attack attack, PokemonCardState playerCard)
+        internal static int GetEnergyNeededToAttack(Attack attack, PokemonCardState playerCard)
         {
             Dictionary<PokemonType, int> attackEnergyCostLeft = new(attack.EnergyCost);
 
@@ -99,4 +107,5 @@ namespace PokemonTCG.Utilities
         }
 
     }
+
 }

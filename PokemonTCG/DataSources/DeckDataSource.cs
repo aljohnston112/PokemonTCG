@@ -1,4 +1,4 @@
-﻿using PokemonTCG.Models;
+﻿using PokemonTCG.States;
 using PokemonTCG.Utilities;
 
 using System;

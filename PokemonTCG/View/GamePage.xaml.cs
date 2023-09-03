@@ -57,9 +57,20 @@ namespace PokemonTCG.View
         {
             if (e.PropertyName == "GameState")
             {
-                HandViewModel.OnStateChange(GamePageViewModel);
-                PlayerPageViewModel.OnStateChange(GamePageViewModel, isPlayerState: true);
-                OpponentPageViewModel.OnStateChange(GamePageViewModel, isPlayerState: false);
+                HandViewModel.OnStateChange(
+                    GamePageViewModel.GameState,
+                    GamePageViewModel.UpdateGameState
+                    );
+                PlayerPageViewModel.OnStateChange(
+                    GamePageViewModel.GameState, 
+                    GamePageViewModel.UpdateGameState, 
+                    isPlayerState: true
+                    );
+                OpponentPageViewModel.OnStateChange(
+                    GamePageViewModel.GameState,
+                    GamePageViewModel.UpdateGameState, 
+                    isPlayerState: false
+                    );
             }
         }
 

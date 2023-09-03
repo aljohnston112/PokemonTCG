@@ -26,6 +26,8 @@ namespace PokemonTCG.DataSources
                 id: card.Id, 
                 number: card.Number, 
                 name: name, 
+                supertype: card.Supertype,
+                types: card.Types,
                 imagePath: card.ImagePath,
                 limit: cardLimit, 
                 count: 0

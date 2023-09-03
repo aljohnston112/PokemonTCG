@@ -1,6 +1,5 @@
 ﻿using PokemonTCG.DataSources;
 using System.Collections.Immutable;
-using PokemonTCG.Models;
 using PokemonTCG.Utilities;
 using PokemonTCG.States;
 

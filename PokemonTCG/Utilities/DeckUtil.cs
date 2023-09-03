@@ -1,12 +1,11 @@
 ﻿using PokemonTCG.CardModels;
 using PokemonTCG.Enums;
-using PokemonTCG.Models;
+using PokemonTCG.States;
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-
 
 namespace PokemonTCG.Utilities
 {

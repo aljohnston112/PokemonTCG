@@ -1,12 +1,12 @@
-﻿using System;
+﻿using PokemonTCG.CardModels;
+using PokemonTCG.Enums;
+using PokemonTCG.Utilities;
+
+using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-
-using PokemonTCG.CardModels;
-using PokemonTCG.Models;
-using PokemonTCG.Utilities;
 
 namespace PokemonTCG.States
 {
@@ -51,29 +51,6 @@ namespace PokemonTCG.States
             HasUsedVStarAbility = hasUsedVStarAbility;
         }
 
-        internal PlayerState(
-            ImmutableList<PokemonCard> deck,
-            ImmutableList<PokemonCard> hand,
-            PokemonCard active,
-            ImmutableList<PokemonCard> bench,
-            ImmutableList<PokemonCard> prizes,
-            ImmutableList<PokemonCard> discardPile,
-            ImmutableList<PokemonCard> lostZone,
-            OncePerTurnActionsState oncePerTurnActionsState,
-            bool hasUsedVStarAbility
-        ) : this(
-            deck: deck,
-            hand: hand,
-            active: new PokemonCardState(active),
-            bench: bench.Select(card => new PokemonCardState(card)).ToImmutableList(),
-            prizes: prizes,
-            discardPile: discardPile,
-            lostZone: lostZone,
-            oncePerTurnActionsState: oncePerTurnActionsState,
-            hasUsedVStarAbility: hasUsedVStarAbility
-            )
-        { }
-
         internal bool HandHasBasicPokemon()
         {
             // TODO Fossils count as basic Pokemon.
@@ -91,13 +68,13 @@ namespace PokemonTCG.States
 
         internal PlayerState AfterDrawingCards(int numberToDraw)
         {
-            (IImmutableList<PokemonCard> newDeck, IImmutableList<PokemonCard> drawn) = DeckUtil.DrawCards(
+            (IImmutableList<PokemonCard> newDeck, IImmutableList<PokemonCard> drawncards) = DeckUtil.DrawCards(
                 Deck,
                 numberToDraw
                 );
             return new PlayerState(
                 deck: newDeck,
-                hand: Hand.AddRange(drawn),
+                hand: Hand.AddRange(drawncards),
                 active: Active,
                 bench: Bench,
                 prizes: Prizes,
@@ -127,13 +104,13 @@ namespace PokemonTCG.States
         internal PlayerState AfterMovingFromHandToBench(IImmutableList<PokemonCard> benchable)
         {
             // TODO All 4 cards of a V-UNION can be played only from the discard pile and take up one bench spot.
-            Debug.Assert(benchable.Count < MAX_BENCH_SIZE - Bench.Count);
+            Debug.Assert(benchable.Count <= (MAX_BENCH_SIZE - Bench.Count));
             PlayerState newPlayerState = this;
             if (benchable.Count > 0)
             {
                 foreach (PokemonCard card in benchable)
                 {
-                    newPlayerState = AfterMovingFromHandToBench(card);
+                    newPlayerState = newPlayerState.AfterMovingFromHandToBench(card);
                 }
             }
             return newPlayerState;
@@ -190,6 +167,7 @@ namespace PokemonTCG.States
 
             CardUtil.AssertCardEvolvesFrom(Active, evolutionCard);
             Debug.Assert(Hand.Contains(evolutionCard));
+            Debug.Assert(!Active.FirstTurnInPlay);
             return new PlayerState(
                 deck: Deck,
                 hand: Hand.Remove(evolutionCard),
@@ -209,6 +187,7 @@ namespace PokemonTCG.States
             CardUtil.AssertCardEvolvesFrom(benchedCard, evolutionCard);
             Debug.Assert(Bench.Contains(benchedCard));
             Debug.Assert(Hand.Contains(evolutionCard));
+            Debug.Assert(!benchedCard.FirstTurnInPlay);
             int iForBench = Bench.IndexOf(benchedCard);
             IList<PokemonCardState> mutableBench = Bench.ToList();
             mutableBench[iForBench] = Bench[iForBench].AfterEvolvingTo(evolutionCard);
@@ -225,13 +204,10 @@ namespace PokemonTCG.States
                 );
         }
 
-        internal PlayerState AfterAttachingEnergyToActiveFromHand(string energyCardId)
+        internal PlayerState AfterAttachingEnergyToActiveFromHand(PokemonType energyType)
         {
-            int i = CardUtil.IndexOfCardWithId(Hand, energyCardId);
-            if (i == -1)
-            {
-                throw new ArgumentException($"Energy card with id {energyCardId} was not found in the hand");
-            }
+            int i = CardUtil.IndexOfEnergyCardWithType(Hand, energyType);
+            Debug.Assert(i != -1, $"Energy card with type {energyType} was not found in the hand");
 
             PokemonCard card = Hand[i];
             return new PlayerState(
@@ -247,22 +223,16 @@ namespace PokemonTCG.States
                 );
         }
 
-        internal PlayerState AfterAttachingEnergyToBenchedFromHand(PokemonCardState benchedCard, string energyCardId)
+        internal PlayerState AfterAttachingEnergyToBenchedFromHand(PokemonCardState benchedCard, PokemonType type)
         {
+            Debug.Assert(Bench.Contains(benchedCard), $"Card with id {benchedCard.PokemonCard.Id} was not found in the bench");
             int iForBenched = Bench.IndexOf(benchedCard);
-            if (iForBenched == -1)
-            {
-                throw new ArgumentException($"Card with id {benchedCard.PokemonCard.Id} was not found in the bench");
-            }
 
-            int iForHand = CardUtil.IndexOfCardWithId(Hand, energyCardId);
-            if (iForHand == -1)
-            {
-                throw new ArgumentException($"Energy card with id {energyCardId} was not found in the hand");
-            }
+            int iForHand = CardUtil.IndexOfEnergyCardWithType(Hand, type);
+            Debug.Assert(iForHand != -1, $"Energy card with type {type} was not found in the hand");
             PokemonCard energyCard = Hand[iForHand];
 
-            List<PokemonCardState> mutableBench = Bench.ToList();
+            IList<PokemonCardState> mutableBench = Bench.ToList();
             mutableBench[iForBenched] = Bench[iForBenched].AfterAttachingEnergy(energyCard);
             return new PlayerState(
                 deck: Deck,
@@ -327,29 +297,21 @@ namespace PokemonTCG.States
 
         internal IImmutableList<PokemonCard> GetEvolutionCardsForCard(PokemonCardState card)
         {
-            List<PokemonCard> pokemonCards = new();
-            foreach (PokemonCard handCard in Hand)
-            {
-                if (CardUtil.CardEvolvesFrom(card, handCard))
-                {
-                    pokemonCards.Add(handCard);
-                }
-            }
-            return pokemonCards.ToImmutableList();
+            return Hand.Where(handCard => CardUtil.CardEvolvesFrom(card, handCard)).ToImmutableList();
         }
 
         internal int NumberOfEnergyOnAllPokemon()
         {
             int numberOfEnergy = 0;
             numberOfEnergy += Active.Energy.Count;
-            foreach(PokemonCardState benched in Bench)
+            foreach (PokemonCardState benched in Bench)
             {
                 numberOfEnergy += benched.Energy.Count;
             }
             return numberOfEnergy;
         }
 
-        internal PlayerState AfterPotentialMoveBenchAction(GameState gameState)
+        internal PlayerState AfterPotentialOpponentMoveToBenchAction(GameState gameState)
         {
             PlayerState opponentState = this;
             PokemonCard bestCardToAddToBench = OpponentUtil.BestCardIfShouldAddToBench(gameState);
@@ -359,6 +321,84 @@ namespace PokemonTCG.States
             }
             return opponentState;
         }
+
+        internal PlayerState AfterPotentialOpponentEvolutions()
+        {
+            PlayerState opponentState = this;
+
+            IImmutableList<PokemonCard> evolutionCardsForActive = GetEvolutionCardsForCard(Active);
+            PokemonCard potentialEvolution = OpponentUtil.PotentialEvolveOf(Active, evolutionCardsForActive);
+            if (potentialEvolution != null)
+            {
+                opponentState = opponentState.AfterEvolvingActivePokemon(potentialEvolution);
+            }
+
+            foreach (PokemonCardState benchCard in Bench)
+            {
+                IImmutableList<PokemonCard> evolutionCardsForBenched = GetEvolutionCardsForCard(benchCard);
+                potentialEvolution = OpponentUtil.PotentialEvolveOf(benchCard, evolutionCardsForBenched);
+                if (potentialEvolution != null)
+                {
+                    opponentState = opponentState.AfterEvolvingBenchedPokemon(benchCard, potentialEvolution);
+                }
+            }
+            return opponentState;
+        }
+
+        internal PlayerState AfterPotentialOpponentEnergyAttaching()
+        {
+            IImmutableDictionary<PokemonType, int> energyInHand = CardUtil.GetNumberOfEachEnergy(Hand);
+
+            Dictionary<Attack, int> energyNeededForAttacks = new();
+            foreach (Attack attack in Active.PokemonCard.Attacks)
+            {
+                energyNeededForAttacks[attack] = AttackUtil.GetEnergyNeededToAttack(attack, Active);
+            }
+            List<KeyValuePair<Attack, int>> sortedAttackEnergyCost = energyNeededForAttacks.ToList();
+            sortedAttackEnergyCost.Sort((x, y) => x.Value.CompareTo(y.Value));
+
+
+            PlayerState opponentState = this;
+            bool found = false;
+            int attackIndex = 0;
+            while (!found && attackIndex < sortedAttackEnergyCost.Count)
+            {
+                KeyValuePair<Attack, int> attackCost = sortedAttackEnergyCost[attackIndex];
+                Dictionary<PokemonType, int> energyNeededToAttack = new(AttackUtil.GetEnergyNeededToAttack(attackCost.Key, Active.Energy));
+                int numberOfColorless = 0;
+                if (energyNeededToAttack.ContainsKey(PokemonType.Colorless))
+                {
+                    numberOfColorless = energyNeededToAttack[PokemonType.Colorless];
+                }
+                energyNeededToAttack.Remove(PokemonType.Colorless);
+
+                bool needToAddEnergy = energyNeededToAttack.Count > 0 || numberOfColorless > 0;
+                if (needToAddEnergy)
+                {
+                    int typeIndex = 0;
+                    while (typeIndex < energyNeededToAttack.Keys.Count && !found)
+                    {
+                        PokemonType type = energyNeededToAttack.Keys.ToList()[typeIndex];
+                        if (energyInHand.ContainsKey(type))
+                        {
+                            found = true;
+                            opponentState = opponentState.AfterAttachingEnergyToActiveFromHand(type);
+                        }
+                        typeIndex++;
+                    }
+                    if (!found && numberOfColorless > 0)
+                    {
+                        found = true;
+                        int maxEnergy = energyInHand.ToList().Max(kv => kv.Value);
+                        PokemonType type = energyInHand.Where(kv => kv.Value == maxEnergy).First().Key;
+                        opponentState = opponentState.AfterAttachingEnergyToActiveFromHand(type);
+                    }
+                }
+                attackIndex++;
+            }
+            return opponentState;
+        }
+
     }
 
 }

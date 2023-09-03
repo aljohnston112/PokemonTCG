@@ -1,15 +1,10 @@
-﻿using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Input;
-
-using PokemonTCG.CardModels;
-using PokemonTCG.Models;
+﻿using PokemonTCG.CardModels;
+using PokemonTCG.DataSources;
 using PokemonTCG.Utilities;
-using PokemonTCG.View;
-using PokemonTCG.ViewModel;
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.Reflection;
 
 namespace PokemonTCG.States
@@ -24,55 +19,55 @@ namespace PokemonTCG.States
         internal readonly ImmutableList<CardActionState<PokemonCardState>> BenchCardActions;
         internal readonly ImmutableList<CardActionState<PokemonCardState>> ActiveCardActions;
 
-        internal FieldCardActionState(GamePageViewModel gamePageViewModel)
+        internal FieldCardActionState(GameState currentGameState, Action<GameState> onGameStateChanged)
         {
-            if (gamePageViewModel.GameState.PlayersTurn)
+            if (currentGameState.PlayersTurn)
             {
-                BenchCardActions = GetBenchCardActions(gamePageViewModel);
-                ActiveCardActions = GetActiveCardActions(gamePageViewModel);
+                BenchCardActions = GetBenchCardActions(currentGameState, onGameStateChanged);
+                ActiveCardActions = GetActiveCardActions(currentGameState, onGameStateChanged);
             }
         }
 
         private static ImmutableList<CardActionState<PokemonCardState>> GetActiveCardActions(
-            GamePageViewModel gamePageViewModel
+            GameState currentGameState, 
+            Action<GameState> onGameStateChanged
             )
         {
             List<CardActionState<PokemonCardState>> fieldActions = new()
             {
-                GetFieldActionsForActive(gamePageViewModel)
+                GetFieldActionsForActive(currentGameState, onGameStateChanged)
             };
             return fieldActions.ToImmutableList();
         }
 
         private static ImmutableList<CardActionState<PokemonCardState>> GetBenchCardActions(
-            GamePageViewModel gamePageViewModel
+            GameState currentGameState, 
+            Action<GameState> onGameStateChanged
             )
         {
-            GameState gameState = gamePageViewModel.GameState;
             List<CardActionState<PokemonCardState>> fieldActions = new();
-            foreach (PokemonCardState benchCard in gameState.PlayerState.Bench)
+            foreach (PokemonCardState benchCard in currentGameState.PlayerState.Bench)
             {
-                fieldActions.Add(GetFieldActionsForBenched(gamePageViewModel, benchCard));
+                fieldActions.Add(GetFieldActionsForBenched(currentGameState, onGameStateChanged, benchCard));
             }
             return fieldActions.ToImmutableList();
         }
 
         private static CardActionState<PokemonCardState> GetFieldActionsForBenched(
-            GamePageViewModel gamePageViewModel,
+            GameState currentGameState,
+            Action<GameState> onGameStateChanged,
             PokemonCardState benchCard
             )
         {
-            GameState gameState = gamePageViewModel.GameState;
-            Dictionary<string, TappedEventHandler> cardActions = new();
-
+            Dictionary<string, Action> cardActions = new();
             if (!benchCard.FirstTurnInPlay)
             {
-                IImmutableList<PokemonCard> evolutionCards = gameState.PlayerState.GetEvolutionCardsForCard(benchCard);
+                IImmutableList<PokemonCard> evolutionCards = currentGameState.PlayerState.GetEvolutionCardsForCard(benchCard);
                 if (evolutionCards.Count > 0)
                 {
                     cardActions[EVOLVE_ACTION] = GetEvolveAction(
-                        gamePageViewModel,
-                        gameState,
+                        currentGameState,
+                        onGameStateChanged,
                         benchCard,
                         evolutionCards,
                         isBench: true
@@ -82,11 +77,11 @@ namespace PokemonTCG.States
 
             foreach (Ability ability in benchCard.PokemonCard.Abilities)
             {
-                if (CanUseAbility(gameState, benchCard, ability.Name))
+                if (CanUseAbility(currentGameState, benchCard, ability.Name))
                 {
                     cardActions[$"{USE_ACTION}{ability.Name}"] = GetAbilityAction(
-                        gamePageViewModel,
-                        gameState,
+                        currentGameState,
+                        onGameStateChanged,
                         benchCard,
                         ability
                         );
@@ -97,46 +92,47 @@ namespace PokemonTCG.States
         }
 
         private static CardActionState<PokemonCardState> GetFieldActionsForActive(
-            GamePageViewModel gamePageViewModel
+            GameState currentGameState,
+            Action<GameState> onGameStateChanged
             )
         {
-            GameState gameState = gamePageViewModel.GameState;
-            Dictionary<string, TappedEventHandler> cardActionsForActive = new();
-            PokemonCardState activeCard = gameState.PlayerState.Active;
+            PlayerState playerState = currentGameState.PlayerState;
+            Dictionary<string, Action> cardActionsForActive = new();
+            PokemonCardState activeCard = currentGameState.PlayerState.Active;
 
             if (activeCard != null)
             {
                 if (!activeCard.FirstTurnInPlay)
                 {
-                    IImmutableList<PokemonCard> evolutionCardsForActive = gameState.PlayerState.GetEvolutionCardsForCard(activeCard);
+                    IImmutableList<PokemonCard> evolutionCardsForActive = playerState.GetEvolutionCardsForCard(activeCard);
                     if (evolutionCardsForActive.Count > 0)
                     {
                         cardActionsForActive[EVOLVE_ACTION] = GetEvolveAction(
-                            gamePageViewModel,
-                            gameState,
+                            currentGameState,
+                            onGameStateChanged,
                             activeCard,
                             evolutionCardsForActive,
                             isBench: false
                             );
                     }
                 }
-                if (!gameState.IsPreGame )
+                if (!currentGameState.IsPreGame)
                 {
-                    if (activeCard.CanRetreat() && gameState.PlayerState.Bench.Count > 0)
+                    if (activeCard.CanRetreat() && playerState.Bench.Count > 0)
                     {
                         cardActionsForActive[RETREAT_ACTION] = GetRetreatAction(
-                            gamePageViewModel,
-                            gameState,
+                            currentGameState,
+                            onGameStateChanged,
                             activeCard
                             );
                     }
-                    foreach(Ability ability in activeCard.PokemonCard.Abilities)
+                    foreach (Ability ability in activeCard.PokemonCard.Abilities)
                     {
-                        if (CanUseAbility(gameState, activeCard, ability.Name))
+                        if (CanUseAbility(currentGameState, activeCard, ability.Name))
                         {
                             cardActionsForActive[$"{USE_ACTION}{ability.Name}"] = GetAbilityAction(
-                                gamePageViewModel,
-                                gameState,
+                                currentGameState,
+                                onGameStateChanged,
                                 activeCard,
                                 ability
                                 );
@@ -146,11 +142,11 @@ namespace PokemonTCG.States
                     {
                         foreach (Attack attack in activeCard.PokemonCard.Attacks)
                         {
-                            if (CanUseAttack(gameState, activeCard, attack))
+                            if (CanUseAttack(currentGameState, activeCard, attack))
                             {
                                 cardActionsForActive[$"{USE_ACTION}{attack.Name}"] = GetAttackAction(
-                                    gamePageViewModel,
-                                    gameState,
+                                    currentGameState,
+                                    onGameStateChanged,
                                     activeCard,
                                     attack
                                     );
@@ -158,164 +154,121 @@ namespace PokemonTCG.States
                         }
                     }
                 }
-                
-
             }
 
             return new CardActionState<PokemonCardState>(activeCard, cardActionsForActive.ToImmutableDictionary());
         }
 
-        private static TappedEventHandler GetAttackAction(
-            GamePageViewModel gamePageViewModel, 
-            GameState gameState, 
-            PokemonCardState activeCard, 
+        private static Action GetAttackAction(
+            GameState currentGameState,
+            Action<GameState> onGameStateChanged,
+            PokemonCardState activeCard,
             Attack attack
             )
         {
-            return new TappedEventHandler(
-                (sender, e) =>
+            return new Action(
+                () =>
                 {
-                    MethodInfo method = GetUseFunction(activeCard.PokemonCard, attack.Name);
-                    gamePageViewModel.UpdateGameState(
-                        (GameState)method.Invoke(null, new object[] { gameState, attack })
-                    );
+                    MethodInfo method = CardFunctionDataSource.GetPlayerUseFunction(activeCard.PokemonCard.Id, attack.Name);
+                    GameState newGameState = (GameState)method.Invoke(null, new object[] { currentGameState, attack });
+                    onGameStateChanged(newGameState);
                 }
                 );
         }
 
-        private static TappedEventHandler GetAbilityAction(
-            GamePageViewModel gamePageViewModel,
-            GameState gameState,
+        private static Action GetAbilityAction(
+            GameState currentGameState,
+            Action<GameState> onGameStateChanged,
             PokemonCardState activeCard,
             Ability ability
             )
         {
-            return new TappedEventHandler(
-                (sender, e) =>
+            return new Action(
+                () =>
                 {
-                    MethodInfo method = GetUseFunction(activeCard.PokemonCard, ability.Name);
-                    gamePageViewModel.UpdateGameState(
-                        (GameState)method.Invoke(null, new object[] { gameState, activeCard })
-                    );
+                    MethodInfo method = CardFunctionDataSource.GetPlayerUseFunction(activeCard.PokemonCard.Id, ability.Name);
+                    GameState newGameState = (GameState)method.Invoke(null, new object[] { currentGameState, activeCard });
+                    onGameStateChanged(newGameState);
                 }
                 );
         }
 
-        private static TappedEventHandler GetRetreatAction(
-            GamePageViewModel gamePageViewModel,
-            GameState gameState,
+        private static Action GetRetreatAction(
+            GameState currentGameState,
+            Action<GameState> onGameStateChanged,
             PokemonCardState activeCard
             )
         {
-            return new TappedEventHandler(
-                (sender, e) =>
+            return new Action(
+                () =>
                 {
-                    CardPickerPage energyCardPickerPage = new();
-                    Window energyPickerWindow = null;
                     void OnEnergySelected(IImmutableList<PokemonCard> pickedEnergy)
                     {
-
-                        energyPickerWindow.Close();
-
-                        CardPickerPage benchCardPickerPage = new();
-                        Window benchPickerWindow = null;
                         void onCardSelected(IImmutableList<PokemonCardState> pickedBenchCards)
                         {
-                            PlayerState newPlayerState;
-                            newPlayerState = gameState.PlayerState.AfterRetreatingActivePokemon(
+                            PlayerState newPlayerState = currentGameState.PlayerState.AfterRetreatingActivePokemon(
                                 pickedBenchCards[0],
                                 pickedEnergy
                                 );
-                            benchPickerWindow.Close();
-                            gamePageViewModel.UpdateGameState(gameState.WithPlayerState(newPlayerState));
+                            onGameStateChanged(currentGameState.WithPlayerState(newPlayerState));
                         }
-
-                        CardPickerPageArgs<PokemonCardState> args = new(
-                            gameState.PlayerState.Bench,
-                            onCardSelected,
-                            1
+                        WindowUtil.OpenCardPickerPageAndGetSelectedCards(
+                            cards: currentGameState.PlayerState.Bench,
+                            onCardsSelected: onCardSelected,
+                            numberOfCardsToPick: 1
                             );
-
-                        benchCardPickerPage.SetArgs(args);
-                        benchPickerWindow = WindowUtil.OpenPageInNewWindow(benchCardPickerPage);
                     }
-                    CardPickerPageArgs<PokemonCard> energyArgs = new(
-                            activeCard.Energy,
-                            OnEnergySelected,
-                            activeCard.PokemonCard.ConvertedRetreatCost
-                            );
-
-                    energyCardPickerPage.SetArgs(energyArgs);
-                    energyPickerWindow = WindowUtil.OpenPageInNewWindow(energyCardPickerPage);
+                    WindowUtil.OpenCardPickerPageAndGetSelectedCards(
+                        cards: activeCard.Energy,
+                        onCardsSelected: OnEnergySelected,
+                        numberOfCardsToPick: activeCard.PokemonCard.ConvertedRetreatCost);
                 }
                 );
         }
 
-        private static TappedEventHandler GetEvolveAction(
-            GamePageViewModel gamePageViewModel,
-            GameState gameState,
+        private static Action GetEvolveAction(
+            GameState currentGameState,
+            Action<GameState> onGameStateChanged,
             PokemonCardState benchCard,
             IImmutableList<PokemonCard> evolutionCards,
             bool isBench
             )
         {
-            return new TappedEventHandler(
-                (sender, e) =>
+            GameState gameState = currentGameState;
+            return new Action(
+                () =>
                 {
-                    CardPickerPage cardPickerPage = new();
-                    Window window = null;
+                    PlayerState playerState = gameState.PlayerState;
                     void OnCardSelected(IImmutableList<PokemonCard> pickedCards)
                     {
                         PlayerState newPlayerState;
                         PokemonCard pickedCard = pickedCards[0];
                         if (isBench)
                         {
-                            newPlayerState = gameState.PlayerState.AfterEvolvingBenchedPokemon(benchCard, pickedCard);
+                            newPlayerState = playerState.AfterEvolvingBenchedPokemon(benchCard, pickedCard);
                         }
                         else
                         {
-                            newPlayerState = gameState.PlayerState.AfterEvolvingActivePokemon(pickedCard);
+                            newPlayerState = playerState.AfterEvolvingActivePokemon(pickedCard);
                         }
-
-                        window.Close();
-                        gamePageViewModel.UpdateGameState(gameState.WithPlayerState(newPlayerState));
+                        onGameStateChanged(gameState.WithPlayerState(newPlayerState));
                     }
-
-                    CardPickerPageArgs<PokemonCard> args = new(
-                        evolutionCards,
-                        OnCardSelected,
-                        1
+                    WindowUtil.OpenCardPickerPageAndGetSelectedCards(
+                        cards: evolutionCards,
+                        onCardsSelected: OnCardSelected,
+                        numberOfCardsToPick: 1
                         );
-
-                    cardPickerPage.SetArgs(args);
-                    window = WindowUtil.OpenPageInNewWindow(cardPickerPage);
                 }
                 );
         }
 
-        private static MethodInfo GetUseFunction(PokemonCard card, string toUse)
-        {
-            string namespaceName = "PokemonTCG.Generated";
-            string className = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id).Replace(" ", "_").Replace("-", "_");
-            string methodName = toUse.Replace(" ", "_").Replace("-", "_") + "_Use";
-
-            Type type = Type.GetType($"{namespaceName}.{className}");
-            MethodInfo methodInfo = type?.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
-            return methodInfo;
-        }
-
         private static bool CanUseAbility(
-            GameState gameState, 
-            PokemonCardState card, 
+            GameState gameState,
+            PokemonCardState card,
             string abilityName
             )
         {
-            string namespaceName = "PokemonTCG.Generated";
-            string className = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.PokemonCard.Id.Replace(" ", "_").Replace("-", "_"));
-            string methodName = abilityName.Replace(" ", "_").Replace("-", "_") + "_CanUse";
-
-            Type type = Type.GetType($"{namespaceName}.{className}");
-            MethodInfo methodInfo = type?.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
+            MethodInfo methodInfo =  CardFunctionDataSource.GetCanUseFunction(card.PokemonCard.Id, abilityName);
             return (bool)methodInfo.Invoke(null, new object[] { gameState, card });
         }
 
@@ -326,12 +279,7 @@ namespace PokemonTCG.States
             Attack attack
             )
         {
-            string namespaceName = "PokemonTCG.Generated";
-            string className = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.PokemonCard.Id.Replace(" ", "_").Replace("-", "_"));
-            string methodName = attack.Name.Replace(" ", "_").Replace("-", "_") + "_CanUse";
-
-            Type type = Type.GetType($"{namespaceName}.{className}");
-            MethodInfo methodInfo = type?.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
+            MethodInfo methodInfo = CardFunctionDataSource.GetCanUseFunction(card.PokemonCard.Id, attack.Name);
             return (bool)methodInfo.Invoke(null, new object[] { gameState, attack });
         }
 

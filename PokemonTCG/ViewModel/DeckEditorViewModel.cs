@@ -1,7 +1,6 @@
 ﻿using PokemonTCG.CardModels;
 using PokemonTCG.DataSources;
 using PokemonTCG.Enums;
-using PokemonTCG.Models;
 using PokemonTCG.States;
 using PokemonTCG.Utilities;
 
@@ -93,7 +92,7 @@ namespace PokemonTCG.ViewModel
             }
         }
 
-        internal async Task ChangeCardItemCount(
+        internal void ChangeCardItemCount(
             CardItemAdapter cardItemAdapter,
             string cardId,
             int newValue
@@ -117,7 +116,7 @@ namespace PokemonTCG.ViewModel
             }
             
             NumberOfCardsInDeck += difference;
-            await cardItemAdapter.SetCardCountForCardWithId(cardId, value);
+            cardItemAdapter.SetCardCountForCardWithId(cardId, value);
             Debug.Assert(NumberOfCardsInDeck <= PokemonDeck.NUMBER_OF_CARDS_PER_DECK && NumberOfCardsInDeck >= 0);
         }
 

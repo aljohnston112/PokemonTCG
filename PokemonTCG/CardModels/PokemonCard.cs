@@ -1,8 +1,6 @@
 ﻿using PokemonTCG.Enums;
-using PokemonTCG.Models;
-using System.Collections.Generic;
+
 using System.Collections.Immutable;
-using System.Xml.Linq;
 
 namespace PokemonTCG.CardModels
 {
@@ -87,6 +85,12 @@ namespace PokemonTCG.CardModels
             Legalities = legalities;
         }
 
+        /// <summary>
+        /// Gets this card without the specified attack.
+        /// Used for when an attack can no longer be used by a card.
+        /// </summary>
+        /// <param name="attack">The attack to remove from this card</param>
+        /// <returns>This card without the specified attack</returns>
         internal PokemonCard WithoutAttack(Attack attack)
         {
             return new PokemonCard(

@@ -1,9 +1,13 @@
-﻿using System;
-
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml.Controls;
+
+using PokemonTCG.View;
+using PokemonTCG.ViewModel;
+
+using System;
+using System.Collections.Immutable;
 
 using Windows.Foundation;
 using Windows.Graphics;
@@ -15,6 +19,32 @@ namespace PokemonTCG.Utilities
 {
     internal class WindowUtil
     {
+
+        internal static void OpenCardPickerPageAndGetSelectedCards<T>(
+            IImmutableList<T> cards,
+            Action<IImmutableList<T>> onCardsSelected,
+            int numberOfCardsToPick
+            )
+        {
+            CardPickerPage cardPickerPage = new();
+            Window window = null;
+
+            void OnCardSelected(IImmutableList<T> cardStates)
+            {
+                onCardsSelected(cardStates);
+                window.Close();
+            }
+
+            CardPickerPageArgs<T> args = new(
+                cards,
+                OnCardSelected,
+                numberOfCardsToPick
+                );
+
+            cardPickerPage.SetArgs(args);
+            OpenPageInNewWindow(cardPickerPage);
+        }
+
         internal static Window OpenPageInNewWindow(Page page)
         {
             int width = 960;

@@ -1,12 +1,13 @@
-﻿using System;
+﻿using PokemonTCG.CardModels;
+using PokemonTCG.Enums;
+using PokemonTCG.Utilities;
+
+using System;
 using System.Collections.Immutable;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using PokemonTCG.CardModels;
-using PokemonTCG.Enums;
-using PokemonTCG.Utilities;
+
 using Windows.Storage;
 
 namespace PokemonTCG.DataSources
@@ -15,18 +16,18 @@ namespace PokemonTCG.DataSources
     {
 
         private const string ROOT_FOLDER = "\\Generated\\";
+        private const string AttackFunctionParameters = "(GameState gameState, Attack attack)";
+        private const string AbilityFunctionParameters = "(GameState gameState, PokemonCardState userCardState)";
+        private const string TrainerFunctionParameters = "(GameState gameState)";
+
+        internal const string NamespacePath = "PokemonTCG.Generated";
+        internal const string PlayerUseFunctionSuffix = "_PlayerUse";
+        internal const string CanUseFunctionSuffix = "_CanUse";
+        internal const string OpponentUseFunctionSuffix = "_OpponentUse";
+        internal const string ShouldUseFunctionSuffix = "_ShouldUse";
 
         internal static async Task GenerateCardFunctions()
         {
-            // Template: SetName is the folder
-            //           CardId is the file name and class name
-            //           Function is of one of the forms
-            //              AttackName_CanUse, 
-            //              AttackName_Use, 
-            //              AbilityName_CanUse, 
-            //              AbilityName_Use, 
-            //              TrainerName_CanUse, or
-            //              TrainerName_Use
             Directory.CreateDirectory(FileUtil.GetFullPath(ROOT_FOLDER));
             StorageFolder rootFolder = await FileUtil.GetFolder(ROOT_FOLDER);
             IImmutableDictionary<string, IImmutableList<PokemonCard>> sets = await CardDataSource.LoadSets();
@@ -55,8 +56,8 @@ namespace PokemonTCG.DataSources
                         if (card.Supertype == CardSupertype.POKéMON)
                         {
                             fileContent = GenerateCardFileContent(
-                                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id),
-                                card.Attacks,
+                                card.Id,
+                                card.Attacks.Select(attack => attack.Name).ToImmutableList(),
                                 card.Abilities.Select(ability => ability.Name).ToImmutableList(),
                                 null
                                 );
@@ -64,8 +65,8 @@ namespace PokemonTCG.DataSources
                         else if(card.Supertype == CardSupertype.TRAINER)
                         {
                             fileContent = GenerateCardFileContent(
-                                CultureInfo.CurrentCulture.TextInfo.ToTitleCase(card.Id),
-                                ImmutableList.Create<Attack>(),
+                                card.Id,
+                                ImmutableList.Create<string>(),
                                 ImmutableList.Create<string>(),
                                 card.Name
                                 );
@@ -81,9 +82,9 @@ namespace PokemonTCG.DataSources
 
         internal static string GenerateCardFileContent(
             string cardClassName,
-            IImmutableList<Attack> attacks,
-            IImmutableList<string> abilities,
-            string trainer
+            IImmutableList<string> attackNames,
+            IImmutableList<string> abilityNames,
+            string trainerName
             )
         {
             string template = @"
@@ -92,88 +93,88 @@ using PokemonTCG.CardModels;
 using PokemonTCG.Models;
 using PokemonTCG.States;
 
-namespace PokemonTCG.Generated 
+namespace" + NamespacePath + @"
 {
     
-    internal class " + cardClassName.Replace("-", "_").Replace(" ", "_") + @"
+    internal class " + StringUtil.GetValidClassIdentifier(cardClassName) + @"
     {
 ";
 
-            foreach (Attack attack in attacks)
+            foreach (string attack in attackNames)
             {
-                string attackName = attack.Name.Replace("-", "_").Replace(" ", "_");
+                string attackName = StringUtil.MakeValidIdentifierFrom(attack);
                 template += @"
-        internal static bool " + attackName + @"_CanUse(GameState gameState, Attack attack)
+        internal static bool " + attackName + CanUseFunctionSuffix + AttackFunctionParameters + @"
         {
             bool canUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
             throw new NotImplementedException();
             return canUse;
         }
 
-        internal static bool " + attackName + @"_ShouldUse(GameState gameState, Attack attack)
+        internal static bool " + attackName + ShouldUseFunctionSuffix + AttackFunctionParameters + @"
         {
             bool shouldUse = gameState.CurrentPlayersActiveCanUseAttack(attack);
             throw new NotImplementedException();
             return shouldUse;
         }
 
-        internal static GameState " + attackName + @"_PlayerUse(GameState gameState, Attack attack)
+        internal static GameState " + attackName + PlayerUseFunctionSuffix + AttackFunctionParameters + @"
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState " + attackName + @"_OpponentUse(GameState gameState, Attack attack)
+        internal static GameState " + attackName + OpponentUseFunctionSuffix + AttackFunctionParameters + @"
         {
             throw new NotImplementedException();
         }
 ";
             }
 
-            foreach (string abilityName in abilities)
+            foreach (string abilityName in abilityNames)
             {
-                string newAbilityName = abilityName.Replace("-", "_").Replace(" ", "_");
+                string newAbilityName = StringUtil.MakeValidIdentifierFrom(abilityName);
                 template += @"
-        internal static bool " + newAbilityName + @"_CanUse(GameState gameState, PokemonCardState userCardState)
+        internal static bool " + newAbilityName + CanUseFunctionSuffix + AbilityFunctionParameters + @"
         {
             throw new NotImplementedException();
         }
 
-        internal static bool " + newAbilityName + @"_ShouldUse(GameState gameState, PokemonCardState userCardState)
+        internal static bool " + newAbilityName + ShouldUseFunctionSuffix + AbilityFunctionParameters + @"
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState " + newAbilityName + @"_PlayerUse(GameState gameState, PokemonCardState userCardState)
+        internal static GameState " + newAbilityName + PlayerUseFunctionSuffix + AbilityFunctionParameters + @"
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState " + newAbilityName + @"_OpponentUse(GameState gameState, PokemonCardState userCardState)
+        internal static GameState " + newAbilityName + OpponentUseFunctionSuffix + AbilityFunctionParameters + @"
         {
             throw new NotImplementedException();
         }
 ";
             }
-            if (trainer != null)
+            if (trainerName != null)
             {
-                string trainerName = trainer.Replace("-", "_").Replace(" ", "_");
+                string newTrainerName = StringUtil.MakeValidIdentifierFrom(trainerName);
                 template += @"
-        internal static bool " + trainerName + @"_CanUse(GameState gameState)
+        internal static bool " + newTrainerName + CanUseFunctionSuffix + TrainerFunctionParameters + @"
         {
             throw new NotImplementedException();
         }
 
-        internal static bool " + trainerName + @"_ShouldUse(GameState gameState)
+        internal static bool " + newTrainerName + ShouldUseFunctionSuffix + TrainerFunctionParameters + @"
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState " + trainerName + @"_PlayerUse(GameState gameState)
+        internal static GameState " + newTrainerName + PlayerUseFunctionSuffix + TrainerFunctionParameters + @"
         {
             throw new NotImplementedException();
         }
 
-        internal static GameState " + trainerName + @"_OpponentUse(GameState gameState)
+        internal static GameState " + newTrainerName + OpponentUseFunctionSuffix + TrainerFunctionParameters + @"
         {
             throw new NotImplementedException();
         }

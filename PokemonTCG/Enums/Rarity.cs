@@ -1,5 +1,6 @@
 ﻿namespace PokemonTCG.Enums
 {
+
     internal enum Rarity
     {
         NONE,

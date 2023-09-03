@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 
 using PokemonTCG.CardModels;
-using PokemonTCG.Models;
+using PokemonTCG.States;
 using PokemonTCG.Utilities;
 
 namespace PokemonTCG.ViewModel

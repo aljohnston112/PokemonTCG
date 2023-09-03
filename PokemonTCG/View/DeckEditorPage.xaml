@@ -29,7 +29,7 @@
                     <Image x:Name="CardImage"
                            Grid.Column="0"
                            MaxWidth="240"
-                           Source="{x:Bind ImagePath, Mode=OneWay}"
+                           Source="{x:Bind ImagePath}"
                            FlyoutBase.AttachedFlyout="{StaticResource ImagePreviewFlyout}"
                            Margin="5" />
 

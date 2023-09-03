@@ -2,6 +2,7 @@
 
 namespace PokemonTCG.CardModels
 {
+
     internal class Ability
     {
         internal readonly string Name;

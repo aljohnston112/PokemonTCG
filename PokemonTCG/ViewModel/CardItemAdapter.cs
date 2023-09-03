@@ -1,11 +1,9 @@
-﻿using System;
+﻿using PokemonTCG.Enums;
+using PokemonTCG.States;
+
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
-using PokemonTCG.Enums;
-using PokemonTCG.Models;
-using PokemonTCG.States;
-using PokemonTCG.Utilities;
+using System.Diagnostics;
 
 namespace PokemonTCG.ViewModel
 {
@@ -13,6 +11,7 @@ namespace PokemonTCG.ViewModel
     {
         private CardSifter CardSifter = new();
         private readonly IDictionary<string, CardItem> _cardItems = new Dictionary<string, CardItem>();
+
         internal readonly ObservableCollection<CardItem> CardItems = new();
 
         internal ICollection<CardItem> GetAllCardItems()
@@ -26,35 +25,27 @@ namespace PokemonTCG.ViewModel
             CardItems.Add(cardItem);
         }
 
-        internal async void IncrementCardCountForCardWithId(string id)
+        internal void IncrementCardCountForCardWithId(string id)
         {
             CardItem cardItem = _cardItems[id];
             int count = cardItem.Count + 1;
-            await SetCardCountForCardWithId(cardItem.Id, count);
+            SetCardCountForCardWithId(cardItem.Id, count);
         }
 
-        internal async Task SetCardCountForCardWithId(string id, int count)
+        internal void SetCardCountForCardWithId(string id, int count)
         {
             CardItem cardItem = _cardItems[id];
-            AssertCount(
-                count: count,
-                limit: cardItem.Limit
+            Debug.Assert(
+                cardItem.Limit != -1 && (count > cardItem.Limit) || (count < 0 || (count > PokemonDeck.NUMBER_OF_CARDS_PER_DECK)),
+                "Count was out of range: " + count
                 );
             _cardItems[id] = cardItem.WithCount(count);
-            await SiftCards();
+            SiftCards();
         }
 
-        private static void AssertCount(int count, int limit)
+        private void SiftCards()
         {
-            if (limit != -1 && (count > limit) || (count < 0 || (count > PokemonDeck.NUMBER_OF_CARDS_PER_DECK)))
-            {
-                throw new ArgumentException("Count was out of range: " + count);
-            }
-        }
-
-        private async Task SiftCards()
-        {
-            ICollection<CardItem> cards = await CardSifter.Sift(_cardItems.Values);
+            ICollection<CardItem> cards = CardSifter.Sift(_cardItems.Values);
             CardItems.Clear();
             foreach (CardItem card in cards)
             {
@@ -62,59 +53,57 @@ namespace PokemonTCG.ViewModel
             }
         }
 
-        internal async Task UpdateSearchString(string text)
+        internal void UpdateSearchString(string text)
         {
             CardSifter = CardSifter.WithNewSearchString(text);
-            await SiftCards();
+            SiftCards();
         }
 
-        internal async Task InludeType(string type, bool inludeType)
+        internal void InludeType(PokemonType type, bool inludeType)
         {
-            PokemonType pokemonType = EnumUtil.Parse<PokemonType>(type);
-            CardSifter = CardSifter.WithTypeIncluded(pokemonType, inludeType);
-            await SiftCards();
+            CardSifter = CardSifter.WithTypeIncluded(type, inludeType);
+            SiftCards();
         }
 
-        internal async Task IncludeOnlyCardsInDeck(bool deckCardsOnly)
+        internal void IncludeOnlyCardsInDeck(bool deckCardsOnly)
         {
             CardSifter = CardSifter.IncludeOnlyCardsFromDeck(deckCardsOnly);
-            await SiftCards();
+            SiftCards();
         }
 
-        internal async Task IncludeSupertype(string text, bool value)
+        internal void IncludeSupertype(CardSupertype type, bool value)
         {
-            CardSupertype supertype = EnumUtil.Parse<CardSupertype>(text);
+            CardSupertype supertype = type;
             if (supertype == CardSupertype.POKéMON)
             {
-                await IncludePokemon(value);
+                IncludePokemon(value);
             }
             else if (supertype == CardSupertype.TRAINER)
             {
-                await IncludeTrainer(value);
+                IncludeTrainer(value);
             }
             else if (supertype == CardSupertype.ENERGY)
             {
-                await IncludeEnergy(value);
+                IncludeEnergy(value);
             }
         }
 
-        private async Task IncludePokemon(bool includePokemon)
+        private void IncludePokemon(bool includePokemon)
         {
             CardSifter = CardSifter.WithPokemonIncluded(includePokemon);
-            await SiftCards();
+            SiftCards();
         }
 
-
-        private async Task IncludeTrainer(bool includeTrainer)
+        private void IncludeTrainer(bool includeTrainer)
         {
             CardSifter = CardSifter.WithTrainersIncluded(includeTrainer);
-            await SiftCards();
+            SiftCards();
         }
 
-        private async Task IncludeEnergy(bool includeEnergy)
+        private void IncludeEnergy(bool includeEnergy)
         {
             CardSifter = CardSifter.WithEnergiesIncluded(includeEnergy);
-            await SiftCards();
+            SiftCards();
         }
 
     }

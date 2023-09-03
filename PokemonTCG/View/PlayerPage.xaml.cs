@@ -7,8 +7,6 @@ using System.Diagnostics;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media.Imaging;
-
-using PokemonTCG.Models;
 using PokemonTCG.States;
 using PokemonTCG.Utilities;
 
@@ -51,7 +49,7 @@ namespace PokemonTCG.View
         {
             FieldCardActionState fieldCardActionState = PlayerPageViewModel.FieldCardActionState;
             Debug.Assert(fieldCardActionState.ActiveCardActions.Count == 1);
-            IImmutableDictionary<string, TappedEventHandler> cardActions =
+            IImmutableDictionary<string, Action> cardActions =
                 fieldCardActionState.ActiveCardActions[0].Actions;
             ActiveImage.ContextFlyout = null;
             if (cardActions.Count > 0)

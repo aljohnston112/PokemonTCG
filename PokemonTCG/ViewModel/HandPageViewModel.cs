@@ -1,4 +1,5 @@
-﻿using PokemonTCG.States;
+﻿using System;
+using PokemonTCG.States;
 using PokemonTCG.Utilities;
 
 namespace PokemonTCG.ViewModel
@@ -21,10 +22,10 @@ namespace PokemonTCG.ViewModel
             set { SetProperty(ref _showStartGameButton, value); }
         }
 
-        internal void OnStateChange(GamePageViewModel gamePageViewModel)
+        internal void OnStateChange(GameState gameState, Action<GameState> onGameStateChanged)
         {
-            HandCardActionState = new HandCardActionState(gamePageViewModel);
-            if(gamePageViewModel.GameState.IsPreGame && gamePageViewModel.GameState.PlayerState.Active != null)
+            HandCardActionState = new HandCardActionState(gameState, onGameStateChanged);
+            if(gameState.IsPreGame && gameState.PlayerState.Active != null)
             {
                 ShowStartGameButton = true;
             } else

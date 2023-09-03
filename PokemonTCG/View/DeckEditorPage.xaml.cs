@@ -1,9 +1,8 @@
-﻿using System.Threading.Tasks;
-
-using Microsoft.UI.Xaml;
+﻿using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Navigation;
+using PokemonTCG.Enums;
 using PokemonTCG.States;
 using PokemonTCG.Utilities;
 using PokemonTCG.ViewModel;
@@ -44,7 +43,7 @@ namespace PokemonTCG.View
                 if (checkBox.IsChecked.HasValue)
                 {
                     string text = checkBox.Content.ToString();
-                    _ = CardItemAdapter.IncludeSupertype(text, checkBox.IsChecked.Value);
+                    CardItemAdapter.IncludeSupertype(EnumUtil.Parse<CardSupertype>(text), checkBox.IsChecked.Value);
                 }
             }
 
@@ -59,7 +58,7 @@ namespace PokemonTCG.View
                 if (checkBox.IsChecked.HasValue)
                 {
                     string text = checkBox.Content.ToString();
-                    _ = CardItemAdapter.InludeType(text, checkBox.IsChecked.Value);
+                    CardItemAdapter.InludeType(EnumUtil.Parse<PokemonType>(text), checkBox.IsChecked.Value);
                 }
             }
 
@@ -74,15 +73,15 @@ namespace PokemonTCG.View
                 CheckBox checkBox = sender as CheckBox;
                 if (checkBox.IsChecked.HasValue)
                 {
-                    _ = CardItemAdapter.IncludeOnlyCardsInDeck(checkBox.IsChecked.Value);
+                    CardItemAdapter.IncludeOnlyCardsInDeck(checkBox.IsChecked.Value);
                 }
             }
             CheckBoxInDeck.RegisterPropertyChangedCallback(ToggleButton.IsCheckedProperty, inDeckCallback);
         }
 
-        private async void SearchTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
+        private void SearchTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs args)
         {
-            await CardItemAdapter.UpdateSearchString(sender.Text);
+            CardItemAdapter.UpdateSearchString(sender.Text);
         }
 
         /// <summary>
@@ -129,13 +128,13 @@ namespace PokemonTCG.View
             }
         }
 
-        private async void NumberBoxHandler(NumberBox box, NumberBoxValueChangedEventArgs args)
+        private void NumberBoxHandler(NumberBox box, NumberBoxValueChangedEventArgs args)
         {
             if (box.Tag is CardItem cardItem && args.OldValue != args.NewValue)
             {
                 if (!double.IsNaN(args.NewValue))
                 {
-                    await ViewModel.ChangeCardItemCount(
+                    ViewModel.ChangeCardItemCount(
                         cardItemAdapter: CardItemAdapter,
                         cardId: cardItem.Id,
                         newValue: (int)args.NewValue
@@ -143,7 +142,7 @@ namespace PokemonTCG.View
                 }
                 else
                 {
-                    await ViewModel.ChangeCardItemCount(
+                    ViewModel.ChangeCardItemCount(
                        cardItemAdapter: CardItemAdapter,
                        cardId: cardItem.Id,
                        newValue: 0
